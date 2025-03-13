@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Models;
@@ -23,16 +24,17 @@ namespace MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-                if (result.Succeeded)
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user != null)
                 {
+                    await signInManager.PasswordSignInAsync(user.UserName!, model.Password, model.RememberMe, false);
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
                     ModelState.AddModelError("", "Email or password is incorrect");
                     return View(model);
-                }   
+                } 
             }
             return View(model);
         }
@@ -46,13 +48,13 @@ namespace MVC.Controllers
                 Users users = new Users
                 {
                     UserName = model.UserName,
-                    Email = model.Email,
-                    
+                    Email = model.Email
                 };
                 var result = await userManager.CreateAsync(users, model.Password);
+                await userManager.AddToRoleAsync(users, "User");
                 if(result.Succeeded)
                 {
-                    return RedirectToAction("Login", "User");
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
@@ -64,6 +66,13 @@ namespace MVC.Controllers
                 }
             }
             return View(model);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
