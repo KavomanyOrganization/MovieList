@@ -14,7 +14,6 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <!-- Зображення фільму -->
                             @if (!string.IsNullOrEmpty(Model.Cover))
                             {
                                 <img src="@Model.Cover" alt="@Model.Title" class="img-fluid rounded" />
@@ -25,7 +24,6 @@
                             }
                         </div>
                         <div class="col-md-8">
-                            <!-- Деталі фільму -->
                             <dl class="row">
                                 <dt class="col-sm-3">Rating</dt>
                                 <dd class="col-sm-9">@Model.Rating</dd>

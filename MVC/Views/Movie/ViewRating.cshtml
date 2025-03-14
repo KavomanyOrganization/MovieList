@@ -7,7 +7,6 @@
 <div class="container mt-4">
     <h1>Movie Ratings</h1>
 
-    <!-- Кнопка для переходу на сторінку створення фільму -->
     @if (User.IsInRole("User") || User.IsInRole("Admin"))
     {
         <div class="row mb-4">
@@ -54,9 +53,8 @@
                             <td>@movie.Year</td>
                             <td>@movie.Director</td>
                             <td>
-                                <!-- Відображення рейтингового балу у форматі "X/10" -->
                                 @{
-                                    double ratingOutOf10 = movie.Rating / 10.0; // Перетворення з відсотків у формат "X/10"
+                                    double ratingOutOf10 = movie.Rating / 10.0; 
                                 }
                                 <span>@ratingOutOf10.ToString("0.0")/10</span>
                             </td>
@@ -64,7 +62,6 @@
                             {
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <!-- Кнопки "Edit" та "Delete" доступні лише для адміністратора -->
                                         <a asp-controller="Movie" asp-action="Update" asp-route-id="@movie.Id" class="btn btn-warning btn-sm">
                                             <i class="bi bi-pencil"></i> Edit
                                         </a>

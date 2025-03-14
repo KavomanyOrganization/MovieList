@@ -51,7 +51,7 @@ public class MovieController : Controller{
             Description = movie.Description
         };
         
-        ViewBag.MovieId = id; // Передаємо ID для використання в формі
+        ViewBag.MovieId = id;
         return View(movieViewModel);
     }
 
@@ -88,13 +88,13 @@ public class MovieController : Controller{
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var movie = await _context.Movies.FindAsync(id); // Отримуємо фільм за ID
+        var movie = await _context.Movies.FindAsync(id); 
         if (movie == null)
         {
-            return NotFound(); // Якщо фільм не знайдено, повертаємо 404
+            return NotFound(); 
         }
 
-        return View(movie); // Передаємо модель у вигляд
+        return View(movie);
     }
 
     public IActionResult Rating(){
