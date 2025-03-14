@@ -39,7 +39,7 @@
                 <tbody>
                     @foreach (var movie in Model)
                     {
-                        <tr>
+                        <tr onclick="location.href='@Url.Action("Details", "Movie", new { id = movie.Id })'" style="cursor: pointer;">
                             <td>
                                 @if (!string.IsNullOrEmpty(movie.Cover))
                                 {

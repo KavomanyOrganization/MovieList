@@ -1,0 +1,83 @@
+@model MVC.Models.Movie
+
+@{
+    ViewData["Title"] = "Movie Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">@Model.Title</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <!-- Зображення фільму -->
+                            @if (!string.IsNullOrEmpty(Model.Cover))
+                            {
+                                <img src="@Model.Cover" alt="@Model.Title" class="img-fluid rounded" />
+                            }
+                            else
+                            {
+                                <span>No cover available</span>
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <!-- Деталі фільму -->
+                            <dl class="row">
+                                <dt class="col-sm-3">Rating</dt>
+                                <dd class="col-sm-9">@Model.Rating</dd>
+
+                                <dt class="col-sm-3">Title</dt>
+                                <dd class="col-sm-9">@Model.Title</dd>
+
+                                <dt class="col-sm-3">Director</dt>
+                                <dd class="col-sm-9">@Model.Director</dd>
+
+                                <dt class="col-sm-3">Year</dt>
+                                <dd class="col-sm-9">@Model.Year</dd>
+
+                                <dt class="col-sm-3">Duration</dt>
+                                <dd class="col-sm-9">@Model.Duration minutes</dd>
+
+                                <dt class="col-sm-3">Description</dt>
+                                <dd class="col-sm-9">@Model.Description</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Ratings
+                    </a>
+                    @if (User.IsInRole("User") || User.IsInRole("Admin"))
+                        {
+                        <a asp-controller="User" asp-action="AddToWatch" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> To watch!
+                        </a>
+                        <a asp-controller="User" asp-action="AddSeenIt" class="btn btn-success">
+                            <i class="bi bi-arrow-left"></i> Seen It!
+                        </a>
+                    }
+                    @if (User.IsInRole("User") )
+                    {
+                        <a asp-controller="Report" asp-action="CreateReport" class="btn btn-danger">
+                            <i class="bi bi-arrow-left"></i> Back to Ratings
+                        </a>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Movie" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <a asp-controller="Movie" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

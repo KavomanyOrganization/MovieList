@@ -19,7 +19,7 @@ public class MovieController : Controller{
         return View();
     }
 
-    [Authorize(Roles = "User")]
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(MovieViewModel movieViewModel){
         Movie movie = new Movie(
@@ -32,9 +32,10 @@ public class MovieController : Controller{
         );
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
-        return RedirectToAction("Movie", "ViewRating");
+        return RedirectToAction("ViewRating", "Movie");
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id){
         Movie? movie = await _context.Movies.FindAsync(id);
         if (movie == null)
@@ -53,6 +54,7 @@ public class MovieController : Controller{
         ViewBag.MovieId = id; // Передаємо ID для використання в формі
         return View(movieViewModel);
     }
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Update(int id, MovieViewModel movieViewModel){
@@ -69,7 +71,7 @@ public class MovieController : Controller{
 
         _context.Movies.Update(movie);
         await _context.SaveChangesAsync();
-        return RedirectToAction("Movie", "ViewRating");
+        return RedirectToAction("ViewRating", "Movie");
     }
 
     [Authorize(Roles="Admin")]
@@ -80,26 +82,19 @@ public class MovieController : Controller{
 
         _context.Movies.Remove(movie);
         await _context.SaveChangesAsync();
-        return RedirectToAction("Movie", "ViewRating");
+        return RedirectToAction("ViewRating", "Movie");
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int id){
-        var movie = await _context.Movies.FindAsync(id);
+    public async Task<IActionResult> Details(int id)
+    {
+        var movie = await _context.Movies.FindAsync(id); // Отримуємо фільм за ID
         if (movie == null)
-            return NotFound();
-
-        var movieViewModel = new MovieViewModel
         {
-            Title = movie.Title,
-            Cover = movie.Cover,
-            Year = movie.Year,
-            Duration = movie.Duration,
-            Director = movie.Director,
-            Description = movie.Description
-        };
+            return NotFound(); // Якщо фільм не знайдено, повертаємо 404
+        }
 
-        return View(movieViewModel);
+        return View(movie); // Передаємо модель у вигляд
     }
 
     public IActionResult Rating(){
