@@ -1,0 +1,88 @@
+@model IEnumerable<MVC.Models.Movie>
+
+@{
+    ViewData["Title"] = "Movie Ratings";
+}
+
+<div class="container mt-4">
+    <h1>Movie Ratings</h1>
+
+    @if (User.IsInRole("User") || User.IsInRole("Admin"))
+    {
+        <div class="row mb-4">
+            <div class="col">
+                <a asp-controller="Movie" asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Movie
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Cover</th>
+                        <th>Title</th>
+                        <th>Year</th>
+                        <th>Director</th>
+                        <th>Rating</th>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <th>Actions</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in Model)
+                    {
+                        <tr onclick="location.href='@Url.Action("Details", "Movie", new { id = movie.Id })'" style="cursor: pointer;">
+                            <td>
+                                @if (!string.IsNullOrEmpty(movie.Cover))
+                                {
+                                    <img src="@movie.Cover" alt="@movie.Title" class="img-thumbnail" style="max-height: 100px;" />
+                                }
+                                else
+                                {
+                                    <span>No cover</span>
+                                }
+                            </td>
+                            <td>@movie.Title</td>
+                            <td>@movie.Year</td>
+                            <td>@movie.Director</td>
+                            <td>
+                                @{
+                                    double ratingOutOf10 = movie.Rating / 10.0; 
+                                }
+                                <span>@ratingOutOf10.ToString("0.0")/10</span>
+                            </td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-controller="Movie" asp-action="Update" asp-route-id="@movie.Id" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a asp-controller="Movie" asp-action="Delete" asp-route-id="@movie.Id" 
+                                           class="btn btn-danger btn-sm" 
+                                           onclick="return confirm('Are you sure you want to delete this movie?');">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p>No movies have been added yet. Click the "Add Movie" button to get started.</p>
+        </div>
+    }
+</div>
