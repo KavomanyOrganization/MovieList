@@ -35,8 +35,26 @@ public class MovieController : Controller{
         return RedirectToAction("Movie", "ViewRating");
     }
 
+    public async Task<IActionResult> Update(int id){
+        Movie? movie = await _context.Movies.FindAsync(id);
+        if (movie == null)
+            return NotFound();
+            
+        var movieViewModel = new MovieViewModel
+        {
+            Title = movie.Title,
+            Cover = movie.Cover,
+            Year = movie.Year,
+            Duration = movie.Duration,
+            Director = movie.Director,
+            Description = movie.Description
+        };
+        
+        ViewBag.MovieId = id; // Передаємо ID для використання в формі
+        return View(movieViewModel);
+    }
     [Authorize(Roles = "Admin")]
-    [HttpPut]
+    [HttpPost]
     public async Task<IActionResult> Update(int id, MovieViewModel movieViewModel){
         Movie? movie = await _context.Movies.FindAsync(id);
         if (movie == null)
@@ -53,7 +71,7 @@ public class MovieController : Controller{
         await _context.SaveChangesAsync();
         return RedirectToAction("Movie", "ViewRating");
     }
-    
+
     [Authorize(Roles="Admin")]
     public async Task<IActionResult> Delete(int id){
         Movie? movie = await _context.Movies.FindAsync(id);
@@ -67,11 +85,21 @@ public class MovieController : Controller{
 
     [HttpGet]
     public async Task<IActionResult> Details(int id){
-        Movie? movie = await _context.Movies.FindAsync(id);
+        var movie = await _context.Movies.FindAsync(id);
         if (movie == null)
             return NotFound();
 
-        return View(movie);
+        var movieViewModel = new MovieViewModel
+        {
+            Title = movie.Title,
+            Cover = movie.Cover,
+            Year = movie.Year,
+            Duration = movie.Duration,
+            Director = movie.Director,
+            Description = movie.Description
+        };
+
+        return View(movieViewModel);
     }
 
     public IActionResult Rating(){
