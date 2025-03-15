@@ -8,9 +8,9 @@ namespace MVC.Controllers
 {
     public class UserController: Controller
     {
-        private readonly SignInManager<Users> signInManager;
-        private readonly UserManager<Users> userManager;
-        public UserController(SignInManager<Users> signInManager, UserManager<Users> userManager)
+        private readonly SignInManager<User> signInManager;
+        private readonly UserManager<User> userManager;
+        public UserController(SignInManager<User> signInManager, UserManager<User> userManager)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
@@ -45,13 +45,13 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model){
             if(ModelState.IsValid){
-                Users users = new Users
+                User user = new User
                 {
                     UserName = model.UserName,
                     Email = model.Email
                 };
-                var result = await userManager.CreateAsync(users, model.Password);
-                await userManager.AddToRoleAsync(users, "User");
+                var result = await userManager.CreateAsync(user, model.Password);
+                await userManager.AddToRoleAsync(user, "User");
                 if(result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
