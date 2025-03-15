@@ -44,6 +44,7 @@ public class MovieController : Controller{
         return RedirectToAction("ViewRating", "Movie");
     }
 
+    [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id){
         Movie? movie = await _context.Movies.FindAsync(id);
@@ -83,6 +84,7 @@ public class MovieController : Controller{
         return RedirectToAction("ViewRating", "Movie");
     }
 
+    [HttpGet]
     [Authorize(Roles="Admin")]
     public async Task<IActionResult> Delete(int id){
         Movie? movie = await _context.Movies.FindAsync(id);
