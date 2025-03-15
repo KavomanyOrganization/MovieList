@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using DotNetEnv;
 using MVC.Data;
+using MVC.Models;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(Env.GetString("CONNECTION_STRING")));
-builder.Services.AddIdentity<Users, IdentityRole>(options => 
+builder.Services.AddIdentity<User, IdentityRole>(options => 
 {
     options.Password.RequireNonAlphanumeric=false;
     options.Password.RequiredLength = 6;

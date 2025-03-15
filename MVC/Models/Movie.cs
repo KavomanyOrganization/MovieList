@@ -26,4 +26,9 @@ public class Movie
         Description = description;
         CreationDate = DateTime.UtcNow; 
     }
+
+    public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
+    public ICollection<MovieCountry> MovieCountries { get; set; } = new List<MovieCountry>();
+    public ICollection<UserMovie> UserMovies { get; set; } = new List<UserMovie>();
+    public ICollection<MovieCreator> MovieCreators { get; set; } = new List<MovieCreator>();
 }

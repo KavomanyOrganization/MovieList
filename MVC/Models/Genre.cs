@@ -12,4 +12,7 @@ public class Genre
     public Genre (string? name){
         Name = name; 
     }
+
+    public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
+
 }

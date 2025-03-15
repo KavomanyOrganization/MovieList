@@ -12,4 +12,7 @@ public class Country
     public Country (string? name){
         Name = name; 
     }
+
+    public ICollection<MovieCountry> MovieCountries { get; set; } = new List<MovieCountry>();
+
 }
