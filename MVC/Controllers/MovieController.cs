@@ -5,14 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using MVC.Services;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace MVC.Controllers;
 
 public class MovieController : Controller{
     protected readonly AppDbContext _context;
+    protected readonly UserService _userService;
 
-    public MovieController(AppDbContext appDbContext){
+    public MovieController(AppDbContext appDbContext, UserService userService){
         _context = appDbContext;
+        _userService = userService;
     }
 
     public IActionResult Create(){
@@ -32,6 +36,11 @@ public class MovieController : Controller{
         );
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
+
+        string userId = _context.Users.FirstOrDefault(u => u.UserName == User.Identity!.Name)?.Id ?? string.Empty;
+        if (userId != null)
+            _userService.ConnectCreatorToMovie(userId, movie.Id);
+
         return RedirectToAction("ViewRating", "Movie");
     }
 

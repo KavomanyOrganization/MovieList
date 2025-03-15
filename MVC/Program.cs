@@ -4,10 +4,13 @@ using Microsoft.Extensions.Options;
 using DotNetEnv;
 using MVC.Data;
 using MVC.Models;
+using MVC.Services;
+
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<UserService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(Env.GetString("CONNECTION_STRING")));
