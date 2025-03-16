@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="vpWpz_RjU_PNFIuciJn-" name="UseCase">
-        <mxGraphModel dx="425" dy="1567" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="766" dy="1567" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -70,43 +70,43 @@
                     <mxGeometry x="30" y="410" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="Register" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="-40" width="75" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="-120" width="75" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="17" value="LogIn" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" width="55" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="-80" width="55" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="18" value="LogOut" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="120" width="65" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="40" width="65" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" value="View&amp;nbsp;&lt;span style=&quot;background-color: transparent;&quot;&gt;rating&lt;/span&gt;" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="40" width="80" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="-40" width="80" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="20" value="Search movies" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="80" width="100" height="30" as="geometry"/>
+                    <mxGeometry x="245" width="100" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="21" value="Add to&lt;span style=&quot;background-color: transparent;&quot;&gt;&amp;nbsp;Seen It!&lt;/span&gt;" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="200" width="110" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="120" width="110" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="22" value="Add&amp;nbsp;&lt;span style=&quot;background-color: transparent;&quot;&gt;to To Watch!&lt;/span&gt;" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="240" width="120" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="160" width="120" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="23" value="Rate movie" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="280" width="90" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="200" width="90" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="24" value="Add movie" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="160" width="90" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="80" width="90" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="25" value="View users activity&amp;nbsp;" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="560" width="130" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="480" width="130" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="26" value="Delete a user" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="360" width="95" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="280" width="95" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="27" value="Remove movie" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="440" width="100" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="360" width="100" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="44" value="Edit a movie" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="400" width="90" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="320" width="90" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="45" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" parent="1" source="12" target="44" edge="1">
                     <mxGeometry relative="1" as="geometry">
@@ -115,13 +115,13 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="47" value="Report folse information" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="320" width="150" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="240" width="150" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="48" value="Ban a user" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="240" y="480" width="85" height="30" as="geometry"/>
+                    <mxGeometry x="242.5" y="400" width="85" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="49" value="View reports" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
-                    <mxGeometry x="242.5" y="520" width="85" height="30" as="geometry"/>
+                    <mxGeometry x="245" y="440" width="85" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="50" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" parent="1" source="10" target="47" edge="1">
                     <mxGeometry relative="1" as="geometry">
@@ -141,28 +141,28 @@
                         <mxPoint x="310" y="620" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="53" value="Add Country" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" vertex="1" parent="1">
-                    <mxGeometry x="240" y="600" width="100" height="30" as="geometry"/>
+                <mxCell id="53" value="Add Country" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="242.5" y="520" width="100" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="54" value="Delete Country" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" vertex="1" parent="1">
-                    <mxGeometry x="237.5" y="640" width="102.5" height="30" as="geometry"/>
+                <mxCell id="54" value="Delete Country" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="560" width="102.5" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="55" value="Delete Genre" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" vertex="1" parent="1">
-                    <mxGeometry x="237.5" y="720" width="100" height="30" as="geometry"/>
+                <mxCell id="55" value="Delete Genre" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="640" width="100" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="56" value="Add Genre" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" vertex="1" parent="1">
-                    <mxGeometry x="240" y="680" width="100" height="30" as="geometry"/>
+                <mxCell id="56" value="Add Genre" style="html=1;dashed=0;whitespace=wrap;shape=mxgraph.dfd.start;strokeWidth=1;" parent="1" vertex="1">
+                    <mxGeometry x="242.5" y="600" width="100" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="57" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" edge="1" parent="1" source="12" target="54">
+                <mxCell id="57" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" parent="1" source="12" target="54" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="58" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" edge="1" parent="1" source="12" target="56">
+                <mxCell id="58" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" parent="1" source="12" target="56" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="59" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" edge="1" parent="1" source="12" target="53">
+                <mxCell id="59" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" parent="1" source="12" target="53" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="60" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" edge="1" parent="1" source="12" target="55">
+                <mxCell id="60" style="edgeStyle=none;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=openThin;endFill=0;" parent="1" source="12" target="55" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
             </root>
