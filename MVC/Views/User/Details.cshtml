@@ -1,0 +1,16 @@
+@model MVC.Models.Users
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="text-center">
+    <h2>User Details</h2>
+
+    <div>
+        <h4>Username: @Model.UserName</h4>
+        <h4>Email: @Model.Email</h4>
+    </div>
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to Home</a>
+</div>
