@@ -26,6 +26,27 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 var app = builder.Build();
 
+// Seed data
+if (args.Length > 0 && args[0].ToLower() == "seeddata")
+{
+    // initialize the database
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            SeedData.InitializeAsync(services).Wait();
+            Console.WriteLine("DataBase successfully initialize.");
+            return; 
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"DataBaseInitialization error: {ex.Message}");
+            return; 
+        }
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
