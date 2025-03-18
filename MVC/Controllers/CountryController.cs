@@ -27,7 +27,7 @@ public class CountryController : Controller{
         );
         _context.Countries.Add(country);
         await _context.SaveChangesAsync();
-        //return RedirectToAction("ViewRating", "Movie");
+        return RedirectToAction("ViewCountry", "Country");
     }
     [Authorize(Roles="Admin")]
     public async Task<IActionResult> Delete(int id){
@@ -38,7 +38,7 @@ public class CountryController : Controller{
 
         _context.Countries.Remove(country);
         await _context.SaveChangesAsync();
-        return RedirectToAction("");
+        return RedirectToAction("Index", "Home");
     }
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id){
@@ -66,6 +66,6 @@ public class CountryController : Controller{
 
         _context.Countries.Update(country);
         await _context.SaveChangesAsync();
-        //return RedirectToAction("ViewRating", "Movie");
+        return RedirectToAction("Index", "Home");
     }
 }
