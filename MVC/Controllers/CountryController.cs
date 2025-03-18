@@ -31,13 +31,14 @@ public class CountryController : Controller{
     }
     [Authorize(Roles="Admin")]
     public async Task<IActionResult> Delete(int id){
-        Country? country = await _context.Countries.FindAsync(id);
+
+        var country = await _context.Countries.FindAsync(id);
         if (country == null)
             return NotFound();
 
         _context.Countries.Remove(country);
         await _context.SaveChangesAsync();
-        //return RedirectToAction("ViewRating", "Movie");
+        return RedirectToAction("");
     }
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(int id){
