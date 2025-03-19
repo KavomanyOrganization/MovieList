@@ -6,19 +6,22 @@ using MVC.ViewModels;
 
 namespace MVC.Controllers
 {
-    public class UserController: Controller
+    public class UserController : Controller
     {
         private readonly SignInManager<User> signInManager;
         private readonly UserManager<User> userManager;
+
         public UserController(SignInManager<User> signInManager, UserManager<User> userManager)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
         }
 
-        public IActionResult Login(){
+        public IActionResult Login()
+        {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -34,17 +37,21 @@ namespace MVC.Controllers
                 {
                     ModelState.AddModelError("", "Email or password is incorrect");
                     return View(model);
-                } 
+                }
             }
             return View(model);
         }
 
-         public IActionResult Register(){
+        public IActionResult Register()
+        {
             return View();
-        }   
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model){
-            if(ModelState.IsValid){
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
                 User user = new User
                 {
                     UserName = model.UserName,
@@ -52,13 +59,13 @@ namespace MVC.Controllers
                 };
                 var result = await userManager.CreateAsync(user, model.Password);
                 await userManager.AddToRoleAsync(user, "User");
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    foreach(var error in result.Errors)
+                    foreach (var error in result.Errors)
                     {
                         ModelState.AddModelError("", error.Description);
                     }
@@ -73,6 +80,17 @@ namespace MVC.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Details()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+            return View(user);
         }
     }
 }
