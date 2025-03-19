@@ -30,12 +30,20 @@ namespace MVC.Controllers
                 var user = await userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
-                    await signInManager.PasswordSignInAsync(user.UserName!, model.Password, model.RememberMe, false);
-                    return RedirectToAction("Index", "Home");
+                    var result = await signInManager.PasswordSignInAsync(user.UserName!, model.Password, model.RememberMe, false);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("ViewRating", "Movie");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Incorrect password");
+                        return View(model);
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Email or password is incorrect");
+                    ModelState.AddModelError("", "This email is not registered");
                     return View(model);
                 }
             }
