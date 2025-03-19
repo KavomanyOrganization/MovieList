@@ -46,36 +46,63 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Back to Ratings
-                    </a>
-                    @if (User.IsInRole("User") || User.IsInRole("Admin"))
+                <div class="card-footer d-flex justify-content-between">
+                    <div>
+                        @if (User.IsInRole("User") || User.IsInRole("Admin"))
                         {
-                        <a asp-controller="User" asp-action="AddToWatch" class="btn btn-primary">
-                            <i class="bi bi-arrow-left"></i> To watch!
-                        </a>
-                        <a asp-controller="User" asp-action="AddSeenIt" class="btn btn-success">
-                            <i class="bi bi-arrow-left"></i> Seen It!
-                        </a>
-                    }
-                    @if (User.IsInRole("User") )
-                    {
-                        <a asp-controller="Report" asp-action="CreateReport" class="btn btn-danger">
+                            <a asp-controller="User" asp-action="AddToWatch" asp-route-id="@Model.Id" class="btn btn-primary">
+                                <i class="bi bi-plus"></i> To Watch!
+                            </a>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal">
+                                <i class="bi bi-eye"></i> Seen It!
+                            </button>
+                        }
+                    </div>
+                    <div>
+                        <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Back to Ratings
                         </a>
-                    }
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-controller="Movie" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <a asp-controller="Movie" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-                            <i class="bi bi-trash"></i> Delete
-                        </a>
-                    }
+                    </div>
                 </div>
+            </div>
+            <div class="mt-3 text-center">
+                <small>Notice incorrect information? <a asp-controller="Report" asp-action="CreateReport" style="color: red;">Report</a></small>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal for Rating -->
+<div class="modal fade" id="rateMovieModal" tabindex="-1" aria-labelledby="rateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rateMovieModalLabel">Rate @Model.Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="rateMovieForm" asp-controller="User" asp-action="RateMovie" method="post">
+                    <input type="hidden" name="movieId" value="@Model.Id" />
+                    <div class="form-group">
+                        <label for="rating">Rating (1-10):</label>
+                        <input type="number" id="rating" name="rating" class="form-control" min="1" max="10" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit Rating</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('rateMovieForm').addEventListener('submit', function(event) {
+        var rating = document.getElementById('rating').value;
+        if (rating < 1 || rating > 10) {
+            alert('Please enter a rating between 1 and 10.');
+            event.preventDefault();
+        }
+    });
+</script>

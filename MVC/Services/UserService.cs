@@ -1,18 +1,21 @@
-  using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using MVC.Models;
 using MVC.ViewModels;
-using System.Threading.Tasks;
+using MVC.Data;
+
 namespace MVC.Services
 {
     public class UserService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly AppDbContext _context;
 
-        public UserService(UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserService(UserManager<User> userManager, SignInManager<User> signInManager, AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         public async Task<(bool Succeeded, string? ErrorMessage)> LoginAsync(LoginViewModel model)
@@ -64,5 +67,35 @@ namespace MVC.Services
         {
             return await _userManager.GetUserAsync(userPrincipal);
         }
+
+        public async Task ConnectUserMovie(User user, int movieId, bool isWatched=false, int Rating = -1) 
+        {
+            var movie = await _context.Movies.FindAsync(movieId);
+            if (movie == null) return;
+
+            var usermovie = await _context.UserMovies.FindAsync(user.Id, movieId);
+            if (usermovie == null)
+            {
+                usermovie = new UserMovie
+                {
+                    UserId = user.Id,
+                    User = user,
+                    MovieId = movieId,
+                    Movie = movie,
+                    IsWatched = isWatched,
+                    Rating = Rating
+                };
+                _context.UserMovies.Add(usermovie);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                usermovie.IsWatched = isWatched;
+                usermovie.Rating = Rating;
+                _context.UserMovies.Update(usermovie);
+                await _context.SaveChangesAsync();
+            }
+        }
+
     }
 }

@@ -10,10 +10,12 @@ namespace MVC.Controllers
     public class UserController : Controller
     {
         private readonly UserService _userService;
+        private readonly MovieService _movieService;
 
-        public UserController(UserService userService)
+        public UserController(UserService userService, MovieService movieService)
         {
             _userService = userService;
+            _movieService = movieService;
         }
 
         public IActionResult Login()
@@ -81,5 +83,39 @@ namespace MVC.Controllers
             }
             return View(user);
         }
+
+        [Authorize]
+        public async Task<IActionResult> AddSeenIt(int id)
+        {
+            var user = await _userService.GetCurrentUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+            TempData["MovieId"] = id;
+            return RedirectToAction("Details", "Movie", new { id = id });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> RateMovie(int movieId, int rating)
+        {
+            if (rating < 1 || rating > 10)
+            {
+                ModelState.AddModelError("", "Rating must be between 1 and 10.");
+                return RedirectToAction("Details", new { id = movieId });
+            }
+
+            var user = await _userService.GetCurrentUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            await _userService.ConnectUserMovie(user, movieId, true, rating);
+            await _movieService.CalculateRating(movieId);
+            return RedirectToAction("Details", "Movie", new { id = movieId });
+        }
+
     }
 }
