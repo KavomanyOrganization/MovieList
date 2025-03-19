@@ -12,6 +12,14 @@
                     <h3 class="card-title mb-0">Edit Movie</h3>
                 </div>
                 <div class="card-body">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-warning">
+                            <a href="#" class="btn btn-warning btn-sm" onclick="return false;">
+                                <i class="bi bi-exclamation-triangle"></i> @ViewBag.ErrorMessage
+                            </a>
+                        </div>
+                    }
                     <form asp-action="Update" asp-route-id="@ViewBag.MovieId" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         
@@ -51,6 +59,26 @@
                         </div>
                         
                         <div class="mb-3">
+                            <label class="form-label">Genres</label>
+                            <select asp-for="SelectedGenreIds" class="form-control select2-genres" multiple="multiple">
+                                @foreach (var genre in Model.Genres) {
+                                    <option value="@genre.Key">@genre.Value</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedGenreIds" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Countries</label>
+                            <select asp-for="SelectedCountryIds" class="form-control select2-countries" multiple="multiple">
+                                @foreach (var country in Model.Countries) {
+                                    <option value="@country.Key">@country.Value</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedCountryIds" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
                             <label asp-for="Description" class="form-label">Description</label>
                             <textarea asp-for="Description" class="form-control" rows="5">@Model.Description</textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
@@ -73,4 +101,19 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            $('.select2-genres').select2({
+                placeholder: "Select genres",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('.select2-countries').select2({
+                placeholder: "Select countries",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
 }

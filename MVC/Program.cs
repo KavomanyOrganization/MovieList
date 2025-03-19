@@ -8,6 +8,8 @@ using MVC.Models;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<MVC.Services.MovieService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>

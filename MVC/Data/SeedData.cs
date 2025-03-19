@@ -42,7 +42,7 @@ public static class SeedData
             await context.Countries.AddRangeAsync(countries);
             await context.SaveChangesAsync();
 
-            // Add Users
+            // Add User
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
