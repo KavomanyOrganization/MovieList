@@ -1,7 +1,7 @@
 @model IEnumerable<MVC.Models.Movie>
 
 @{
-    ViewData["Title"] = "Переглянуті фільми";
+    ViewData["Title"] = "Seen It Movies";
 }
 
 <div class="container mt-4">
@@ -37,7 +37,7 @@
                                 var userMovies = ViewBag.UserMovies as IEnumerable<MVC.Models.UserMovie>;
                                 var userRating = userMovies?.FirstOrDefault(um => um.MovieId == item.Id)?.Rating ?? 0;
                             }
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
                                 <i class="bi bi-pencil"></i> @userRating/10
                             </button>
                         </td>
@@ -84,17 +84,11 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const forms = document.querySelectorAll('form[asp-action="RateMovie"]');
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(event) {
-                const ratingInput = this.querySelector('input[name="rating"]');
-                const rating = parseInt(ratingInput.value);
-                if (rating < 1 || rating > 10) {
-                    alert('Будь ласка, введіть рейтинг від 1 до 10.');
-                    event.preventDefault();
-                }
-            });
-        });
+    document.getElementById('rateMovieForm').addEventListener('submit', function(event) {
+        var rating = document.getElementById('rating').value;
+        if (rating < 1 || rating > 10) {
+            alert('Please enter a rating between 1 and 10.');
+            event.preventDefault();
+        }
     });
 </script>
