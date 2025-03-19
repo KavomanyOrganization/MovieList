@@ -1,27 +1,40 @@
 using MVC.ViewModels;
 using MVC.Models;
 using MVC.Data;
+using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
 namespace MVC.Controllers;
 
-public class MovieController : Controller{
-    protected readonly AppDbContext _context;
+public class MovieController : Controller
+{
+    protected readonly MovieService _movieService;
 
-    public MovieController(AppDbContext appDbContext){
-        _context = appDbContext;
+    public MovieController(MovieService movieService)
+    {
+        _movieService = movieService;
     }
 
-    public IActionResult Create(){
+    public async Task<IActionResult> Create()
+    {
+        ViewBag.Genres = await _movieService.GetGenresDictionaryAsync();
+        ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
         return View();
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Create(MovieViewModel movieViewModel){
+    public async Task<IActionResult> Create(MovieViewModel movieViewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Genres = await _movieService.GetGenresDictionaryAsync();
+            ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
+            return View(movieViewModel);
+        }
+
         Movie movie = new Movie(
             movieViewModel.Cover,
             movieViewModel.Title,
@@ -30,17 +43,31 @@ public class MovieController : Controller{
             movieViewModel.Director,
             movieViewModel.Description
         );
-        _context.Movies.Add(movie);
-        await _context.SaveChangesAsync();
+
+        await _movieService.ConnectToGenre(movieViewModel, movie);
+        await _movieService.ConnectToCountry(movieViewModel, movie);
+        
+        var result = await _movieService.AddMovieAsync(movie);
+        if (!result.Success)
+        {
+            ViewBag.ErrorMessage = result.ErrorMessage;
+            ViewBag.Genres = await _movieService.GetGenresDictionaryAsync();
+            ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
+            return View(movieViewModel);
+        }
+        
         return RedirectToAction("ViewRating", "Movie");
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id){
-        Movie? movie = await _context.Movies.FindAsync(id);
+    [HttpGet]
+    public async Task<IActionResult> Update(int id)
+    {
+        Movie movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
+
         if (movie == null)
             return NotFound();
-            
+
         var movieViewModel = new MovieViewModel
         {
             Title = movie.Title,
@@ -48,17 +75,31 @@ public class MovieController : Controller{
             Year = movie.Year,
             Duration = movie.Duration,
             Director = movie.Director,
-            Description = movie.Description
+            Description = movie.Description,
+            SelectedGenreIds = movie.MovieGenres.Select(mg => mg.GenreId).ToList(),
+            SelectedCountryIds = movie.MovieCountries.Select(mc => mc.CountryId).ToList(),
+            Genres = await _movieService.GetGenresDictionaryAsync(),
+            Countries = await _movieService.GetCountriesDictionaryAsync()
         };
-        
+
         ViewBag.MovieId = id;
         return View(movieViewModel);
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> Update(int id, MovieViewModel movieViewModel){
-        Movie? movie = await _context.Movies.FindAsync(id);
+    public async Task<IActionResult> Update(int id, MovieViewModel movieViewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            movieViewModel.Genres = await _movieService.GetGenresDictionaryAsync();
+            movieViewModel.Countries = await _movieService.GetCountriesDictionaryAsync();
+            ViewBag.MovieId = id;
+            return View(movieViewModel);
+        }
+
+        var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
+
         if (movie == null)
             return NotFound();
 
@@ -69,50 +110,51 @@ public class MovieController : Controller{
         movie.Director = movieViewModel.Director;
         movie.Description = movieViewModel.Description;
 
-        _context.Movies.Update(movie);
-        await _context.SaveChangesAsync();
+        await _movieService.UpdateMovieGenres(movie, movieViewModel.SelectedGenreIds);
+        await _movieService.UpdateMovieCountries(movie, movieViewModel.SelectedCountryIds);
+
+        var result = await _movieService.UpdateMovieAsync(movie);
+        if (!result.Success)
+        {
+            ViewBag.ErrorMessage = result.ErrorMessage;
+
+            movieViewModel.Genres = await _movieService.GetGenresDictionaryAsync();
+            movieViewModel.Countries = await _movieService.GetCountriesDictionaryAsync();
+            ViewBag.MovieId = id;
+            return View(movieViewModel);
+        }
+        
         return RedirectToAction("ViewRating", "Movie");
     }
 
-    [Authorize(Roles="Admin")]
-    public async Task<IActionResult> Delete(int id){
-        Movie? movie = await _context.Movies.FindAsync(id);
-        if (movie == null)
-            return NotFound();
-
-        _context.Movies.Remove(movie);
-        await _context.SaveChangesAsync();
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _movieService.DeleteMovieAsync(id);
         return RedirectToAction("ViewRating", "Movie");
     }
 
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var movie = await _context.Movies.FindAsync(id); 
+        var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
         if (movie == null)
         {
-            return NotFound(); 
+            return NotFound();
         }
 
         return View(movie);
     }
 
-    public IActionResult Rating(){
+    public IActionResult Rating()
+    {
         return View();
     }
-    
+
     [HttpGet]
     public async Task<ActionResult> ViewRating()
     {
-        if (_context.Movies == null)
-            return View(new List<Movie>());
-        
-        var movies = await _context.Movies.ToListAsync();
-        
-        if (movies != null && movies.Any())
-            return View(movies.OrderByDescending(m => m.Rating).ToList());
-        
-        return View(new List<Movie>());
+        var movies = await _movieService.GetMoviesByRatingAsync();
+        return View(movies);
     }
-
 }
