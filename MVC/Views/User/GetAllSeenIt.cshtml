@@ -38,7 +38,7 @@
                                 var userRating = userMovies?.FirstOrDefault(um => um.MovieId == item.Id)?.Rating ?? 0;
                             }
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
-                                <i class="bi bi-pencil"></i> @userRating
+                                <i class="bi bi-pencil"></i> @userRating/10
                             </button>
                         </td>
                         <td>
