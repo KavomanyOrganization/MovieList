@@ -12,6 +12,13 @@ public class MovieViewModel {
     public int? Duration { get; set; }
     public string? Director { get; set; }
     public string? Description { get; set; }
+
+    [Required(ErrorMessage = "At least one genre is required")]
+    public List<int> SelectedGenreIds { get; set; } = new List<int>();
+
+    [Required(ErrorMessage = "At least one country is required")]
+    public List<int> SelectedCountryIds { get; set; } = new List<int>();
+
     public Dictionary<int, string>? Genres { get; set; }
-    public Dictionary<int, string>? Country { get; set; }
+    public Dictionary<int, string>? Countries { get; set; }
 }

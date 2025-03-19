@@ -51,6 +51,27 @@
                         </div>
                         
                         <div class="mb-3">
+                            <label class="form-label">Genres</label>
+                            <select asp-for="SelectedGenreIds" class="form-control" multiple>
+                                @foreach (var genre in Model.Genres) {
+                                    <option value="@genre.Key">@genre.Value</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedGenreIds" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Countries</label>
+                            <select asp-for="SelectedCountryIds" class="form-control" multiple>
+                                @foreach (var country in Model.Countries) {
+                                    <option value="@country.Key">@country.Value</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedCountryIds" class="text-danger"></span>
+                        </div>
+
+                        
+                        <div class="mb-3">
                             <label asp-for="Description" class="form-label">Description</label>
                             <textarea asp-for="Description" class="form-control" rows="5">@Model.Description</textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
