@@ -73,7 +73,9 @@ public class MovieService
     {
         var movie = await _context.Movies
             .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
             .Include(m => m.MovieCountries)
+                .ThenInclude(mc => mc.Country)
             .FirstOrDefaultAsync(m => m.Id == id);
 
         return movie ?? throw new InvalidOperationException("Movie not found.");
