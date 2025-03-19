@@ -1,0 +1,128 @@
+@model List<MVC.Models.User>
+
+@{
+    ViewData["Title"] = "Список користувачів";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-primary fw-bold">Список зареєстрованих користувачів</h2>
+            <p class="text-muted">Загальна кількість: <span class="badge bg-primary">@Model.Count</span></p>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var user in Model)
+            {
+                <div class="col">
+                    <div class="card rounded-4 shadow-sm border-0 h-100 transition-hover">
+                        <div class="card-header bg-light border-0 rounded-top-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-3" style="width: 48px; height: 48px;">
+                                        <span class="fw-bold fs-4">@user.UserName?.Substring(0, 1).ToUpper()</span>
+                                    </div>
+                                    <div>
+                                        <h5 class="card-title mb-0 fw-bold">@user.UserName</h5>
+                                        <p class="card-subtitle text-muted small mb-0">@user.Email</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="badge rounded-pill bg-light text-dark border">ID: @user.Id</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-md-5 text-muted">Статус:</div>
+                                <div class="col-md-7">
+                                    <span class="badge rounded-pill bg-success">Активний</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 py-3">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a asp-action="Details" asp-route-id="@user.Id" 
+                                   class="btn btn-secondary btn-sm rounded-3 shadow-sm">
+                                    <i class="bi bi-eye"></i> Деталі
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@user.Id" 
+                                   class="btn btn-secondary btn-sm rounded-3 shadow-sm">
+                                    <i class="bi bi-pencil"></i> Редагувати
+                                </a>
+                                <button type="button" class="btn btn-secondary btn-sm rounded-3 shadow-sm" 
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal-@user.Id">
+                                    <i class="bi bi-trash"></i> Видалити
+                                </button>
+                                <a asp-action="Ban" asp-route-id="@user.Id" 
+                                   class="btn btn-secondary btn-sm rounded-3 shadow-sm">
+                                    <i class="bi bi-slash-circle"></i> Забанити
+                                </a>
+                            </div>
+                                
+                            <div class="modal fade" id="deleteModal-@user.Id" tabindex="-1" 
+                                 aria-labelledby="deleteModalLabel-@user.Id" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content rounded-4 shadow">
+                                        <div class="modal-header border-bottom-0">
+                                            <h5 class="modal-title" id="deleteModalLabel-@user.Id">Підтвердження видалення</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body py-4">
+                                            <div class="text-center mb-4">
+                                                <i class="bi bi-exclamation-triangle-fill text-warning fs-1"></i>
+                                            </div>
+                                            <p class="text-center">
+                                                Ви впевнені, що хочете видалити користувача <strong>@user.UserName</strong>?
+                                            </p>
+                                            <p class="text-center text-muted small">
+                                                Цю дію не можна буде скасувати
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer border-top-0">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                                            <form asp-action="Delete" asp-route-id="@user.Id" method="post">
+                                                <button type="submit" class="btn btn-danger">Видалити</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info rounded-4 shadow-sm">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                <p class="mb-0">Немає зареєстрованих користувачів у системі.</p>
+            </div>
+        </div>
+    }
+    
+    <div class="row mt-4">
+        <div class="col">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary rounded-3 shadow-sm">
+                <i class="bi bi-arrow-left"></i> Повернутися на головну
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>

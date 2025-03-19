@@ -81,5 +81,12 @@ namespace MVC.Controllers
             }
             return View(user);
         }
+        
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return View(users);
+        }
     }
 }

@@ -64,5 +64,9 @@ namespace MVC.Services
         {
             return await _userManager.GetUserAsync(userPrincipal);
         }
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return _userManager.Users.ToList();
+        }
     }
 }
