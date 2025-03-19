@@ -1,0 +1,51 @@
+@model Dictionary<MVC.Models.Movie, MVC.Models.User>
+
+@{
+    ViewData["Title"] = "User Activity";
+}
+
+<h2>User Activity</h2>
+
+<form method="get" action="@Url.Action("GetActivity", "User")" class="row g-3">
+    <div class="col-md-3">
+        <label for="startDate" class="form-label">Start Date:</label>
+        <input type="date" class="form-control" id="startDate" name="startDate" value="@Context.Request.Query["startDate"]" />
+    </div>
+    <div class="col-md-3">
+        <label for="endDate" class="form-label">End Date:</label>
+        <input type="date" class="form-control" id="endDate" name="endDate" value="@Context.Request.Query["endDate"]" />
+    </div>
+    <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+<hr />
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Movie</th>
+                <th>Creation Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in Model)
+            {
+                <tr>
+                    <td><a href="@Url.Action("Details", "Movie", new { id = entry.Key.Id })">
+                        @entry.Key.Title</a></td>
+                    <td>@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
+                    <td>@entry.Value.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No user activity found for the selected date range.</p>
+}

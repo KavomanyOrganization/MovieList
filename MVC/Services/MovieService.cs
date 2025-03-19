@@ -14,6 +14,51 @@ public class MovieService
         _context = context;
     }
 
+    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie)
+    {
+        if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
+        {
+            return (false, "Movie already exists!");
+        }
+
+        _context.Movies.Add(movie);
+        await _context.SaveChangesAsync(); 
+        return (true, null);
+    }
+
+    public async Task ConnectToGenre(MovieViewModel movieViewModel, Movie movie)
+    {
+        if (movieViewModel.SelectedGenreIds != null && movieViewModel.SelectedGenreIds.Any())
+        {
+            foreach (var genreId in movieViewModel.SelectedGenreIds)
+            {
+                _context.MovieGenres.Add(new MovieGenre { MovieId = movie.Id, GenreId = genreId });
+            }
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task ConnectToCountry(MovieViewModel movieViewModel, Movie movie)
+    {
+        if (movieViewModel.SelectedCountryIds != null && movieViewModel.SelectedCountryIds.Any())
+        {
+            foreach (var countryId in movieViewModel.SelectedCountryIds)
+            {
+                _context.MovieCountries.Add(new MovieCountry { MovieId = movie.Id, CountryId = countryId });
+            }
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task ConnectToCreator(Movie movie, User user)
+    {
+        if (user != null && movie != null)
+        {
+            _context.MovieCreators.Add(new MovieCreator { MovieId = movie.Id, UserId = user.Id });
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public async Task<List<Movie>> GetAllMoviesAsync()
     {
         return await _context.Movies.ToListAsync();
@@ -26,16 +71,14 @@ public class MovieService
 
     public async Task<Movie> GetMovieByIdWithRelationsAsync(int id)
     {
-        return await _context.Movies
+        var movie = await _context.Movies
             .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
             .Include(m => m.MovieCountries)
+                .ThenInclude(mc => mc.Country)
             .FirstOrDefaultAsync(m => m.Id == id);
-    }
 
-    public async Task<List<Movie>> GetMoviesByRatingAsync()
-    {
-        var movies = await _context.Movies.ToListAsync();
-        return movies.OrderByDescending(m => m.Rating).ToList();
+        return movie ?? throw new InvalidOperationException("Movie not found.");
     }
 
     public async Task<Dictionary<int, string>> GetGenresDictionaryAsync()
@@ -46,17 +89,6 @@ public class MovieService
     public async Task<Dictionary<int, string>> GetCountriesDictionaryAsync()
     {
         return await _context.Countries.ToDictionaryAsync(c => c.Id, c => c.Name);
-    }
-
-    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie)
-    {
-        if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
-        {
-            return (false, "Movie already exist!");
-        }
-        _context.Movies.Add(movie);
-        await _context.SaveChangesAsync();
-        return (true, null);
     }
 
     public async Task<(bool Success, string ErrorMessage)> UpdateMovieAsync(Movie movie)
@@ -90,28 +122,6 @@ public class MovieService
             movie.Rating = movies.Sum(um => um.Rating) / movies.Count;
             _context.Movies.Update(movie);
             await _context.SaveChangesAsync();
-        }
-    }
-
-    public void ConnectToGenre(MovieViewModel movieViewModel, Movie movie)
-    {
-        if (movieViewModel.SelectedGenreIds != null && movieViewModel.SelectedGenreIds.Any())
-        {
-            foreach (var genreId in movieViewModel.SelectedGenreIds)
-            {
-                movie.MovieGenres.Add(new MovieGenre { GenreId = genreId });
-            }
-        }
-    }
-
-    public void ConnectToCountry(MovieViewModel movieViewModel, Movie movie)
-    {
-        if (movieViewModel.SelectedCountryIds != null && movieViewModel.SelectedCountryIds.Any())
-        {
-            foreach (var countryId in movieViewModel.SelectedCountryIds)
-            {
-                movie.MovieCountries.Add(new MovieCountry { CountryId = countryId });
-            }
         }
     }
 
@@ -155,5 +165,19 @@ public class MovieService
                 movie.MovieCountries.Remove(countryToRemove);
             }
         }
+    }
+
+    public async Task<User?> GetCreatorAsync(int movieId)
+    {
+        var movie = await _context.Movies.FindAsync(movieId);
+        if (movie != null)
+        {
+            var creatorId = await _context.MovieCreators.FirstOrDefaultAsync(mc => mc.MovieId == movieId);
+            if (creatorId != null)
+            {
+                return await _context.Users.FindAsync(creatorId.UserId);
+            }
+        }
+        return null;
     }
 }

@@ -36,6 +36,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Country" asp-action="GetAll">Countries</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="GetActivity">Activity</a>
+                            </li>
                         }
                         <partial name="_LoginPartial" />
                     </ul>
@@ -51,14 +54,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - MovieList 
         </div>
     </footer>
-    <!-- Підключення необхідних скриптів -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- Додано посилання на Select2 JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 

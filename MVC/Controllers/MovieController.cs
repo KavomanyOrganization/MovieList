@@ -11,10 +11,12 @@ namespace MVC.Controllers;
 public class MovieController : Controller
 {
     protected readonly MovieService _movieService;
+    protected readonly UserService _userService;
 
-    public MovieController(MovieService movieService)
+    public MovieController(MovieService movieService, UserService userService)
     {
         _movieService = movieService;
+        _userService = userService;
     }
 
     public async Task<IActionResult> Create()
@@ -44,9 +46,6 @@ public class MovieController : Controller
             movieViewModel.Description
         );
 
-        _movieService.ConnectToGenre(movieViewModel, movie);
-        _movieService.ConnectToCountry(movieViewModel, movie);
-        
         var result = await _movieService.AddMovieAsync(movie);
         if (!result.Success)
         {
@@ -55,7 +54,12 @@ public class MovieController : Controller
             ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
             return View(movieViewModel);
         }
-        
+
+        await _movieService.ConnectToGenre(movieViewModel, movie);
+        await _movieService.ConnectToCountry(movieViewModel, movie);
+        var currentUser = await _userService.GetCurrentUserAsync(User);
+        if (currentUser != null) await _movieService.ConnectToCreator(movie, currentUser);
+
         return RedirectToAction("ViewRating", "Movie");
     }
 
@@ -138,6 +142,7 @@ public class MovieController : Controller
     public async Task<IActionResult> Details(int id)
     {
         var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
+        
         if (movie == null)
         {
             return NotFound();
@@ -154,7 +159,7 @@ public class MovieController : Controller
     [HttpGet]
     public async Task<ActionResult> ViewRating()
     {
-        var movies = await _movieService.GetMoviesByRatingAsync();
-        return View(movies);
+        var movies = await _movieService.GetAllMoviesAsync();
+        return View(movies.OrderByDescending(m => m.Rating).ToList());
     }
 }
