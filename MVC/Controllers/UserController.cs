@@ -132,6 +132,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
         await _userService.DeleteUserMovie(user, id);
+        await _movieService.CalculateRating(id);
         return RedirectToAction("GetAllSeenIt");
     }
 
