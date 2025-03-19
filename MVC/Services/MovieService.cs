@@ -156,4 +156,9 @@ public class MovieService
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<Movie> GetMovieById(int id)
+    {
+        return await _context.Movies.FindAsync(id) ?? throw new InvalidOperationException("Movie not found.");
+    }
 }
