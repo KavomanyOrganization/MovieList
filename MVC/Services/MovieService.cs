@@ -144,12 +144,12 @@ public class MovieService
         }
     }
 
-    public async var CalculateRating(int MovieId)
+    public async Task CalculateRating(int MovieId)
     {
         var movies = _context.UserMovies.Where(um => um.MovieId == MovieId).ToList();
         
         var movie = await _context.Movies.FindAsync(MovieId);
-        if (movie != null)
+        if (movie != null && movies.Any())
         {
             movie.Rating = movies.Sum(um => um.Rating) / movies.Count;
             _context.Movies.Update(movie);
