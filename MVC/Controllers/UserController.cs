@@ -1,20 +1,19 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using MVC.Models;
+using MVC.Services;
 using MVC.ViewModels;
 
 namespace MVC.Controllers
 {
     public class UserController : Controller
     {
-        private readonly SignInManager<User> signInManager;
-        private readonly UserManager<User> userManager;
+        private readonly UserService _userService;
 
-        public UserController(SignInManager<User> signInManager, UserManager<User> userManager)
+        public UserController(UserService userService)
         {
-            this.signInManager = signInManager;
-            this.userManager = userManager;
+            _userService = userService;
         }
 
         public IActionResult Login()
@@ -27,15 +26,14 @@ namespace MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByEmailAsync(model.Email);
-                if (user != null)
+                var (succeeded, errorMessage) = await _userService.LoginAsync(model);
+                if (succeeded)
                 {
-                    await signInManager.PasswordSignInAsync(user.UserName!, model.Password, model.RememberMe, false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("ViewRating", "Movie");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Email or password is incorrect");
+                    ModelState.AddModelError("", errorMessage!);
                     return View(model);
                 }
             }
@@ -52,23 +50,14 @@ namespace MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User
+                var (succeeded, errorMessage) = await _userService.RegisterAsync(model);
+                if (succeeded)
                 {
-                    UserName = model.UserName,
-                    Email = model.Email
-                };
-                var result = await userManager.CreateAsync(user, model.Password);
-                await userManager.AddToRoleAsync(user, "User");
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("ViewRating", "Movie");
                 }
                 else
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
+                    ModelState.AddModelError("", errorMessage!);
                     return View(model);
                 }
             }
@@ -78,14 +67,14 @@ namespace MVC.Controllers
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            await _userService.LogoutAsync();
+            return RedirectToAction("ViewRating", "Movie");
         }
 
         [Authorize]
         public async Task<IActionResult> Details()
         {
-            var user = await userManager.GetUserAsync(User);
+            var user = await _userService.GetCurrentUserAsync(User);
             if (user == null)
             {
                 return RedirectToAction("Login");
