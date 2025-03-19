@@ -166,4 +166,34 @@ public class UserController : Controller
         return View(movies);
     }
 
+    public async Task<IActionResult> GetActivity(DateTime? startDate, DateTime? endDate)
+    {
+        if (startDate == null)
+            startDate = DateTime.Now.AddMonths(-1);
+        if (endDate == null)
+            endDate = DateTime.Now;
+
+        var movies = await _movieService.GetAllMoviesAsync();
+        var moviesCreators = new List<KeyValuePair<Movie, User>>();
+
+        foreach (var movie in movies)
+        {
+            if (movie.CreationDate >= startDate.Value && movie.CreationDate <= endDate.Value+TimeSpan.FromDays(1))
+            {
+                var creator = await _movieService.GetCreatorAsync(movie.Id);
+                if (creator != null)
+                {
+                    moviesCreators.Add(new KeyValuePair<Movie, User>(movie, creator));
+                }
+            }
+        }
+
+        var moviesCreatorsDict = moviesCreators
+            .GroupBy(pair => pair.Key)
+            .ToDictionary(g => g.Key, g => g.First().Value);
+
+        return View(moviesCreatorsDict);
+    }
+
+
 }
