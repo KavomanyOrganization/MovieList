@@ -7,8 +7,10 @@ public class Country
     public int Id { get; set; } 
     [Required]
     public string Name { get; set; } = "";
-    
-    public Country(){}
+    public Country()
+    { 
+        
+    }
     public Country (string? name){
         Name = name; 
     }

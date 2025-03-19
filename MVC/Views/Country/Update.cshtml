@@ -1,0 +1,19 @@
+@model MVC.ViewModels.CountryViewModel
+
+@{
+    ViewData["Title"] = "Edit Country";
+}
+
+<div class="container mt-4">
+    <h1>Edit Country</h1>
+
+    <form asp-action="Update" method="post">
+        <div class="mb-3">
+            <label for="Name" class="form-label">Country Name</label>
+            <input type="text" class="form-control" id="Name" asp-for="Name" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a asp-action="GetAll" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
