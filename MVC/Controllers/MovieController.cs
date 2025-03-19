@@ -44,8 +44,8 @@ public class MovieController : Controller
             movieViewModel.Description
         );
 
-        await _movieService.ConnectToGenre(movieViewModel, movie);
-        await _movieService.ConnectToCountry(movieViewModel, movie);
+        _movieService.ConnectToGenre(movieViewModel, movie);
+        _movieService.ConnectToCountry(movieViewModel, movie);
         
         var result = await _movieService.AddMovieAsync(movie);
         if (!result.Success)
@@ -110,8 +110,8 @@ public class MovieController : Controller
         movie.Director = movieViewModel.Director;
         movie.Description = movieViewModel.Description;
 
-        await _movieService.UpdateMovieGenres(movie, movieViewModel.SelectedGenreIds);
-        await _movieService.UpdateMovieCountries(movie, movieViewModel.SelectedCountryIds);
+        _movieService.UpdateMovieGenres(movie, movieViewModel.SelectedGenreIds);
+        _movieService.UpdateMovieCountries(movie, movieViewModel.SelectedCountryIds);
 
         var result = await _movieService.UpdateMovieAsync(movie);
         if (!result.Success)
