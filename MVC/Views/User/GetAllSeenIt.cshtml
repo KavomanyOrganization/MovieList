@@ -1,7 +1,7 @@
 @model IEnumerable<MVC.Models.Movie>
 
 @{
-    ViewData["Title"] = "Seen It Movies";
+    ViewData["Title"] = "Переглянуті фільми";
 }
 
 <div class="container mt-4">
@@ -12,6 +12,7 @@
                 <th>Poster</th>
                 <th>Title</th>
                 <th>Rating</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -20,42 +21,51 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
+                        <td onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'" style="cursor: pointer;">
                             @if (!string.IsNullOrEmpty(item.Cover))
                             {
                                 <img src="@item.Cover" alt="@item.Title" class="img-fluid" style="max-width: 100px;" />
                             }
                             else
                             {
-                                <span>No poster available</span>
+                                <span>Постер відсутній</span>
                             }
                         </td>
-                        <td>@(item.Title ?? "No Title")</td>
+                        <td onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'" style="cursor: pointer;">@(item.Title ?? "Без назви")</td>
                         <td>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id">
-                                <i class="bi bi-pencil"></i> @item.Rating
+                            @{
+                                var userMovies = ViewBag.UserMovies as IEnumerable<MVC.Models.UserMovie>;
+                                var userRating = userMovies?.FirstOrDefault(um => um.MovieId == item.Id)?.Rating ?? 0;
+                            }
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
+                                <i class="bi bi-pencil"></i> @userRating
                             </button>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("RemoveFromLists", "User", new { id = item.Id })" class="btn btn-danger btn-sm" onclick="event.stopPropagation();">
+                                <i class="bi bi-trash"></i> Remove
+                            </a>
                         </td>
                     </tr>
 
-                    <!-- Modal for Editing Rating -->
+                    <!-- Модальне вікно для редагування рейтингу -->
                     <div class="modal fade" id="rateMovieModal-@item.Id" tabindex="-1" aria-labelledby="rateMovieModalLabel-@item.Id" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="rateMovieModalLabel-@item.Id">Rate @(item.Title ?? "Unknown Movie")</h5>
+                                    <h5 class="modal-title" id="rateMovieModalLabel-@item.Id">Оцінити @(item.Title ?? "Невідомий фільм")</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <form asp-controller="User" asp-action="RateMovie" method="post">
                                         <input type="hidden" name="movieId" value="@item.Id" />
                                         <div class="form-group">
-                                            <label for="rating-@item.Id">Rating (1-10):</label>
-                                            <input type="number" id="rating-@item.Id" name="rating" class="form-control" min="1" max="10" value="@item.Rating" required />
+                                            <label for="rating-@item.Id">Рейтинг (1-10):</label>
+                                            <input type="number" id="rating-@item.Id" name="rating" class="form-control" min="1" max="10" value="@userRating" required />
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-success">Update Rating</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                                            <button type="submit" class="btn btn-success">Оновити рейтинг</button>
                                         </div>
                                     </form>
                                 </div>
@@ -67,9 +77,25 @@
             else
             {
                 <tr>
-                    <td colspan="4" class="text-center">No movies found.</td>
+                    <td colspan="4" class="text-center">Фільми не знайдено.</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form[asp-action="RateMovie"]');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                const ratingInput = this.querySelector('input[name="rating"]');
+                const rating = parseInt(ratingInput.value);
+                if (rating < 1 || rating > 10) {
+                    alert('Будь ласка, введіть рейтинг від 1 до 10.');
+                    event.preventDefault();
+                }
+            });
+        });
+    });
+</script>

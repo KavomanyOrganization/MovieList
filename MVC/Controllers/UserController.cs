@@ -92,7 +92,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
         TempData["MovieId"] = id;
-        return RedirectToAction("Details", "Movie", new { id = id });
+        return RedirectToAction("RateMovie", "Movie", new { id = id });
     }
 
     [Authorize]
@@ -102,7 +102,7 @@ public class UserController : Controller
         if (rating < 1 || rating > 10)
         {
             ModelState.AddModelError("", "Rating must be between 1 and 10.");
-            return RedirectToAction("Details", new { id = movieId });
+            return RedirectToAction("GetAllSeenIt", "User", new { id = movieId });
         }
 
         var user = await _userService.GetCurrentUserAsync(User);
@@ -120,20 +120,19 @@ public class UserController : Controller
             return Redirect(referer);
         }
 
-        // Якщо Referer відсутній, перенаправляємо на сторінку деталей фільму
-        return RedirectToAction("Details", "Movie", new { id = movieId });
+        return RedirectToAction("GetAllSeenIt", "User", new { id = movieId });
     }
 
     [Authorize]
-    public async Task<IActionResult> RemoveSeenIt(int id)
+    public async Task<IActionResult> RemoveFromLists(int id)
     {
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
         {
             return RedirectToAction("Login");
         }
-        await _userService.ConnectUserMovie(user, id, false, -1);
-        return RedirectToAction("Details");
+        await _userService.DeleteUserMovie(user, id);
+        return RedirectToAction("GetAllSeenIt");
     }
 
     [Authorize]
@@ -152,6 +151,9 @@ public class UserController : Controller
         {
             return View(new List<Movie>());
         }
+
+        // Передаємо список UserMovie у ViewBag
+        ViewBag.UserMovies = userMovies;
 
         var movies = new List<Movie>();
         foreach (var userMovie in userMovies)

@@ -102,5 +102,14 @@ public class UserService
         return await _context.UserMovies.Where(um => um.UserId == user.Id && um.IsWatched == isWatched).ToListAsync();
     }
 
+    public async Task DeleteUserMovie(User user, int movieId)
+    {
+        var usermovie = await _context.UserMovies.FindAsync(user.Id, movieId);
+        if (usermovie != null)
+        {
+            _context.UserMovies.Remove(usermovie);
+            await _context.SaveChangesAsync();
+        }
+    }
 }
 
