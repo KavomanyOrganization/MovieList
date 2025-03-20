@@ -20,7 +20,7 @@ public class ReportController : Controller{
 
     public async Task<IActionResult> GetAll()
     {
-        var reports = await _context.Reports.OrderBy(r => r.CreationDate).ToListAsync();
+        var reports = await _context.Reports.Include(r => r.Movie).OrderBy(r => r.CreationDate).ToListAsync();
         ViewBag.ReportViewModel = new ReportViewModel();
         return View(reports);
     }
