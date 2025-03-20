@@ -88,5 +88,21 @@ namespace MVC.Controllers
             var users = await _userService.GetAllUsersAsync();
             return View(users);
         }
+        [HttpPost]
+        [Authorize(Roles="Admin")]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var result = await _userService.DeleteUserAsync(userId);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "User successfully removed";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.ErrorMessage;
+            }
+            
+            return RedirectToAction("GetAll");
+        }
     }
 }

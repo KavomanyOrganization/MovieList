@@ -1,14 +1,14 @@
 @model List<MVC.Models.User>
 
 @{
-    ViewData["Title"] = "Список користувачів";
+    ViewData["Title"] = "Registered users";
 }
 
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col">
-            <h2 class="text-primary fw-bold">Список зареєстрованих користувачів</h2>
-            <p class="text-muted">Загальна кількість: <span class="badge bg-primary">@Model.Count</span></p>
+            <h2 class="text-primary fw-bold">Registered users</h2>
+            <p class="text-muted">Total amount: <span class="badge bg-primary">@Model.Count</span></p>
         </div>
     </div>
 
@@ -37,59 +37,50 @@
                         </div>
                         <div class="card-body">
                             <div class="row mb-2">
-                                <div class="col-md-5 text-muted">Статус:</div>
+                                <div class="col-md-5 text-muted">Status:</div>
                                 <div class="col-md-7">
-                                    <span class="badge rounded-pill bg-success">Активний</span>
+                                    <span class="badge rounded-pill bg-success">Active</span>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer bg-transparent border-0 py-3">
                             <div class="d-flex justify-content-end gap-2">
-                                <a asp-action="Details" asp-route-id="@user.Id" 
-                                   class="btn btn-secondary btn-sm rounded-3 shadow-sm">
-                                    <i class="bi bi-eye"></i> Деталі
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@user.Id" 
-                                   class="btn btn-secondary btn-sm rounded-3 shadow-sm">
-                                    <i class="bi bi-pencil"></i> Редагувати
-                                </a>
                                 <button type="button" class="btn btn-secondary btn-sm rounded-3 shadow-sm" 
                                         data-bs-toggle="modal" data-bs-target="#deleteModal-@user.Id">
-                                    <i class="bi bi-trash"></i> Видалити
+                                    <i class="bi bi-trash"></i> Delete
                                 </button>
                                 <a asp-action="Ban" asp-route-id="@user.Id" 
                                    class="btn btn-secondary btn-sm rounded-3 shadow-sm">
-                                    <i class="bi bi-slash-circle"></i> Забанити
+                                    <i class="bi bi-slash-circle"></i> Ban
                                 </a>
                             </div>
-                                
-                            <div class="modal fade" id="deleteModal-@user.Id" tabindex="-1" 
-                                 aria-labelledby="deleteModalLabel-@user.Id" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content rounded-4 shadow">
-                                        <div class="modal-header border-bottom-0">
-                                            <h5 class="modal-title" id="deleteModalLabel-@user.Id">Підтвердження видалення</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body py-4">
-                                            <div class="text-center mb-4">
-                                                <i class="bi bi-exclamation-triangle-fill text-warning fs-1"></i>
-                                            </div>
-                                            <p class="text-center">
-                                                Ви впевнені, що хочете видалити користувача <strong>@user.UserName</strong>?
-                                            </p>
-                                            <p class="text-center text-muted small">
-                                                Цю дію не можна буде скасувати
-                                            </p>
-                                        </div>
-                                        <div class="modal-footer border-top-0">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
-                                            <form asp-action="Delete" asp-route-id="@user.Id" method="post">
-                                                <button type="submit" class="btn btn-danger">Видалити</button>
-                                            </form>
-                                        </div>
-                                    </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="deleteModal-@user.Id" tabindex="-1" 
+                     aria-labelledby="deleteModalLabel-@user.Id" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4 shadow">
+                            <div class="modal-header border-bottom-0">
+                                <h5 class="modal-title" id="deleteModalLabel-@user.Id">Confirmation of deletion</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body py-4">
+                                <div class="text-center mb-4">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning fs-1"></i>
                                 </div>
+                                <p class="text-center">
+                                    Are you sure you want to delete a user <strong>@user.UserName</strong>?
+                                </p>
+                                <p class="text-center text-muted small">
+                                    This action cannot be cancelled
+                                </p>
+                            </div>
+                            <div class="modal-footer border-top-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form asp-controller="User" asp-action="DeleteUser" asp-route-userId="@user.Id" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -102,7 +93,7 @@
         <div class="alert alert-info rounded-4 shadow-sm">
             <div class="d-flex align-items-center">
                 <i class="bi bi-info-circle-fill fs-4 me-3"></i>
-                <p class="mb-0">Немає зареєстрованих користувачів у системі.</p>
+                <p class="mb-0">No registered users in the system.</p>
             </div>
         </div>
     }
@@ -110,7 +101,7 @@
     <div class="row mt-4">
         <div class="col">
             <a asp-controller="Home" asp-action="Index" class="btn btn-secondary rounded-3 shadow-sm">
-                <i class="bi bi-arrow-left"></i> Повернутися на головну
+                <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>
     </div>
