@@ -160,7 +160,6 @@ public class UserController : Controller
             return View(new List<Movie>());
         }
 
-        // Передаємо список UserMovie у ViewBag
         ViewBag.UserMovies = userMovies;
 
         var movies = new List<Movie>();
@@ -173,6 +172,8 @@ public class UserController : Controller
         return View(movies);
     }
 
+    [Authorize]
+    [HttpGet]
     public async Task<IActionResult> GetActivity(DateTime? startDate, DateTime? endDate)
     {
         if (startDate == null)
