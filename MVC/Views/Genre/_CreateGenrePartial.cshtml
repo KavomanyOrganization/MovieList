@@ -1,0 +1,15 @@
+@model MVC.ViewModels.GenreViewModel
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label for="Name" class="form-label">Genre Name</label>
+        <input type="text" class="form-control w-70" id="Name" asp-for="Name" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Add Genre</button>
+    <a asp-action="GetAll" class="btn btn-secondary">Cancel</a>
+</form>
+
+
