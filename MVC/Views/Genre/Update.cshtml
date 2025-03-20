@@ -11,6 +11,7 @@
         <div class="mb-3">
             <label for="Name" class="form-label">Genre Name</label>
             <input type="text" class="form-control" id="Name" asp-for="Name" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         <button type="submit" class="btn btn-success">Save Changes</button>

@@ -20,6 +20,7 @@ public class CountryController : Controller
     public async Task<IActionResult> GetAll()
     {
         var countries = await _context.Countries.ToListAsync();
+        ViewBag.CountryViewModel = new CountryViewModel();
         return View(countries.OrderBy(c => c.Name).ToList());
     }
 
@@ -41,7 +42,7 @@ public class CountryController : Controller
 
             if (existingCountry != null)
             {
-                ModelState.AddModelError("Name", "Already existing in List");
+                ModelState.AddModelError("Name", "A country with this name already exists.");
                 return View(countryViewModel);
             }
             Country country = new Country { Name = countryViewModel.Name };
@@ -87,6 +88,16 @@ public class CountryController : Controller
         Country? country = await _context.Countries.FindAsync(id);
         if (country == null)
             return NotFound();
+            
+        bool isDuplicate = await _context.Countries
+        .AnyAsync(c => c.Name == countryViewModel.Name && c.Id != id);
+
+        if (isDuplicate)
+        {
+            ModelState.AddModelError("Name", "A country with this name already exists.");
+            ViewBag.CountryId = id;
+            return View(countryViewModel);
+        }
 
         country.Name = countryViewModel.Name;
 
