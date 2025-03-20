@@ -5,14 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace MVC.Controllers;
 
 public class ReportController : Controller{
     protected readonly AppDbContext _context;
+    private readonly ILogger<ReportController> _logger;
 
-    public ReportController(AppDbContext appDbContext){
+    public ReportController(AppDbContext appDbContext, ILogger<ReportController> logger){
         _context = appDbContext;
+        _logger = logger;
     }
 
     public async Task<IActionResult> GetAll()
@@ -23,20 +26,25 @@ public class ReportController : Controller{
     }
 
     [Authorize]
-    public IActionResult Create()
+    public IActionResult Create(int movieId)
     {
-        return View();
+        var model = new ReportViewModel { MovieId = movieId };
+        return View(model);
     }
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Create(ReportViewModel reportViewModel, int movieId)
+    public async Task<IActionResult> Create(ReportViewModel reportViewModel)
     {
-            if (!ModelState.IsValid)
+        _logger.LogInformation("Received movieId: {MovieId}", reportViewModel.MovieId);
+
+        if (!ModelState.IsValid)
         {
+            // Повертаємо форму з помилками
             return View(reportViewModel);
         }
 
-        var movie = await _context.Movies.FindAsync(movieId);
+        _logger.LogInformation("Creating report for movie ID: {MovieId}", reportViewModel.MovieId);
+        var movie = await _context.Movies.FindAsync(reportViewModel.MovieId);
         if (movie == null)
         {
             return NotFound();
@@ -46,13 +54,17 @@ public class ReportController : Controller{
         {
             Comment = reportViewModel.Comment,
             CreationDate = DateTime.UtcNow,
-            MovieId = movieId
+            MovieId = reportViewModel.MovieId
         };
 
         _context.Reports.Add(report);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("ViewRating", "Movie");
+        TempData["SuccessMessage"] = "Report successfully created!";
+
+        _logger.LogInformation("Report created successfully.");
+
+        return RedirectToAction("Details", "Movie", new { id = reportViewModel.MovieId });
     }
 
     [Authorize(Roles="Admin")]

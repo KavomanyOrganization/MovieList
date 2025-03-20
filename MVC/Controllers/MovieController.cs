@@ -147,6 +147,17 @@ public class MovieController : Controller
         {
             return NotFound();
         }
+        var reports = await _movieService.GetReportsForMovieAsync(id);
+
+        var reportViewModel = reports.Select(r => new ReportViewModel
+        {
+            MovieId = r.MovieId,
+            Comment = r.Comment,
+            CreationDate = r.CreationDate
+        }).ToList();
+
+        ViewBag.Movie = movie;
+        ViewBag.ReportViewModel = reportViewModel;
 
         return View(movie);
     }
