@@ -1,20 +1,11 @@
 @model MVC.ViewModels.CountryViewModel
-
 @{
     ViewData["Title"] = "Add Country";
 }
 
-<div class="container mt-4">
-    <h1>Add New Country</h1>
-
-    <form asp-action="Create" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="mb-3">
-            <label for="Name" class="form-label">Country Name</label>
-            <input type="text" class="form-control" id="Name" asp-for="Name" required />
-        </div>
-
-        <button type="submit" class="btn btn-success">Add Country</button>
-        <a asp-action="GetAll" class="btn btn-secondary">Cancel</a>
-    </form>
+<div class="container mt-4 d-flex justify-content-center align-items-start" style="height: 100vh;">
+    <div>
+        <h1>Add New Country</h1>
+        @await Html.PartialAsync("_CreateCountryPartial", Model)
+    </div>
 </div>
