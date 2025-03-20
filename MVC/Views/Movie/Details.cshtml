@@ -16,7 +16,9 @@
                         <div class="col-md-4">
                             @if (!string.IsNullOrEmpty(Model.Cover))
                             {
-                                <img src="@Model.Cover" alt="@Model.Title" class="img-fluid rounded" />
+                                <a href="@Model.Cover" target="_blank">
+                                    <img src="@Model.Cover" alt="@Model.Title" class="img-fluid rounded" />
+                                </a>
                             }
                             else
                             {
@@ -100,7 +102,10 @@
                 </div>
             </div>
             <div class="mt-3 text-center">
+                @if (User.IsInRole("User") || User.IsInRole("Admin"))
+                {
                 <small>Notice incorrect information? <a asp-controller="Report" asp-action="CreateReport" style="color: red;">Report</a></small>
+                }
             </div>
         </div>
     </div>
