@@ -28,7 +28,7 @@
                             }
                             else
                             {
-                                <span>Постер відсутній</span>
+                                <span>No cover available</span>
                             }
                         </td>
                         <td onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'" style="cursor: pointer;">@(item.Title ?? "Без назви")</td>
@@ -38,7 +38,7 @@
                                 var userRating = userMovies?.FirstOrDefault(um => um.MovieId == item.Id)?.Rating ?? 0;
                             }
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
-                                <i class="bi bi-pencil"></i> @userRating/10
+                                 @userRating/10 <i class="bi bi-pencil"></i>
                             </button>
                         </td>
                         <td>
