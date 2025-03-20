@@ -141,13 +141,27 @@ public class MovieController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
-        
+        var movie = await _movieService.GetMovieById(id);
         if (movie == null)
         {
             return NotFound();
         }
-
+        
+        // Check if the user is authenticated
+        if (User.Identity.IsAuthenticated)
+        {
+            var user = await _userService.GetCurrentUserAsync(User);
+            if (user != null)
+            {
+                // Get all user movies (both watched and to-watch)
+                var userMovies = (await _userService.GetUserMovies(user, true)).ToList();
+                userMovies.AddRange(await _userService.GetUserMovies(user, false));
+                
+                // Check if the current movie is in any of the user's lists
+                ViewBag.IsInUserLists = userMovies.Any(um => um.MovieId == id);
+            }
+        }
+        
         return View(movie);
     }
 

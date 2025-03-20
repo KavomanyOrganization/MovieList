@@ -2,6 +2,13 @@
 
 @{
     ViewData["Title"] = "Movie Details";
+    bool isInUserLists = false;
+    
+    // Check if the movie is in any of the user's lists
+    if (ViewBag.IsInUserLists != null)
+    {
+        isInUserLists = ViewBag.IsInUserLists;
+    }
 }
 
 <div class="container mt-4">
@@ -86,12 +93,21 @@
                     <div>
                         @if (User.IsInRole("User") || User.IsInRole("Admin"))
                         {
-                            <a asp-controller="User" asp-action="AddToWatch" asp-route-id="@Model.Id" class="btn btn-primary">
-                                <i class="bi bi-plus"></i> To Watch!
-                            </a>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal">
-                                <i class="bi bi-eye"></i> Seen It!
-                            </button>
+                            @if (!isInUserLists)
+                            {
+                                <a asp-controller="User" asp-action="AddToWatch" asp-route-id="@Model.Id" class="btn btn-primary">
+                                    <i class="bi bi-plus"></i> To Watch!
+                                </a>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal">
+                                    <i class="bi bi-eye"></i> Seen It!
+                                </button>
+                            }
+                            else
+                            {
+                                <a asp-controller="User" asp-action="RemoveFromLists" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                    <i class="bi bi-dash-circle"></i> Remove from My Lists
+                                </a>
+                            }
                         }
                     </div>
                     <div>
