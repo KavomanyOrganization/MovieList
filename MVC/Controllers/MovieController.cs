@@ -146,22 +146,18 @@ public class MovieController : Controller
         {
             return NotFound();
         }
-        
-        // Check if the user is authenticated
-        if (User.Identity.IsAuthenticated)
+        var reports = await _movieService.GetReportsForMovieAsync(id);
+
+        var reportViewModel = reports.Select(r => new ReportViewModel
         {
-            var user = await _userService.GetCurrentUserAsync(User);
-            if (user != null)
-            {
-                // Get all user movies (both watched and to-watch)
-                var userMovies = (await _userService.GetUserMovies(user, true)).ToList();
-                userMovies.AddRange(await _userService.GetUserMovies(user, false));
-                
-                // Check if the current movie is in any of the user's lists
-                ViewBag.IsInUserLists = userMovies.Any(um => um.MovieId == id);
-            }
-        }
-        
+            MovieId = r.MovieId,
+            Comment = r.Comment,
+            CreationDate = r.CreationDate
+        }).ToList();
+
+        ViewBag.Movie = movie;
+        ViewBag.ReportViewModel = reportViewModel;
+
         return View(movie);
     }
 
