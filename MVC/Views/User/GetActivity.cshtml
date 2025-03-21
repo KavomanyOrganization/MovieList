@@ -27,9 +27,9 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>User</th>
                 <th>Movie</th>
                 <th>Creation Date</th>
+                <th>User</th>
             </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@
                     <td><a href="@Url.Action("Details", "Movie", new { id = entry.Key.Id })">
                         @entry.Key.Title</a></td>
                     <td>@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
-                    <td>@entry.Value.Email</td>
+                    <td>@entry.Value.UserName</td>
                 </tr>
             }
         </tbody>

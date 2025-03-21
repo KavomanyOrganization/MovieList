@@ -133,7 +133,14 @@ public class UserController : Controller
         }
         await _userService.DeleteUserMovie(user, id);
         await _movieService.CalculateRating(id);
-        return RedirectToAction("GetAllSeenIt");
+
+        var referer = Request.Headers["Referer"].ToString();
+        if (!string.IsNullOrEmpty(referer))
+        {
+            return Redirect(referer);
+        }
+
+        return RedirectToAction("GetAllSeenIt", "User");
     }
 
     [Authorize]
@@ -165,6 +172,8 @@ public class UserController : Controller
         return View(movies);
     }
 
+    [Authorize]
+    [HttpGet]
     public async Task<IActionResult> GetActivity(DateTime? startDate, DateTime? endDate)
     {
         if (startDate == null)

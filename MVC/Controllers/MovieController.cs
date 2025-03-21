@@ -141,8 +141,7 @@ public class MovieController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
-        
+        var movie = await _movieService.GetMovieById(id);
         if (movie == null)
         {
             return NotFound();
