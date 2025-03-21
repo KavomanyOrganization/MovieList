@@ -162,4 +162,11 @@ public class MovieController : Controller
         var movies = await _movieService.GetAllMoviesAsync();
         return View(movies.OrderByDescending(m => m.Rating).ToList());
     }
+    [HttpGet]
+    public async Task<IActionResult> Search(string searchTerm)
+    {
+        var movies = await _movieService.SearchMoviesAsync(searchTerm);
+        return View("ViewRating", movies.OrderByDescending(m => m.Rating).ToList());
+    }
+    
 }
