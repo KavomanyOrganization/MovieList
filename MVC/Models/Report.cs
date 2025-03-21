@@ -8,6 +8,11 @@ public class Report
     [Required]
     public string? Comment { get; set; } = "";
     public DateTime CreationDate { get; set; } = DateTime.UtcNow; 
+    //add id film
+
+    //list of films - cover + name + for admin reports
+    //open - filf - view of report
+    //filter button report
     
     public Report(){}
     public Report (string? comment, DateTime creationDate){

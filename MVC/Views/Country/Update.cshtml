@@ -4,16 +4,20 @@
     ViewData["Title"] = "Edit Country";
 }
 
-<div class="container mt-4">
-    <h1>Edit Country</h1>
+<div class="container mt-4 w-50 mx-auto">
+    <h1 class="text-center">Edit Country</h1>
 
     <form asp-action="Update" method="post">
         <div class="mb-3">
             <label for="Name" class="form-label">Country Name</label>
             <input type="text" class="form-control" id="Name" asp-for="Name" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         <button type="submit" class="btn btn-success">Save Changes</button>
         <a asp-action="GetAll" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+
+

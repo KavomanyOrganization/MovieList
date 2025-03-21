@@ -2,21 +2,44 @@
 
 @{
     ViewData["Title"] = "Movie Details";
+    bool isInUserLists = false;
+    
+    if (ViewBag.IsInUserLists != null)
+    {
+        isInUserLists = ViewBag.IsInUserLists;
+    }
 }
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h3 class="card-title mb-0">@Model.Title</h3>
+                    <div>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="btn-group" role="group">
+                                <a asp-controller="Movie" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-controller="Movie" asp-action="Delete" asp-route-id="@Model.Id" 
+                                    class="btn btn-danger btn-sm" 
+                                    onclick="return confirm('Are you sure you want to delete this movie?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        }
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
                             @if (!string.IsNullOrEmpty(Model.Cover))
                             {
-                                <img src="@Model.Cover" alt="@Model.Title" class="img-fluid rounded" />
+                                <a href="@Model.Cover" target="_blank">
+                                    <img src="@Model.Cover" alt="@Model.Title" class="img-fluid rounded" />
+                                </a>
                             }
                             else
                             {
@@ -25,22 +48,22 @@
                         </div>
                         <div class="col-md-8">
                             <dl class="row">
-                                <dt class="col-sm-3">Rating</dt>
+                                <dt class="col-sm-3 text-nowrap">Rating</dt>
                                 <dd class="col-sm-9">@Model.Rating</dd>
 
-                                <dt class="col-sm-3">Title</dt>
+                                <dt class="col-sm-3 text-nowrap">Title</dt>
                                 <dd class="col-sm-9">@Model.Title</dd>
 
-                                <dt class="col-sm-3">Director</dt>
+                                <dt class="col-sm-3 text-nowrap">Director</dt>
                                 <dd class="col-sm-9">@Model.Director</dd>
 
-                                <dt class="col-sm-3">Year</dt>
+                                <dt class="col-sm-3 text-nowrap">Year</dt>
                                 <dd class="col-sm-9">@Model.Year</dd>
 
-                                <dt class="col-sm-3">Duration</dt>
+                                <dt class="col-sm-3 text-nowrap">Duration</dt>
                                 <dd class="col-sm-9">@Model.Duration minutes</dd>
                                 
-                                <dt class="col-sm-3">Genres</dt>
+                                <dt class="col-sm-3 text-nowrap">Genres</dt>
                                 <dd class="col-sm-9">
                                     @if (Model.MovieGenres != null && Model.MovieGenres.Any())
                                     {
@@ -57,7 +80,7 @@
                                     }
                                 </dd>
                                 
-                                <dt class="col-sm-3">Countries</dt>
+                                <dt class="col-sm-3 text-nowrap">Countries</dt>
                                 <dd class="col-sm-9">
                                     @if (Model.MovieCountries != null && Model.MovieCountries.Any())
                                     {
@@ -74,7 +97,7 @@
                                     }
                                 </dd>
 
-                                <dt class="col-sm-3">Description</dt>
+                                <dt class="col-sm-3 text-nowrap">Description</dt>
                                 <dd class="col-sm-9">@Model.Description</dd>
                             </dl>
                         </div>
@@ -84,12 +107,21 @@
                     <div>
                         @if (User.IsInRole("User") || User.IsInRole("Admin"))
                         {
-                            <a asp-controller="User" asp-action="AddToWatchlist" asp-route-movieId="@Model.Id" class="btn btn-primary">
-                            <i class="bi bi-plus"></i> To Watch!
-                        </a>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal">
-                                <i class="bi bi-eye"></i> Seen It!
-                            </button>
+                            @if (!isInUserLists)
+                            {
+                                <a asp-controller="User" asp-action="AddToWatchlist" asp-route-movieId="@Model.Id" class="btn btn-primary">
+                                    <i class="bi bi-plus"></i> To Watch!
+                                </a>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal">
+                                    <i class="bi bi-eye"></i> Seen It!
+                                </button>
+                            }
+                            else
+                            {
+                                <a asp-controller="User" asp-action="RemoveFromLists" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                    <i class="bi bi-dash-circle"></i> Remove from My Lists
+                                </a>
+                            }
                         }
                     </div>
                     <div>
@@ -100,7 +132,10 @@
                 </div>
             </div>
             <div class="mt-3 text-center">
-                <small>Notice incorrect information? <a asp-controller="Report" asp-action="CreateReport" style="color: red;">Report</a></small>
+                @if (User.IsInRole("User"))
+                {
+                    <small>Notice incorrect information? <a asp-controller="Report" asp-action="CreateReport" style="color: red;">Report</a></small>
+                }
             </div>
         </div>
     </div>
@@ -138,5 +173,21 @@
             alert('Please enter a rating between 1 and 10.');
             event.preventDefault();
         }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const dtElements = document.querySelectorAll('dt.col-sm-3');
+        let maxWidth = 0;
+
+        dtElements.forEach(dt => {
+            const width = dt.offsetWidth;
+            if (width > maxWidth) {
+                maxWidth = width;
+            }
+        });
+
+        dtElements.forEach(dt => {
+            dt.style.minWidth = `${maxWidth}px`;
+        });
     });
 </script>

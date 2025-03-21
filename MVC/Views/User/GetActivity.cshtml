@@ -24,26 +24,28 @@
 
 @if (Model != null && Model.Any())
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Movie</th>
-                <th>Creation Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var entry in Model)
-            {
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
                 <tr>
-                    <td><a href="@Url.Action("Details", "Movie", new { id = entry.Key.Id })">
-                        @entry.Key.Title</a></td>
-                    <td>@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
-                    <td>@entry.Value.Email</td>
+                    <th>Movie</th>
+                    <th>Creation Date</th>
+                    <th>User</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var entry in Model)
+                {
+                    <tr>
+                        <td><a href="@Url.Action("Details", "Movie", new { id = entry.Key.Id })">
+                            @entry.Key.Title</a></td>
+                        <td>@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
+                        <td>@entry.Value.UserName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
