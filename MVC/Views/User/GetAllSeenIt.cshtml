@@ -1,13 +1,13 @@
 @model IEnumerable<MVC.Models.Movie>
 
 @{
-    ViewData["Title"] = "Seen It Movies";
+    ViewData["Title"] = "Seen It! Movies";
 }
 
 <div class="container mt-4">
     <h2>Seen It Movies</h2>
     <div class="row">
-        @if (Model != null)
+        @if (Model != null&& Model.Any())
         {
             @foreach (var item in Model)
             {
@@ -69,8 +69,9 @@
         }
         else
         {
-            <div class="col-12 text-center">
-                <p>No Movies found.</p>
+             <div class="col-12 text-center">
+                <p>The list is empty! You haven't added any films to your Seen It! yet.</p>
+                <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Watch popular films</a>
             </div>
         }
     </div>
