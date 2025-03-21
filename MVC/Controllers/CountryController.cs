@@ -19,15 +19,9 @@ public class CountryController : Controller
 
     public async Task<IActionResult> GetAll()
     {
-        var countries = await _context.Countries.ToListAsync();
-        ViewBag.CountryViewModel = new CountryViewModel();
-        return View(countries.OrderBy(c => c.Name).ToList());
-    }
-
-    [Authorize(Roles = "Admin")]
-    public IActionResult Create()
-    {
-        return View();
+        var countries = await _context.Countries.OrderBy(c => c.Name).ToListAsync();
+        ViewBag.Countries = countries;
+        return View(new CountryViewModel());
     }
 
     [Authorize(Roles = "Admin")]
@@ -43,17 +37,22 @@ public class CountryController : Controller
             if (existingCountry != null)
             {
                 ModelState.AddModelError("Name", "A country with this name already exists.");
-                return View(countryViewModel);
+                var countries = await _context.Countries.OrderBy(c => c.Name).ToListAsync();
+                ViewBag.Countries = countries;
+                return View("GetAll", countryViewModel);
             }
+            
             Country country = new Country { Name = countryViewModel.Name };
 
             _context.Countries.Add(country);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("GetAll", "Country");
+            return RedirectToAction("GetAll");
         }
 
-        return View(countryViewModel);
+        var allCountries = await _context.Countries.OrderBy(c => c.Name).ToListAsync();
+        ViewBag.Countries = allCountries;
+        return View("GetAll", countryViewModel);
     }
 
     [Authorize(Roles = "Admin")]
@@ -65,7 +64,7 @@ public class CountryController : Controller
 
         _context.Countries.Remove(country);
         await _context.SaveChangesAsync();
-        return RedirectToAction("GetAll", "Country");
+        return RedirectToAction("GetAll");
     }
 
     [Authorize(Roles = "Admin")]
@@ -90,7 +89,7 @@ public class CountryController : Controller
             return NotFound();
             
         bool isDuplicate = await _context.Countries
-        .AnyAsync(c => c.Name == countryViewModel.Name && c.Id != id);
+        .AnyAsync(c => c.Name.ToLower() == countryViewModel.Name.ToLower() && c.Id != id);
 
         if (isDuplicate)
         {
@@ -103,6 +102,6 @@ public class CountryController : Controller
 
         _context.Countries.Update(country);
         await _context.SaveChangesAsync();
-        return RedirectToAction("GetAll", "Country");
+        return RedirectToAction("GetAll");
     }
 }
