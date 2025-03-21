@@ -186,4 +186,31 @@ public class MovieService
         }
         return null;
     }
+    public async Task<List<Movie>> SearchMoviesAsync(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return await GetAllMoviesAsync();
+        }
+
+        searchTerm = searchTerm.ToLower();
+
+        var movies = await _context.Movies
+            .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+            .Include(m => m.MovieCountries)
+                .ThenInclude(mc => mc.Country)
+            .Where(m =>
+                (m.Title != null && m.Title.ToLower().Contains(searchTerm)) ||
+                (m.Director != null && m.Director.ToLower().Contains(searchTerm)) ||
+                m.Description.ToLower().Contains(searchTerm) ||
+                m.Year.ToString().Contains(searchTerm) ||
+                m.MovieGenres.Any(mg => mg.Genre.Name.ToLower().Contains(searchTerm)) ||
+                m.MovieCountries.Any(mc => mc.Country.Name.ToLower().Contains(searchTerm))
+            )
+            .ToListAsync();
+
+        return movies;
+    }
+    
 }
