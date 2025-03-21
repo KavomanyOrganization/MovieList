@@ -1,11 +1,11 @@
 @model IEnumerable<MVC.Models.Movie>
 
 @{
-    ViewData["Title"] = "Бажане до перегляду";
+    ViewData["Title"] = "ToWatch!";
 }
 
 <div class="container mt-4">
-    <h2>Мій список бажаного до перегляду</h2>
+    <h2>ToWatch!</h2>
     <div class="row">
         @if (Model != null && Model.Any())
         {
@@ -27,13 +27,12 @@
                             <div class="text-center">
                                 <h5 class="card-title mt-2">@(movie.Title ?? "No Title")</h5>
                                 <p class="card-text text-muted">@movie.Year</p>
-                                <button type="button" class="btn btn-success btn-sm" onclick="event.stopPropagation(); document.getElementById('addSeenItForm-@movie.Id').submit();">
-                                    Переглянуто
+                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal" data-movie-id="@movie.Id">
+                                    Seen It!
                                 </button>
                                 <button type="button" class="btn btn-danger btn-sm" onclick="event.stopPropagation(); document.getElementById('removeFromListForm-@movie.Id').submit();">
                                     <i class="bi bi-trash"></i>
                                 </button>
-                                <form id="addSeenItForm-@movie.Id" asp-controller="User" asp-action="AddSeenIt" method="post" asp-route-id="@movie.Id" class="d-none"></form>
                                 <form id="removeFromListForm-@movie.Id" asp-controller="User" asp-action="RemoveFromLists" method="post" asp-route-id="@movie.Id" class="d-none"></form>
                             </div>
                         </div>
@@ -44,9 +43,53 @@
         else
         {
             <div class="col-12 text-center">
-                <p>Список порожній! Ви ще не додали жодного фільму до списку бажаного до перегляду.</p>
-                <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Переглянути популярні фільми</a>
+                <p>The list is empty! You haven't added any films to your watchlist yet.</p>
+                <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Watch popular films</a>
             </div>
         }
     </div>
 </div>
+
+<!-- Modal for Rating -->
+<div class="modal fade" id="rateMovieModal" tabindex="-1" aria-labelledby="rateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rateMovieModalLabel">Rate Movie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="rateMovieForm" asp-controller="User" asp-action="RateMovie" method="post">
+                    <input type="hidden" name="movieId" id="movieIdInput" />
+                    <div class="form-group">
+                        <label for="rating">Rating (1-10):</label>
+                        <input type="number" id="rating" name="rating" class="form-control" min="1" max="10" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var rateMovieModal = document.getElementById('rateMovieModal');
+        rateMovieModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var movieId = button.getAttribute('data-movie-id');
+            document.getElementById('movieIdInput').value = movieId;
+        });
+
+        document.getElementById('rateMovieForm').addEventListener('submit', function(event) {
+            var rating = document.getElementById('rating').value;
+            if (rating < 1 || rating > 10) {
+                alert('Please enter a rating between 1 and 10.');
+                event.preventDefault();
+            }
+        });
+    });
+</script>
