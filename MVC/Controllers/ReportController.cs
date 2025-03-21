@@ -75,6 +75,6 @@ public class ReportController : Controller{
 
         _context.Reports.Remove(report);
         await _context.SaveChangesAsync();
-        return RedirectToAction("GetAll", "Report");
+        return Redirect(Request.Headers["Referer"].ToString());
     }
 }
