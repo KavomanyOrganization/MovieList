@@ -146,6 +146,19 @@ public class MovieController : Controller
         {
             return NotFound();
         }
+
+        if (User.Identity.IsAuthenticated)
+        {
+            var user = await _userService.GetCurrentUserAsync(User);
+            if (user != null)
+            {
+                var userMovies = (await _userService.GetUserMovies(user, true)).ToList();
+                userMovies.AddRange(await _userService.GetUserMovies(user, false));
+                
+                ViewBag.IsInUserLists = userMovies.Any(um => um.MovieId == id);
+            }
+        }
+        
         var reports = await _movieService.GetReportsForMovieAsync(id);
 
         var reportViewModel = reports.Select(r => new ReportViewModel
@@ -172,6 +185,7 @@ public class MovieController : Controller
         var movies = await _movieService.GetAllMoviesAsync();
         return View(movies.OrderByDescending(m => m.Rating).ToList());
     }
+    
     [HttpGet]
     public async Task<IActionResult> Search(string searchTerm)
     {

@@ -183,7 +183,7 @@
                                     <br />
                                     <small class="text-muted">Reported on @report.CreationDate</small>
                                     <form action="@Url.Action("Delete", "Report", new { id = report.Id })" method="post" class="d-inline">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this report?');">
+                                        <button type="submit" class="btn btn-danger btn-sm float-end" onclick="return confirm('Are you sure you want to delete this report?');">
                                             <i class="bi bi-x-circle"></i> Close Report
                                         </button>
                                     </form>
