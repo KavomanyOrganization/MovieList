@@ -4,32 +4,23 @@
     ViewData["Title"] = "Movie Reports";
 }
 
-<div class="container mt-4">
-    <h1>Movie Reports</h1>
-    <form action="@Url.Action("GetReportsByDateRange", "Report")" method="get">
-    <div class="form-group">
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" name="startDate" class="form-control" />
-    </div>
+<h2>Movie Reports</h2>
 
-    <div class="form-group">
-        <label for="startTime">Start Time:</label>
-        <input type="time" id="startTime" name="startTime" class="form-control" />
+<form method="get" action="@Url.Action("Filter", "Report")" class="row g-3">
+    <div class="col-md-3">
+        <label for="startDate" class="form-label">Start Date:</label>
+        <input type="date" class="form-control" id="startDate" name="startDate" value="@Context.Request.Query["startDate"]" />
     </div>
-
-    <div class="form-group">
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" name="endDate" class="form-control" />
+    <div class="col-md-3">
+        <label for="endDate" class="form-label">End Date:</label>
+        <input type="date" class="form-control" id="endDate" name="endDate" value="@Context.Request.Query["endDate"]" />
     </div>
-
-    <div class="form-group">
-        <label for="endTime">End Time:</label>
-        <input type="time" id="endTime" name="endTime" class="form-control" />
+    <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary">Filter</button>
     </div>
-
-    <button type="submit" class="btn btn-primary">Filter Reports</button>
 </form>
 
+<hr />
     @if (Model.Any())
     {
         <div class="table-responsive">

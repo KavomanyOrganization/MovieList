@@ -11,16 +11,14 @@ namespace MVC.Controllers;
 
 public class ReportController : Controller{
     protected readonly AppDbContext _context;
-    private readonly ILogger<ReportController> _logger;
 
-    public ReportController(AppDbContext appDbContext, ILogger<ReportController> logger){
+    public ReportController(AppDbContext appDbContext){
         _context = appDbContext;
-        _logger = logger;
     }
 
     public async Task<IActionResult> GetAll()
     {
-        var reports = await _context.Reports.Include(r => r.Movie).OrderBy(r => r.CreationDate).ToListAsync();
+        var reports = await _context.Reports.Include(r => r.Movie).OrderByDescending(r => r.CreationDate).ToListAsync();
         ViewBag.ReportViewModel = new ReportViewModel();
         return View(reports);
     }
@@ -35,15 +33,11 @@ public class ReportController : Controller{
     [HttpPost]
     public async Task<IActionResult> Create(ReportViewModel reportViewModel)
     {
-        _logger.LogInformation("Received movieId: {MovieId}", reportViewModel.MovieId);
-
         if (!ModelState.IsValid)
         {
-            // Повертаємо форму з помилками
             return View(reportViewModel);
         }
 
-        _logger.LogInformation("Creating report for movie ID: {MovieId}", reportViewModel.MovieId);
         var movie = await _context.Movies.FindAsync(reportViewModel.MovieId);
         if (movie == null)
         {
@@ -61,9 +55,6 @@ public class ReportController : Controller{
         await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Report successfully created!";
-
-        _logger.LogInformation("Report created successfully.");
-
         return RedirectToAction("Details", "Movie", new { id = reportViewModel.MovieId });
     }
 
@@ -76,5 +67,23 @@ public class ReportController : Controller{
         _context.Reports.Remove(report);
         await _context.SaveChangesAsync();
         return Redirect(Request.Headers["Referer"].ToString());
+    }
+    public async Task<IActionResult> Filter(DateTime? startDate, DateTime? endDate)
+    {
+        startDate = (startDate ?? DateTime.Now.AddMonths(-1)).ToUniversalTime();
+        endDate = (endDate ?? DateTime.Now).ToUniversalTime();
+
+        var reports = await _context.Reports
+            .Include(r => r.Movie)
+            .Where(r => r.CreationDate >= startDate.Value && r.CreationDate <= endDate.Value.AddDays(1))
+            .OrderBy(r => r.CreationDate)
+            .OrderByDescending(r => r.CreationDate)
+            .ToListAsync();
+        if (!reports.Any())
+        {
+            ViewBag.Message = "No reports found for the selected date range.";
+        }
+
+        return View("GetAll", reports);
     }
 }
