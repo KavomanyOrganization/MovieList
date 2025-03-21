@@ -68,6 +68,12 @@ public class MovieService
     {
         return await _context.Movies.FindAsync(id) ?? throw new InvalidOperationException("Movie not found.");
     }
+    public async Task<List<Report>> GetReportsForMovieAsync(int movieId)
+    {
+        return await _context.Reports
+                            .Where(r => r.MovieId == movieId)
+                            .ToListAsync();
+    }
 
     public async Task<Movie> GetMovieByIdWithRelationsAsync(int id)
     {
