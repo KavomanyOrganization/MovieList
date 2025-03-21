@@ -221,6 +221,7 @@ public class UserController : Controller
 
         return RedirectToAction("Details", "Movie", new { id = movieId });
     }
+    
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllToWatchlist()
