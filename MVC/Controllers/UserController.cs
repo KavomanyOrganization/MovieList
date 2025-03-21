@@ -102,14 +102,14 @@ public class UserController : Controller
         if (rating < 1 || rating > 10)
         {
             ModelState.AddModelError("", "Rating must be between 1 and 10.");
-            return RedirectToAction("GetAllSeenIt", "User", new { id = movieId });
+            return RedirectToAction("GetAllSeenIt", "User");
         }
 
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
         {
             return RedirectToAction("Login");
-        }
+        }                     
 
         await _userService.ConnectUserMovie(user, movieId, true, rating);
         await _movieService.CalculateRating(movieId);
@@ -194,6 +194,51 @@ public class UserController : Controller
 
         return View(moviesCreatorsDict);
     }
+    [Authorize]
+    public async Task<IActionResult> AddToWatchlist(int movieId)
+    {
+        var user = await _userService.GetCurrentUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
 
+        await _userService.ConnectUserMovie(user, movieId, false, -1);
+
+        var referer = Request.Headers["Referer"].ToString();
+        if (!string.IsNullOrEmpty(referer))
+        {
+            return Redirect(referer);
+        }
+
+        return RedirectToAction("Details", "Movie", new { id = movieId });
+    }
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetAllToWatchlist()
+    {
+        var user = await _userService.GetCurrentUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        var userMovies = await _userService.GetUserMovies(user, false);
+
+        if (userMovies == null || !userMovies.Any())
+        {
+            return View(new List<Movie>());
+        }
+        ViewBag.UserMovies = userMovies;
+
+        var movies = new List<Movie>();
+        foreach (var userMovie in userMovies)
+        {
+            var movie = await _movieService.GetMovieById(userMovie.MovieId);
+            if (movie != null) movies.Add(movie);
+        }
+
+        return View(movies);
+    }
 
 }
