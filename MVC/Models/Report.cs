@@ -8,10 +8,13 @@ public class Report
     [Required]
     public string? Comment { get; set; } = "";
     public DateTime CreationDate { get; set; } = DateTime.UtcNow; 
-    
+
+    public int MovieId { get; set; }
+    public Movie? Movie { get; set; }    
     public Report(){}
-    public Report (string? comment, DateTime creationDate){
+    public Report (string? comment, DateTime creationDate, int movieId){
         Comment = comment;
-        CreationDate = creationDate; 
+        CreationDate = creationDate;
+        MovieId = movieId; 
     }
 }

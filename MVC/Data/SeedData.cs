@@ -196,7 +196,11 @@ public static class SeedData
             await context.MovieCountries.AddRangeAsync(movieCountries);
 
             // Make the regular user the creator of all movies
-            var regularUserId = (await userManager.FindByEmailAsync(regularUser.Email)).Id;
+            var regularUserEntity = await userManager.FindByEmailAsync(regularUser.Email);
+            if (regularUserEntity == null)
+                throw new InvalidOperationException("Regular user not found.");
+            
+            var regularUserId = regularUserEntity.Id;
             var movieCreators = movies.Select(m => new MovieCreator(regularUserId, m.Id)).ToList();
 
             await context.MovieCreators.AddRangeAsync(movieCreators);

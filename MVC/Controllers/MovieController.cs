@@ -5,16 +5,32 @@ using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace MVC.Controllers;
 
-public class MovieController : Controller
+public interface IMovieController
+{
+    Task<IActionResult> Create();
+    Task<IActionResult> Create(MovieViewModel movieViewModel);
+    Task<IActionResult> Delete(int id);
+    Task<IActionResult> Details(int id);
+    IActionResult Rating();
+    Task<IActionResult> Search(string searchTerm);
+    Task<IActionResult> Update(int id);
+    Task<IActionResult> Update(int id, MovieViewModel movieViewModel);
+    Task<ActionResult> ViewRating();
+}
+
+public class MovieController : Controller, IMovieController
 {
     protected readonly MovieService _movieService;
+    protected readonly UserService _userService;
 
-    public MovieController(MovieService movieService)
+    public MovieController(MovieService movieService, UserService userService)
     {
         _movieService = movieService;
+        _userService = userService;
     }
 
     public async Task<IActionResult> Create()
@@ -44,9 +60,6 @@ public class MovieController : Controller
             movieViewModel.Description
         );
 
-        await _movieService.ConnectToGenre(movieViewModel, movie);
-        await _movieService.ConnectToCountry(movieViewModel, movie);
-        
         var result = await _movieService.AddMovieAsync(movie);
         if (!result.Success)
         {
@@ -55,7 +68,12 @@ public class MovieController : Controller
             ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
             return View(movieViewModel);
         }
-        
+
+        await _movieService.ConnectToGenre(movieViewModel, movie);
+        await _movieService.ConnectToCountry(movieViewModel, movie);
+        var currentUser = await _userService.GetCurrentUserAsync(User);
+        if (currentUser != null) await _movieService.ConnectToCreator(movie, currentUser);
+
         return RedirectToAction("ViewRating", "Movie");
     }
 
@@ -110,8 +128,8 @@ public class MovieController : Controller
         movie.Director = movieViewModel.Director;
         movie.Description = movieViewModel.Description;
 
-        await _movieService.UpdateMovieGenres(movie, movieViewModel.SelectedGenreIds);
-        await _movieService.UpdateMovieCountries(movie, movieViewModel.SelectedCountryIds);
+        _movieService.UpdateMovieGenres(movie, movieViewModel.SelectedGenreIds);
+        _movieService.UpdateMovieCountries(movie, movieViewModel.SelectedCountryIds);
 
         var result = await _movieService.UpdateMovieAsync(movie);
         if (!result.Success)
@@ -123,7 +141,7 @@ public class MovieController : Controller
             ViewBag.MovieId = id;
             return View(movieViewModel);
         }
-        
+
         return RedirectToAction("ViewRating", "Movie");
     }
 
@@ -137,11 +155,35 @@ public class MovieController : Controller
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
+        var movie = await _movieService.GetMovieById(id);
         if (movie == null)
         {
             return NotFound();
         }
+
+        if (User.Identity!.IsAuthenticated)
+        {
+            var user = await _userService.GetCurrentUserAsync(User);
+            if (user != null)
+            {
+                var userMovies = (await _userService.GetUserMovies(user, true)).ToList();
+                userMovies.AddRange(await _userService.GetUserMovies(user, false));
+                
+                ViewBag.IsInUserLists = userMovies.Any(um => um.MovieId == id);
+            }
+        }
+        
+        var reports = await _movieService.GetReportsForMovieAsync(id);
+
+        var reportViewModel = reports.Select(r => new ReportViewModel
+        {
+            MovieId = r.MovieId,
+            Comment = r.Comment,
+            CreationDate = r.CreationDate
+        }).ToList();
+
+        ViewBag.Movie = movie;
+        ViewBag.ReportViewModel = reportViewModel;
 
         return View(movie);
     }
@@ -154,7 +196,15 @@ public class MovieController : Controller
     [HttpGet]
     public async Task<ActionResult> ViewRating()
     {
-        var movies = await _movieService.GetMoviesByRatingAsync();
-        return View(movies);
+        var movies = await _movieService.GetAllMoviesAsync();
+        return View(movies.OrderByDescending(m => m.Rating).ToList());
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> Search(string searchTerm)
+    {
+        var movies = await _movieService.SearchMoviesAsync(searchTerm);
+        return View("ViewRating", movies.OrderByDescending(m => m.Rating).ToList());
+    }
+
 }

@@ -21,4 +21,5 @@ public class MovieViewModel {
 
     public Dictionary<int, string>? Genres { get; set; }
     public Dictionary<int, string>? Countries { get; set; }
+    public List<ReportViewModel>? Reports { get; set; }
 }
