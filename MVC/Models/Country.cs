@@ -8,10 +8,9 @@ public class Country
     [Required]
     public string Name { get; set; } = "";
     public Country()
-    { 
-        
+    {  
     }
-    public Country (string? name){
+    public Country (string name){
         Name = name; 
     }
 
