@@ -118,14 +118,19 @@ public class MovieService
         }
     }
 
-    public async Task CalculateRating(int MovieId)
+    public async Task CalculateRating(int mId)
     {
-        var movies = _context.UserMovies.Where(um => um.MovieId == MovieId).ToList();
-
-        var movie = await _context.Movies.FindAsync(MovieId);
-        if (movie != null && movies.Any())
+        var movies = _context.UserMovies.Where(um => um.MovieId == mId && um.Rating != -1).ToList();
+        var movie = await _context.Movies.FindAsync(mId);
+        if (movie != null && movies.Count > 0)
         {
             movie.Rating = movies.Sum(um => um.Rating) / movies.Count;
+            _context.Movies.Update(movie);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            movie!.Rating = 0;
             _context.Movies.Update(movie);
             await _context.SaveChangesAsync();
         }
