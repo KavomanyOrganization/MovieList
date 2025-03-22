@@ -161,7 +161,7 @@ public class MovieController : Controller, IMovieController
             return NotFound();
         }
 
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity!.IsAuthenticated)
         {
             var user = await _userService.GetCurrentUserAsync(User);
             if (user != null)

@@ -23,7 +23,7 @@ public class MovieService
 
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync(); 
-        return (true, null);
+        return (true, string.Empty);
     }
 
     public async Task ConnectToGenre(MovieViewModel movieViewModel, Movie movie)
@@ -105,7 +105,7 @@ public class MovieService
         }
         _context.Movies.Update(movie);
         await _context.SaveChangesAsync();
-        return (true, null);
+        return (true, string.Empty);
     }
 
     public async Task DeleteMovieAsync(int id)
@@ -118,14 +118,19 @@ public class MovieService
         }
     }
 
-    public async Task CalculateRating(int MovieId)
+    public async Task CalculateRating(int mId)
     {
-        var movies = _context.UserMovies.Where(um => um.MovieId == MovieId).ToList();
-
-        var movie = await _context.Movies.FindAsync(MovieId);
-        if (movie != null && movies.Any())
+        var movies = _context.UserMovies.Where(um => um.MovieId == mId && um.Rating != -1).ToList();
+        var movie = await _context.Movies.FindAsync(mId);
+        if (movie != null && movies.Count > 0)
         {
             movie.Rating = movies.Sum(um => um.Rating) / movies.Count;
+            _context.Movies.Update(movie);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            movie!.Rating = 0;
             _context.Movies.Update(movie);
             await _context.SaveChangesAsync();
         }
@@ -203,10 +208,10 @@ public class MovieService
             .Where(m =>
                 (m.Title != null && m.Title.ToLower().Contains(searchTerm)) ||
                 (m.Director != null && m.Director.ToLower().Contains(searchTerm)) ||
-                m.Description.ToLower().Contains(searchTerm) ||
-                m.Year.ToString().Contains(searchTerm) ||
+                m.Description!.ToLower().Contains(searchTerm) ||
+                m.Year.ToString()!.Contains(searchTerm) ||
                 m.MovieGenres.Any(mg => mg.Genre.Name.ToLower().Contains(searchTerm)) ||
-                m.MovieCountries.Any(mc => mc.Country.Name.ToLower().Contains(searchTerm))
+                m.MovieCountries.Any(mc => mc.Country!.Name.ToLower().Contains(searchTerm))
             )
             .ToListAsync();
 
@@ -235,7 +240,7 @@ public class MovieService
         }
 
         var movies = await query
-            .Where(um => um.Movie.Title.ToLower().Contains(title))
+            .Where(um => um.Movie.Title!.ToLower().Contains(title))
             .Select(um => um.Movie)
             .ToListAsync();
 

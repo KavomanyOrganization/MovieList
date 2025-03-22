@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using MVC.Models;
 using DotNetEnv;
 using MVC.Data;
-using MVC.Models;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
