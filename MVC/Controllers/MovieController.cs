@@ -5,10 +5,24 @@ using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace MVC.Controllers;
 
-public class MovieController : Controller
+public interface IMovieController
+{
+    Task<IActionResult> Create();
+    Task<IActionResult> Create(MovieViewModel movieViewModel);
+    Task<IActionResult> Delete(int id);
+    Task<IActionResult> Details(int id);
+    IActionResult Rating();
+    Task<IActionResult> Search(string searchTerm);
+    Task<IActionResult> Update(int id);
+    Task<IActionResult> Update(int id, MovieViewModel movieViewModel);
+    Task<ActionResult> ViewRating();
+}
+
+public class MovieController : Controller, IMovieController
 {
     protected readonly MovieService _movieService;
     protected readonly UserService _userService;
@@ -127,7 +141,7 @@ public class MovieController : Controller
             ViewBag.MovieId = id;
             return View(movieViewModel);
         }
-        
+
         return RedirectToAction("ViewRating", "Movie");
     }
 
@@ -178,5 +192,5 @@ public class MovieController : Controller
         var movies = await _movieService.SearchMoviesAsync(searchTerm);
         return View("ViewRating", movies.OrderByDescending(m => m.Rating).ToList());
     }
-    
+
 }
