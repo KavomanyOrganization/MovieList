@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "User Activity";
+    var currentUser = Context.User.Identity.Name; // Отримуємо поточного користувача
+    var isAdmin = Context.User.IsInRole("Admin"); // Перевіряємо, чи є поточний користувач адміністратором
 }
 
 <h2>User Activity</h2>
@@ -31,6 +33,7 @@
                     <th>Movie</th>
                     <th>Creation Date</th>
                     <th>User</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +44,25 @@
                             @entry.Key.Title</a></td>
                         <td>@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
                         <td>@entry.Value.UserName</td>
+                        <td>
+                            @if (isAdmin && entry.Value.UserName != currentUser)
+                            {
+                                <form asp-controller="User" asp-action="Ban" asp-route-id="@entry.Value.Id" method="post">
+                                    @if (entry.Value.IsBanned)
+                                    {
+                                        <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm action-button">
+                                            <i class="bi bi-check-circle"></i> Unban
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm action-button">
+                                            <i class="bi bi-slash-circle"></i> Ban
+                                        </button>
+                                    }
+                                </form>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -51,3 +73,14 @@ else
 {
     <p>No user activity found for the selected date range.</p>
 }
+
+<style>
+    /* Стилі для кнопок */
+    .action-button {
+        width: 90px; /* Фіксована ширина */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px; /* Відстань між іконкою та текстом */
+    }
+</style>
