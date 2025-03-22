@@ -212,5 +212,33 @@ public class MovieService
 
         return movies;
     }
-    
+    public async Task<List<Movie>> SearchInPersonalListAsync(string title, string userId, string listType)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return new List<Movie>();
+        }
+
+        title = title.ToLower();
+        
+        var query = _context.UserMovies
+            .Include(um => um.Movie)
+            .Where(um => um.UserId == userId.ToString());
+
+        if (listType == "watchlist")
+        {
+            query = query.Where(um => !um.IsWatched);
+        }
+        else if (listType == "seenit")
+        {
+            query = query.Where(um => um.IsWatched);
+        }
+
+        var movies = await query
+            .Where(um => um.Movie.Title.ToLower().Contains(title))
+            .Select(um => um.Movie)
+            .ToListAsync();
+
+        return movies;
+    }
 }

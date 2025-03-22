@@ -6,6 +6,19 @@
 
 <div class="container mt-4">
     <h2>To Watch!</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form asp-controller="User" asp-action="SearchInList" method="get" class="d-flex">
+                <input type="text" name="title" class="form-control me-2" placeholder="Search in To Watch!..." required>
+                <input type="hidden" name="listType" value="watchlist">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+                @if (!string.IsNullOrEmpty(Context.Request.Query["title"]))
+                {
+                    <a asp-controller="User" asp-action="GetAllToWatchlist" class="btn btn-outline-secondary ms-2">Clear</a>
+                }
+            </form>
+        </div>
+    </div>
     <div class="row">
         @if (Model != null && Model.Any())
         {
@@ -50,7 +63,6 @@
     </div>
 </div>
 
-<!-- Modal for Rating -->
 <div class="modal fade" id="rateMovieModal" tabindex="-1" aria-labelledby="rateMovieModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

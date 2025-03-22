@@ -249,5 +249,26 @@ public class UserController : Controller
 
         return View(movies);
     }
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> SearchInList(string title, string listType)
+    {
+        var currentUser = await _userService.GetCurrentUserAsync(User);
+        if (currentUser == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
+        var movies = await _movieService.SearchInPersonalListAsync(title, currentUser.Id, listType);
+
+        if (listType == "watchlist")
+        {
+            return View("GetAllToWatchlist", movies);
+        }
+        else
+        {
+            ViewBag.UserMovies = await _userService.GetUserMovies(currentUser, true);
+            return View("GetAllSeenIt", movies);
+        }
+    }
 }

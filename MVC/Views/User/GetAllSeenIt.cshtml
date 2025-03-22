@@ -6,6 +6,19 @@
 
 <div class="container mt-4">
     <h2>Seen It!</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form asp-controller="User" asp-action="SearchInList" method="get" class="d-flex">
+                <input type="text" name="title" class="form-control me-2" placeholder="Search in Seen It!..." required>
+                <input type="hidden" name="listType" value="seenit">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+                @if (!string.IsNullOrEmpty(Context.Request.Query["title"]))
+                {
+                    <a asp-controller="User" asp-action="GetAllSeenIt" class="btn btn-outline-secondary ms-2">Clear</a>
+                }
+            </form>
+        </div>
+    </div>
     <div class="row">
         @if (Model != null&& Model.Any())
         {
