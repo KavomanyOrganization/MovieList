@@ -18,7 +18,7 @@
             @foreach (var user in Model)
             {
                 <div class="col">
-                    <div class="card rounded-4 shadow-sm border-0 h-100 transition-hover">
+                    <div class="card rounded-4 shadow-sm border-0 h-100 transition-hover @(user.IsBanned ? "banned-user" : "")">
                         <div class="card-header bg-light border-0 rounded-top-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
@@ -39,7 +39,14 @@
                             <div class="row mb-2">
                                 <div class="col-md-5 text-muted">Status:</div>
                                 <div class="col-md-7">
-                                    <span class="badge rounded-pill bg-success">Active</span>
+                                    @if (user.IsBanned)
+                                    {
+                                        <span class="badge rounded-pill bg-danger">Banned</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-success">Active</span>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -49,10 +56,20 @@
                                         data-bs-toggle="modal" data-bs-target="#deleteModal-@user.Id">
                                     <i class="bi bi-trash"></i> Delete
                                 </button>
-                                <a asp-action="Ban" asp-route-id="@user.Id" 
-                                   class="btn btn-secondary btn-sm rounded-3 shadow-sm">
-                                    <i class="bi bi-slash-circle"></i> Ban
-                                </a>
+                                <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
+                                    @if (user.IsBanned)
+                                    {
+                                        <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm">
+                                            <i class="bi bi-check-circle"></i> Unban
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm">
+                                            <i class="bi bi-slash-circle"></i> Ban
+                                        </button>
+                                    }
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -115,5 +132,10 @@
     .transition-hover:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .banned-user {
+        opacity: 0.8;
+        border-left: 4px solid #dc3545 !important;
     }
 </style>

@@ -90,5 +90,30 @@ namespace MVC.Services
                 return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
             }
         }
+        public async Task<(bool Succeeded, string? ErrorMessage)> BanUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return (false, "User not found");
+            }
+
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                return (false, "Cannot ban admin users");
+            }
+
+            user.IsBanned = !user.IsBanned;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return (true, null);
+            }
+            else
+            {
+                return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+        }
     }
 }

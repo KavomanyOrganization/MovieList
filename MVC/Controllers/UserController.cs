@@ -104,5 +104,16 @@ namespace MVC.Controllers
             
             return RedirectToAction("GetAll");
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Ban(string id)
+        {
+            var result = await _userService.BanUserAsync(id);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.ErrorMessage;
+            }
+            return RedirectToAction("GetAll");
+        }
     }
 }

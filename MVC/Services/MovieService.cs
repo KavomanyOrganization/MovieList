@@ -110,7 +110,6 @@ public class MovieService
         return movies.OrderByDescending(m => m.Rating).ToList();
     }
 
-    // У MovieService.cs
     public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie)
     {
         if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
@@ -124,7 +123,6 @@ public class MovieService
 
     public async Task<(bool Success, string ErrorMessage)> UpdateMovieAsync(Movie movie)
     {
-        // Для оновлення потрібно виключити поточний запис з перевірки
         if (await _context.Movies.AnyAsync(m => m.Id != movie.Id && m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
         {
             return (false, "Movie already exist!");

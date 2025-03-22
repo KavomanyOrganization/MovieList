@@ -1,7 +1,10 @@
 @model IEnumerable<MVC.Models.Movie>
+@inject Microsoft.AspNetCore.Identity.UserManager<MVC.Models.User> UserManager
 
 @{
     ViewData["Title"] = "Movie Ratings";
+    var currentUser = await UserManager.GetUserAsync(User);
+    var isUserBanned = currentUser?.IsBanned ?? false;
 }
 
 <div class="container mt-4">
@@ -11,9 +14,18 @@
     {
         <div class="row mb-4">
             <div class="col">
-                <a asp-controller="Movie" asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Add Movie
-                </a>
+                @if (isUserBanned)
+                {
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bannedUserModal">
+                        <i class="bi bi-plus-circle"></i> Add Movie
+                    </button>
+                }
+                else
+                {
+                    <a asp-controller="Movie" asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add Movie
+                    </a>
+                }
             </div>
         </div>
     }
@@ -85,4 +97,30 @@
             <p>No movies have been added yet. Click the "Add Movie" button to get started.</p>
         </div>
     }
+</div>
+
+<!-- Modal for banned users -->
+<div class="modal fade" id="bannedUserModal" tabindex="-1" aria-labelledby="bannedUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title" id="bannedUserModalLabel">Account Restriction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-slash-circle text-danger fs-1"></i>
+                </div>
+                <p class="text-center">
+                    Your account has been banned. You cannot add new movies.
+                </p>
+                <p class="text-center text-muted small">
+                    Please contact an administrator for more information.
+                </p>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
