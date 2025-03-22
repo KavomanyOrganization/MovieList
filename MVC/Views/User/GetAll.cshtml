@@ -1,0 +1,141 @@
+@model List<MVC.Models.User>
+
+@{
+    ViewData["Title"] = "Registered users";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-primary fw-bold">Registered users</h2>
+            <p class="text-muted">Total amount: <span class="badge bg-primary">@Model.Count</span></p>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var user in Model)
+            {
+                <div class="col">
+                    <div class="card rounded-4 shadow-sm border-0 h-100 transition-hover @(user.IsBanned ? "banned-user" : "")">
+                        <div class="card-header bg-light border-0 rounded-top-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-3" style="width: 48px; height: 48px;">
+                                        <span class="fw-bold fs-4">@user.UserName?.Substring(0, 1).ToUpper()</span>
+                                    </div>
+                                    <div>
+                                        <h5 class="card-title mb-0 fw-bold">@user.UserName</h5>
+                                        <p class="card-subtitle text-muted small mb-0">@user.Email</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="badge rounded-pill bg-light text-dark border">ID: @user.Id</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-md-5 text-muted">Status:</div>
+                                <div class="col-md-7">
+                                    @if (user.IsBanned)
+                                    {
+                                        <span class="badge rounded-pill bg-danger">Banned</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-success">Active</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 py-3">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary btn-sm rounded-3 shadow-sm" 
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal-@user.Id">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                                <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
+                                    @if (user.IsBanned)
+                                    {
+                                        <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm">
+                                            <i class="bi bi-check-circle"></i> Unban
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm">
+                                            <i class="bi bi-slash-circle"></i> Ban
+                                        </button>
+                                    }
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="deleteModal-@user.Id" tabindex="-1" 
+                     aria-labelledby="deleteModalLabel-@user.Id" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4 shadow">
+                            <div class="modal-header border-bottom-0">
+                                <h5 class="modal-title" id="deleteModalLabel-@user.Id">Confirmation of deletion</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body py-4">
+                                <div class="text-center mb-4">
+                                    <i class="bi bi-exclamation-triangle-fill text-warning fs-1"></i>
+                                </div>
+                                <p class="text-center">
+                                    Are you sure you want to delete a user <strong>@user.UserName</strong>?
+                                </p>
+                                <p class="text-center text-muted small">
+                                    This action cannot be cancelled
+                                </p>
+                            </div>
+                            <div class="modal-footer border-top-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form asp-controller="User" asp-action="DeleteUser" asp-route-userId="@user.Id" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info rounded-4 shadow-sm">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                <p class="mb-0">No registered users in the system.</p>
+            </div>
+        </div>
+    }
+    
+    <div class="row mt-4">
+        <div class="col">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary rounded-3 shadow-sm">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .banned-user {
+        opacity: 0.8;
+        border-left: 4px solid #dc3545 !important;
+    }
+</style>

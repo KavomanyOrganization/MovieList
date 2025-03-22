@@ -270,5 +270,39 @@ public class UserController : Controller
             ViewBag.UserMovies = await _userService.GetUserMovies(currentUser, true);
             return View("GetAllSeenIt", movies);
         }
+        
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return View(users);
+        }
+        [HttpPost]
+        [Authorize(Roles="Admin")]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var result = await _userService.DeleteUserAsync(userId);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "User successfully removed";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.ErrorMessage;
+            }
+            
+            return RedirectToAction("GetAll");
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Ban(string id)
+        {
+            var result = await _userService.BanUserAsync(id);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.ErrorMessage;
+            }
+            return RedirectToAction("GetAll");
+        }
     }
 }

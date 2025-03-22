@@ -22,7 +22,7 @@ public class MovieService
         }
 
         _context.Movies.Add(movie);
-        await _context.SaveChangesAsync(); 
+        await _context.SaveChangesAsync();
         return (true, string.Empty);
     }
 
@@ -68,6 +68,7 @@ public class MovieService
     {
         return await _context.Movies.FindAsync(id) ?? throw new InvalidOperationException("Movie not found.");
     }
+
     public async Task<List<Report>> GetReportsForMovieAsync(int movieId)
     {
         return await _context.Reports
@@ -101,7 +102,7 @@ public class MovieService
     {
         if (await _context.Movies.AnyAsync(m => m.Id != movie.Id && m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
         {
-            return (false, "Movie already exist!");
+            return (false, "Movie already exists!");
         }
         _context.Movies.Update(movie);
         await _context.SaveChangesAsync();
@@ -118,19 +119,23 @@ public class MovieService
         }
     }
 
-    public async Task CalculateRating(int mId)
+    public async Task CalculateRating(int movieId)
     {
-        var movies = _context.UserMovies.Where(um => um.MovieId == mId && um.Rating != -1).ToList();
-        var movie = await _context.Movies.FindAsync(mId);
-        if (movie != null && movies.Count > 0)
+        var ratings = _context.UserMovies
+            .Where(um => um.MovieId == movieId && um.Rating != -1)
+            .ToList();
+
+        var movie = await _context.Movies.FindAsync(movieId);
+        if (movie != null)
         {
-            movie.Rating = movies.Sum(um => um.Rating) / movies.Count;
-            _context.Movies.Update(movie);
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            movie!.Rating = 0;
+            if (ratings.Count > 0)
+            {
+                movie.Rating = ratings.Sum(um => um.Rating) / ratings.Count;
+            }
+            else
+            {
+                movie.Rating = 0;
+            }
             _context.Movies.Update(movie);
             await _context.SaveChangesAsync();
         }
@@ -183,14 +188,16 @@ public class MovieService
         var movie = await _context.Movies.FindAsync(movieId);
         if (movie != null)
         {
-            var creatorId = await _context.MovieCreators.FirstOrDefaultAsync(mc => mc.MovieId == movieId);
-            if (creatorId != null)
+            var creator = await _context.MovieCreators
+                .FirstOrDefaultAsync(mc => mc.MovieId == movieId);
+            if (creator != null)
             {
-                return await _context.Users.FindAsync(creatorId.UserId);
+                return await _context.Users.FindAsync(creator.UserId);
             }
         }
         return null;
     }
+
     public async Task<List<Movie>> SearchMoviesAsync(string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
@@ -208,8 +215,8 @@ public class MovieService
             .Where(m =>
                 (m.Title != null && m.Title.ToLower().Contains(searchTerm)) ||
                 (m.Director != null && m.Director.ToLower().Contains(searchTerm)) ||
-                m.Description!.ToLower().Contains(searchTerm) ||
-                m.Year.ToString()!.Contains(searchTerm) ||
+                (m.Description != null && m.Description.ToLower().Contains(searchTerm)) ||
+                m.Year.ToString().Contains(searchTerm) ||
                 m.MovieGenres.Any(mg => mg.Genre.Name.ToLower().Contains(searchTerm)) ||
                 m.MovieCountries.Any(mc => mc.Country!.Name.ToLower().Contains(searchTerm))
             )
@@ -217,6 +224,7 @@ public class MovieService
 
         return movies;
     }
+
     public async Task<List<Movie>> SearchInPersonalListAsync(string title, string userId, string listType)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -225,10 +233,10 @@ public class MovieService
         }
 
         title = title.ToLower();
-        
+
         var query = _context.UserMovies
             .Include(um => um.Movie)
-            .Where(um => um.UserId == userId.ToString());
+            .Where(um => um.UserId == userId);
 
         if (listType == "watchlist")
         {
