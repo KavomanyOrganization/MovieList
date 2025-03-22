@@ -14,31 +14,31 @@
     {
         <div class="row mb-4">
             <div class="col">
-                @if (isUserBanned)
-                {
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bannedUserModal">
-                        <i class="bi bi-plus-circle"></i> Add Movie
-                    </button>
-                }
-                else
-                {
-                    <a asp-controller="Movie" asp-action="Create" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Add Movie
-                    </a>
-                }
-            </div>
-
-            <!-- Форма пошуку -->
-            <form asp-controller="Movie" asp-action="Search" method="get" class="d-flex">
-                <div class="input-group" style="max-width: 300px;">
-                    <input type="text" name="searchTerm" class="form-control" placeholder="Search..." />
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary rounded-end">
-                            <i class="fas fa-search"></i>
+                <div class="d-flex justify-content-between align-items-center">
+                    @if (isUserBanned)
+                    {
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bannedUserModal">
+                            <i class="bi bi-plus-circle"></i> Add Movie
                         </button>
-                    </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Movie" asp-action="Create" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Movie
+                        </a>
+                    }
+                    <form asp-controller="Movie" asp-action="Search" method="get" class="d-flex ms-auto">
+                        <div class="input-group" style="max-width: 300px;">
+                            <input type="text" name="searchTerm" class="form-control" placeholder="Search..." />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary rounded-end">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     }
 

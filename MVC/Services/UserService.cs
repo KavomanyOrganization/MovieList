@@ -35,56 +35,57 @@ public class UserService
         {
             return (false, "Incorrect password");
         }
-        public async Task<List<User>> GetAllUsersAsync()
+    }
+
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _userManager.Users.ToListAsync();
+    }
+
+    public async Task<(bool Succeeded, string? ErrorMessage)> DeleteUserAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
         {
-            return _userManager.Users.ToList();
+            return (false, "User not found");
+        }
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            return (false, "Cannot delete admin users");
+        }
+        var result = await _userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            return (true, null);
+        }
+        else
+        {
+            return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+    }
+    public async Task<(bool Succeeded, string? ErrorMessage)> BanUserAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return (false, "User not found");
         }
 
-          public async Task<(bool Succeeded, string? ErrorMessage)> DeleteUserAsync(string userId)
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return (false, "User not found");
-            }
-            if (await _userManager.IsInRoleAsync(user, "Admin"))
-            {
-                return (false, "Cannot delete admin users");
-            }
-            var result = await _userManager.DeleteAsync(user);
-            if (result.Succeeded)
-            {
-                return (true, null);
-            }
-            else
-            {
-                return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
+            return (false, "Cannot ban admin users");
         }
-        public async Task<(bool Succeeded, string? ErrorMessage)> BanUserAsync(string userId)
+
+        user.IsBanned = !user.IsBanned;
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return (false, "User not found");
-            }
-
-            if (await _userManager.IsInRoleAsync(user, "Admin"))
-            {
-                return (false, "Cannot ban admin users");
-            }
-
-            user.IsBanned = !user.IsBanned;
-            var result = await _userManager.UpdateAsync(user);
-
-            if (result.Succeeded)
-            {
-                return (true, null);
-            }
-            else
-            {
-                return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
-            }
+            return (true, null);
+        }
+        else
+        {
+            return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
 
