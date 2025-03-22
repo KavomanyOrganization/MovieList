@@ -5,20 +5,25 @@
 }
 
 <div class="container mt-4">
+    <h2>Registered users</h2>
     <div class="row mb-4">
-        <div class="col">
-            <h2 class="text-primary fw-bold">Registered users</h2>
+        <div class="col-md-6">
             <p class="text-muted">Total amount: <span class="badge bg-primary">@Model.Count</span></p>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-secondary" onclick="window.history.back();">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
         </div>
     </div>
 
     @if (Model.Any())
     {
-        <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
             @foreach (var user in Model)
             {
                 <div class="col">
-                    <div class="card rounded-4 shadow-sm border-0 h-100 transition-hover @(user.IsBanned ? "banned-user" : "")">
+                    <div class="card @(user.IsBanned ? "banned-user" : "")">
                         <div class="card-header bg-light border-0 rounded-top-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
@@ -30,24 +35,19 @@
                                         <p class="card-subtitle text-muted small mb-0">@user.Email</p>
                                     </div>
                                 </div>
-                                <div>
-                                    <span class="badge rounded-pill bg-light text-dark border">ID: @user.Id</span>
-                                </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row mb-2">
-                                <div class="col-md-5 text-muted">Status:</div>
-                                <div class="col-md-7">
-                                    @if (user.IsBanned)
-                                    {
-                                        <span class="badge rounded-pill bg-danger">Banned</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge rounded-pill bg-success">Active</span>
-                                    }
-                                </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="text-muted me-2">Status:</span>
+                                @if (user.IsBanned)
+                                {
+                                    <span class="badge rounded-pill bg-danger">Banned</span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-success">Active</span>
+                                }
                             </div>
                         </div>
                         <div class="card-footer bg-transparent border-0 py-3">
@@ -114,14 +114,6 @@
             </div>
         </div>
     }
-    
-    <div class="row mt-4">
-        <div class="col">
-            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary rounded-3 shadow-sm">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
-        </div>
-    </div>
 </div>
 
 <style>
