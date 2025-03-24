@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "ToWatch!";
+    var searchTerm = Context.Request.Query["title"].ToString();
+    var hasSearchTerm = !string.IsNullOrEmpty(searchTerm);
 }
 
 <div class="container mt-4">
@@ -9,10 +11,10 @@
     <div class="row mb-4">
         <div class="col-md-6">
             <form asp-controller="User" asp-action="SearchInList" method="get" class="d-flex">
-                <input type="text" name="title" class="form-control me-2" placeholder="Search in To Watch!..." required>
+                <input type="text" name="title" class="form-control me-2" placeholder="Search in To Watch!..." required value="@searchTerm">
                 <input type="hidden" name="listType" value="watchlist">
                 <button class="btn btn-outline-primary" type="submit">Search</button>
-                @if (!string.IsNullOrEmpty(Context.Request.Query["title"]))
+                @if (hasSearchTerm)
                 {
                     <a asp-controller="User" asp-action="GetAllToWatch" class="btn btn-outline-secondary ms-2">Clear</a>
                 }
@@ -56,8 +58,16 @@
         else
         {
             <div class="col-12 text-center">
-                <p>The list is empty! You haven't added any films to your watchlist yet.</p>
-                <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Watch popular films</a>
+                @if (hasSearchTerm)
+                {
+                    <p>No movies found matching "@searchTerm" in your To Watch! list.</p>
+                    <a asp-controller="User" asp-action="GetAllToWatch" class="btn btn-outline-primary">Show all movies</a>
+                }
+                else
+                {
+                    <p>The list is empty! You haven't added any films to your watchlist yet.</p>
+                    <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Watch popular films</a>
+                }
             </div>
         }
     </div>
