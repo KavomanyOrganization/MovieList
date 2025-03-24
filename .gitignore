@@ -16,8 +16,9 @@
 # Mono auto generated files
 mono_crash.*
 
-# Migrations
-Migrations/
+# Ігнорувати всі .cs файли в папці Migrations
+MVC/Migrations/*
+!MVC/Migrations/*ModelSnapshot.cs
 
 # Build results
 [Dd]ebug/
@@ -372,9 +373,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-
-# Backup folder for Package Reference Convert tool in Visual Studio 2017
-MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/

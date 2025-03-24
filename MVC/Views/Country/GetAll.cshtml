@@ -1,0 +1,75 @@
+@model MVC.ViewModels.CountryViewModel
+
+@{
+    ViewData["Title"] = "List of Countries";
+}
+
+<div class="container mt-4 w-50 mx-auto">
+    <h1 class="text-center">Add New Country</h1>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label for="Name" class="form-label">Country Name</label>
+            <input type="text" class="form-control w-70" id="Name" asp-for="Name" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-plus"> </i>Add Country
+        </button>
+        <button class="btn btn-secondary" onclick="window.history.back();">
+            <i class="bi bi-arrow-left"></i> Back
+        </button>
+    </form>
+</div>
+
+<div class="container mt-4 d-flex justify-content-center">
+    <div style="width: 50%;">
+        <h1 class="text-center">List of Countries</h1>
+        @if (ViewBag.Countries != null)
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Name</th>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <th class="text-end">Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var country in ViewBag.Countries)
+                        {
+                            <tr>
+                                <td>@country.Name</td>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <a asp-controller="Country" asp-action="Update" asp-route-id="@country.Id" class="btn btn-warning btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-controller="Country" asp-action="Delete" asp-route-id="@country.Id" 
+                                               class="btn btn-danger btn-sm" 
+                                               onclick="return confirm('Are you sure you want to delete this country?');">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center">
+                <p>No countries have been added yet.</p>
+            </div>
+        }
+    </div>
+</div>

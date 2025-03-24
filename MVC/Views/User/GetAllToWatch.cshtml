@@ -1,0 +1,107 @@
+@model IEnumerable<MVC.Models.Movie>
+
+@{
+    ViewData["Title"] = "ToWatch!";
+}
+
+<div class="container mt-4">
+    <h2>To Watch!</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form asp-controller="User" asp-action="SearchInList" method="get" class="d-flex">
+                <input type="text" name="title" class="form-control me-2" placeholder="Search in To Watch!..." required>
+                <input type="hidden" name="listType" value="watchlist">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+                @if (!string.IsNullOrEmpty(Context.Request.Query["title"]))
+                {
+                    <a asp-controller="User" asp-action="GetAllToWatch" class="btn btn-outline-secondary ms-2">Clear</a>
+                }
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var movie in Model)
+            {
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center" onclick="location.href='@Url.Action("Details", "Movie", new { id = movie.Id })'" style="cursor: pointer;">
+                                @if (!string.IsNullOrEmpty(movie.Cover))
+                                {
+                                    <img src="@movie.Cover" alt="@movie.Title" class="img-fluid rounded mb-2" />
+                                }
+                                else
+                                {
+                                    <img src="/images/no-poster.jpg" alt="No poster available" class="img-fluid rounded mb-2" />
+                                }
+                            </div>
+                            <div class="text-center">
+                                <h5 class="card-title mt-2">@(movie.Title ?? "No Title")</h5>
+                                <p class="card-text text-muted">@movie.Year</p>
+                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal" data-movie-id="@movie.Id">
+                                    Seen It!
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="event.stopPropagation(); document.getElementById('removeFromListForm-@movie.Id').submit();">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <form id="removeFromListForm-@movie.Id" asp-controller="User" asp-action="RemoveFromLists" method="post" asp-route-id="@movie.Id" class="d-none"></form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p>The list is empty! You haven't added any films to your watchlist yet.</p>
+                <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Watch popular films</a>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="rateMovieModal" tabindex="-1" aria-labelledby="rateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rateMovieModalLabel">Rate Movie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="rateMovieForm" asp-controller="User" asp-action="RateMovie" method="post">
+                    <input type="hidden" name="movieId" id="movieIdInput" />
+                    <div class="form-group">
+                        <label for="rating">Rating (1-10):</label>
+                        <input type="number" id="rating" name="rating" class="form-control" min="1" max="10" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var rateMovieModal = document.getElementById('rateMovieModal');
+        rateMovieModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var movieId = button.getAttribute('data-movie-id');
+            document.getElementById('movieIdInput').value = movieId;
+        });
+
+        document.getElementById('rateMovieForm').addEventListener('submit', function(event) {
+            var rating = document.getElementById('rating').value;
+            if (rating < 1 || rating > 10) {
+                alert('Please enter a rating between 1 and 10.');
+                event.preventDefault();
+            }
+        });
+    });
+</script>
