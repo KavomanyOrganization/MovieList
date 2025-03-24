@@ -24,10 +24,10 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if(User.IsInRole("User") || User.IsInRole("Admin")){
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="GetAllSeenIt">Seen It!</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="GetAllToWatch">To Watch!</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="GetAllToWatch">To Watch!</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="GetAllSeenIt">Seen It!</a>
                             </li>
                         }
                         @if (User.IsInRole("Admin"))
