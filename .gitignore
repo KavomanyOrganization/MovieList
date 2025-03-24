@@ -16,7 +16,6 @@
 # Mono auto generated files
 mono_crash.*
 
-<<<<<<< HEAD
 # Ігнорувати всі .cs файли в папці Migrations
 MVC/Migrations/*
 !MVC/Migrations/*ModelSnapshot.cs
