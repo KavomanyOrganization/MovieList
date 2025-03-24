@@ -374,7 +374,6 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
