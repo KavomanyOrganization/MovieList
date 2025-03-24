@@ -70,7 +70,7 @@
                                         <ul class="list-inline mb-0">
                                             @foreach (var genre in Model.MovieGenres)
                                             {
-                                                <li>@genre.Genre.Name</li>
+                                                <li>@(genre.Genre != null ? genre.Genre.Name : "Unknown Genre")</li>
                                             }
                                         </ul>
                                     }
@@ -87,7 +87,7 @@
                                         <ul class="list-inline mb-0">
                                             @foreach (var country in Model.MovieCountries)
                                             {
-                                                <li>@country.Country.Name</li>
+                                                <li>@(country.Country != null ? country.Country.Name : "Unknown Country")</li>
                                             }
                                         </ul>
                                     }
