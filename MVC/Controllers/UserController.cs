@@ -203,7 +203,7 @@ public class UserController : Controller
         return View(moviesCreatorsDict);
     }
     [Authorize]
-    public async Task<IActionResult> AddToWatchlist(int movieId)
+    public async Task<IActionResult> AddToWatch(int movieId)
     {
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
