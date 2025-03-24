@@ -16,6 +16,7 @@
 # Mono auto generated files
 mono_crash.*
 
+<<<<<<< HEAD
 # Ігнорувати всі .cs файли в папці Migrations
 MVC/Migrations/*
 !MVC/Migrations/*ModelSnapshot.cs
@@ -336,7 +337,6 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/**
-# !tools/packages.config
 
 # Tabs Studio
 *.tss
@@ -373,7 +373,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
