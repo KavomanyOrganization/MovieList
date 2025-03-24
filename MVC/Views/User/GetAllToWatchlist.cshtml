@@ -14,7 +14,7 @@
                 <button class="btn btn-outline-primary" type="submit">Search</button>
                 @if (!string.IsNullOrEmpty(Context.Request.Query["title"]))
                 {
-                    <a asp-controller="User" asp-action="GetAllToWatchlist" class="btn btn-outline-secondary ms-2">Clear</a>
+                    <a asp-controller="User" asp-action="GetAllToWatch" class="btn btn-outline-secondary ms-2">Clear</a>
                 }
             </form>
         </div>

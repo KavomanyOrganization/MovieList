@@ -9,20 +9,7 @@ using System.Diagnostics;
 
 namespace MVC.Controllers;
 
-public interface IMovieController
-{
-    Task<IActionResult> Create();
-    Task<IActionResult> Create(MovieViewModel movieViewModel);
-    Task<IActionResult> Delete(int id);
-    Task<IActionResult> Details(int id);
-    IActionResult Rating();
-    Task<IActionResult> Search(string searchTerm);
-    Task<IActionResult> Update(int id);
-    Task<IActionResult> Update(int id, MovieViewModel movieViewModel);
-    Task<ActionResult> ViewRating();
-}
-
-public class MovieController : Controller, IMovieController
+public class MovieController : Controller
 {
     protected readonly MovieService _movieService;
     protected readonly UserService _userService;
