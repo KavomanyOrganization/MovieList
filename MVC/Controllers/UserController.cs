@@ -203,7 +203,7 @@ public class UserController : Controller
         return View(moviesCreatorsDict);
     }
     [Authorize]
-    public async Task<IActionResult> AddToWatchlist(int movieId)
+    public async Task<IActionResult> AddToWatch(int movieId)
     {
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
@@ -224,7 +224,7 @@ public class UserController : Controller
     
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetAllToWatchlist()
+    public async Task<IActionResult> GetAllToWatch()
     {
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
@@ -263,7 +263,7 @@ public class UserController : Controller
 
         if (listType == "watchlist")
         {
-            return View("GetAllToWatchlist", movies);
+            return View("GetAllToWatch", movies);
         }
         else
         {
