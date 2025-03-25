@@ -8,18 +8,17 @@ namespace MVC.Services;
 public class MovieService
 {
     private readonly AppDbContext _context;
+    private readonly MovieCreatorService _movieCreatorService;
 
-    public MovieService(AppDbContext context)
+    public MovieService(AppDbContext context, MovieCreatorService movieCreatorService)
     {
         _context = context;
+        _movieCreatorService = movieCreatorService;
     }
-
-    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie)
+    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie, User user)
     {
         if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
-        {
             return (false, "Movie already exists!");
-        }
 
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
@@ -46,15 +45,6 @@ public class MovieService
             {
                 _context.MovieCountries.Add(new MovieCountry { MovieId = movie.Id, CountryId = countryId });
             }
-            await _context.SaveChangesAsync();
-        }
-    }
-
-    public async Task ConnectToCreator(Movie movie, User user)
-    {
-        if (user != null && movie != null)
-        {
-            _context.MovieCreators.Add(new MovieCreator { MovieId = movie.Id, UserId = user.Id });
             await _context.SaveChangesAsync();
         }
     }
@@ -183,21 +173,6 @@ public class MovieService
         }
     }
 
-    public async Task<User?> GetCreatorAsync(int movieId)
-    {
-        var movie = await _context.Movies.FindAsync(movieId);
-        if (movie != null)
-        {
-            var creator = await _context.MovieCreators
-                .FirstOrDefaultAsync(mc => mc.MovieId == movieId);
-            if (creator != null)
-            {
-                return await _context.Users.FindAsync(creator.UserId);
-            }
-        }
-        return null;
-    }
-
     public async Task<List<Movie>> SearchMoviesAsync(string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm))
@@ -216,8 +191,8 @@ public class MovieService
                 (m.Title != null && m.Title.ToLower().Contains(searchTerm)) ||
                 (m.Director != null && m.Director.ToLower().Contains(searchTerm)) ||
                 (m.Description != null && m.Description.ToLower().Contains(searchTerm)) ||
-                m.Year.ToString().Contains(searchTerm) ||
-                m.MovieGenres.Any(mg => mg.Genre.Name.ToLower().Contains(searchTerm)) ||
+                m.Year.ToString()!.Contains(searchTerm) ||
+                m.MovieGenres.Any(mg => mg.Genre!.Name.ToLower().Contains(searchTerm)) ||
                 m.MovieCountries.Any(mc => mc.Country!.Name.ToLower().Contains(searchTerm))
             )
             .ToListAsync();
@@ -248,8 +223,8 @@ public class MovieService
         }
 
         var movies = await query
-            .Where(um => um.Movie.Title!.ToLower().Contains(title))
-            .Select(um => um.Movie)
+            .Where(um => um.Movie != null && um.Movie.Title!.ToLower().Contains(title))
+            .Select(um => um.Movie!)
             .ToListAsync();
 
         return movies;

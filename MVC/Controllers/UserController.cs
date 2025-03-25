@@ -10,11 +10,13 @@ public class UserController : Controller
 {
     private readonly UserService _userService;
     private readonly MovieService _movieService;
+    private readonly MovieCreatorService _movieCreatorService;
 
-    public UserController(UserService userService, MovieService movieService)
+    public UserController(UserService userService, MovieService movieService, MovieCreatorService movieCreatorService)
     {
         _userService = userService;
         _movieService = movieService;
+        _movieCreatorService = movieCreatorService;
     }
 
     public IActionResult Login()
@@ -188,7 +190,7 @@ public class UserController : Controller
         {
             if (movie.CreationDate >= startDate.Value && movie.CreationDate <= endDate.Value+TimeSpan.FromDays(1))
             {
-                var creator = await _movieService.GetCreatorAsync(movie.Id);
+                var creator = await _movieCreatorService.GetCreatorAsync(movie.Id);
                 if (creator != null)
                 {
                     moviesCreators.Add(new KeyValuePair<Movie, User>(movie, creator));
