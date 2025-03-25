@@ -20,3 +20,55 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.movie-card {
+    width: 250px;
+    height: 350px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.movie-card .card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.movie-card .card-image {
+    height: 270px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.movie-card .card-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.movie-card .card-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.movie-card:hover .card-title {
+    white-space: normal;
+    overflow: visible;
+}
+
+.col-md-2 {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+}

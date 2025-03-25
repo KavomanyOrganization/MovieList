@@ -26,37 +26,38 @@
         {
             @foreach (var item in Model)
             {
-                <div class="col-md-3 mb-3">
-                    <div class="card">
+                <div class="col-md-2 mb-3 d-flex justify-content-center">
+                    <div class="card movie-card">
                         <div class="card-body">
-                            <div class="text-center" onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'" style="cursor: pointer;">
+                            <div class="card-image text-center" onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'" style="cursor: pointer;">
                                 @if (!string.IsNullOrEmpty(item.Cover))
                                 {
-                                    <img src="@item.Cover" alt="@item.Title" class="img-fluid rounded mb-2" />
+                                    <img src="@item.Cover" alt="@item.Title" class="img-fluid rounded" />
                                 }
                                 else
                                 {
                                     <span>No cover available</span>
                                 }
                             </div>
-                            <div class="text-center">
-                                <h5 class="card-title mt-2">@(item.Title ?? "No Title")</h5>
+                            <div class="text-center mt-2">
+                                <h5 class="card-title" title="@item.Title">@(item.Title ?? "No Title")</h5>
                                 @{
                                     var userMovies = ViewBag.UserMovies as IEnumerable<MVC.Models.UserMovie>;
                                     var userRating = userMovies?.FirstOrDefault(um => um.MovieId == item.Id)?.Rating ?? 0;
                                 }
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
-                                    @userRating/10 <i class="bi bi-pencil"></i>
-                                </button>
-                                <a href="@Url.Action("RemoveFromLists", "User", new { id = item.Id })" class="btn btn-danger btn-sm" onclick="event.stopPropagation();">
-                                    <i class="bi bi-trash"></i> 
-                                </a>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
+                                        @userRating/10 <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <a href="@Url.Action("RemoveFromLists", "User", new { id = item.Id })" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();">
+                                        <i class="bi bi-dash-circle"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Modal for Rating -->
                 <div class="modal fade" id="rateMovieModal-@item.Id" tabindex="-1" aria-labelledby="rateMovieModalLabel-@item.Id" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
