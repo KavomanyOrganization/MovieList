@@ -37,6 +37,8 @@ public class MovieController : Controller
             ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
             return View(movieViewModel);
         }
+        var currentUser = await _userService.GetCurrentUserAsync(User);
+        if (currentUser == null) return RedirectToAction("Login", "User");
 
         Movie movie = new Movie(
             movieViewModel.Cover,
@@ -47,7 +49,10 @@ public class MovieController : Controller
             movieViewModel.Description
         );
 
-        var result = await _movieService.AddMovieAsync(movie);
+        var result = await _movieService.AddMovieAsync(movie, currentUser);
+        await _movieService.ConnectToGenre(movieViewModel, movie);
+        await _movieService.ConnectToCountry(movieViewModel, movie);
+
         if (!result.Success)
         {
             ViewBag.ErrorMessage = result.ErrorMessage;
@@ -56,11 +61,7 @@ public class MovieController : Controller
             return View(movieViewModel);
         }
 
-        await _movieService.ConnectToGenre(movieViewModel, movie);
-        await _movieService.ConnectToCountry(movieViewModel, movie);
-        var currentUser = await _userService.GetCurrentUserAsync(User);
-        if (currentUser != null) await _movieService.ConnectToCreator(movie, currentUser);
-
+ 
         return RedirectToAction("ViewRating", "Movie");
     }
 

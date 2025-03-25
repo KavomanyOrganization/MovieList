@@ -8,18 +8,19 @@ namespace MVC.Services;
 public class MovieService
 {
     private readonly AppDbContext _context;
+    private readonly MovieCreatorService _movieCreatorService;
 
-    public MovieService(AppDbContext context)
+    public MovieService(AppDbContext context, MovieCreatorService movieCreatorService)
     {
         _context = context;
+        _movieCreatorService = movieCreatorService;
     }
-
-    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie)
+    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie, User user)
     {
         if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
-        {
             return (false, "Movie already exists!");
-        }
+
+        await _movieCreatorService.AddMovieCreatorAsync(movie.Id, user.Id);
 
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
@@ -46,15 +47,6 @@ public class MovieService
             {
                 _context.MovieCountries.Add(new MovieCountry { MovieId = movie.Id, CountryId = countryId });
             }
-            await _context.SaveChangesAsync();
-        }
-    }
-
-    public async Task ConnectToCreator(Movie movie, User user)
-    {
-        if (user != null && movie != null)
-        {
-            _context.MovieCreators.Add(new MovieCreator { MovieId = movie.Id, UserId = user.Id });
             await _context.SaveChangesAsync();
         }
     }
@@ -181,21 +173,6 @@ public class MovieService
                 movie.MovieCountries.Remove(countryToRemove);
             }
         }
-    }
-
-    public async Task<User?> GetCreatorAsync(int movieId)
-    {
-        var movie = await _context.Movies.FindAsync(movieId);
-        if (movie != null)
-        {
-            var creator = await _context.MovieCreators
-                .FirstOrDefaultAsync(mc => mc.MovieId == movieId);
-            if (creator != null)
-            {
-                return await _context.Users.FindAsync(creator.UserId);
-            }
-        }
-        return null;
     }
 
     public async Task<List<Movie>> SearchMoviesAsync(string searchTerm)
