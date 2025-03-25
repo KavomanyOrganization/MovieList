@@ -13,11 +13,13 @@ public class MovieController : Controller
 {
     protected readonly MovieService _movieService;
     protected readonly UserService _userService;
+    protected readonly MovieCreatorService _movieCreatorService;
 
-    public MovieController(MovieService movieService, UserService userService)
+    public MovieController(MovieService movieService, UserService userService, MovieCreatorService movieCreatorService)
     {
         _movieService = movieService;
         _userService = userService;
+        _movieCreatorService = movieCreatorService;
     }
 
     public async Task<IActionResult> Create()
@@ -50,6 +52,7 @@ public class MovieController : Controller
         );
 
         var result = await _movieService.AddMovieAsync(movie, currentUser);
+        await _movieCreatorService.AddMovieCreatorAsync(movie.Id, currentUser.Id);
         await _movieService.ConnectToGenre(movieViewModel, movie);
         await _movieService.ConnectToCountry(movieViewModel, movie);
 
@@ -61,11 +64,10 @@ public class MovieController : Controller
             return View(movieViewModel);
         }
 
- 
         return RedirectToAction("ViewRating", "Movie");
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
@@ -73,6 +75,13 @@ public class MovieController : Controller
 
         if (movie == null)
             return NotFound();
+
+        var currentUser = await _userService.GetCurrentUserAsync(User);
+        
+        // Check if user is admin OR the creator of the movie
+        if (!(User.IsInRole("Admin") || 
+            (currentUser != null && await _movieCreatorService.IsCreatorAsync(id, currentUser.Id))))
+            return Forbid();
 
         var movieViewModel = new MovieViewModel
         {
@@ -92,10 +101,21 @@ public class MovieController : Controller
         return View(movieViewModel);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Update(int id, MovieViewModel movieViewModel)
     {
+        var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
+
+        if (movie == null)
+            return NotFound();
+
+        var currentUser = await _userService.GetCurrentUserAsync(User);
+        
+        if (!(User.IsInRole("Admin") || 
+            (currentUser != null && await _movieCreatorService.IsCreatorAsync(id, currentUser.Id))))
+            return Forbid();
+
         if (!ModelState.IsValid)
         {
             movieViewModel.Genres = await _movieService.GetGenresDictionaryAsync();
@@ -103,11 +123,6 @@ public class MovieController : Controller
             ViewBag.MovieId = id;
             return View(movieViewModel);
         }
-
-        var movie = await _movieService.GetMovieByIdWithRelationsAsync(id);
-
-        if (movie == null)
-            return NotFound();
 
         movie.Cover = movieViewModel.Cover;
         movie.Title = movieViewModel.Title;
@@ -158,6 +173,7 @@ public class MovieController : Controller
                 userMovies.AddRange(await _userService.GetUserMovies(user, false));
                 
                 ViewBag.IsInUserLists = userMovies.Any(um => um.MovieId == id);
+                ViewBag.IsCreator = await _movieCreatorService.IsCreatorAsync(id, user.Id);
             }
         }
         
@@ -194,5 +210,4 @@ public class MovieController : Controller
         var movies = await _movieService.SearchMoviesAsync(searchTerm);
         return View("ViewRating", movies.OrderByDescending(m => m.Rating).ToList());
     }
-
 }

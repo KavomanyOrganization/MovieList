@@ -20,8 +20,6 @@ public class MovieService
         if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
             return (false, "Movie already exists!");
 
-        await _movieCreatorService.AddMovieCreatorAsync(movie.Id, user.Id);
-
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
         return (true, string.Empty);
@@ -193,8 +191,8 @@ public class MovieService
                 (m.Title != null && m.Title.ToLower().Contains(searchTerm)) ||
                 (m.Director != null && m.Director.ToLower().Contains(searchTerm)) ||
                 (m.Description != null && m.Description.ToLower().Contains(searchTerm)) ||
-                m.Year.ToString().Contains(searchTerm) ||
-                m.MovieGenres.Any(mg => mg.Genre.Name.ToLower().Contains(searchTerm)) ||
+                m.Year.ToString()!.Contains(searchTerm) ||
+                m.MovieGenres.Any(mg => mg.Genre!.Name.ToLower().Contains(searchTerm)) ||
                 m.MovieCountries.Any(mc => mc.Country!.Name.ToLower().Contains(searchTerm))
             )
             .ToListAsync();
@@ -225,8 +223,8 @@ public class MovieService
         }
 
         var movies = await query
-            .Where(um => um.Movie.Title!.ToLower().Contains(title))
-            .Select(um => um.Movie)
+            .Where(um => um.Movie != null && um.Movie.Title!.ToLower().Contains(title))
+            .Select(um => um.Movie!)
             .ToListAsync();
 
         return movies;

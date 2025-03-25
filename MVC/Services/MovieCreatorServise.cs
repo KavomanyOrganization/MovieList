@@ -40,7 +40,7 @@ public class MovieCreatorService
         return await _context.MovieCreators.AnyAsync(mc => mc.MovieId == movieId && mc.UserId == creatorId);
     }
 
-    public async Task<User> GetCreatorAsync(int movieId)
+    public async Task<User?> GetCreatorAsync(int movieId)
     {
         if(!await _context.Movies.AnyAsync(m => m.Id == movieId))
             throw new InvalidOperationException("No movie found for the specified id.");
@@ -49,10 +49,6 @@ public class MovieCreatorService
             .Where(mc => mc.MovieId == movieId && mc.User != null)
             .Select(mc => mc.User!)
             .FirstOrDefaultAsync();
-
-        if (user == null)
-            throw new InvalidOperationException("No creator found for the specified movie.");
-
         return user;
     }
 
