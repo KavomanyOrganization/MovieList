@@ -113,21 +113,16 @@ public class MovieService
 
     public async Task CalculateRating(int movieId)
     {
-        var ratings = _context.UserMovies
-            .Where(um => um.MovieId == movieId && um.Rating != -1)
-            .ToList();
+        List<int> ratings = _userMovieService.GetMovieRatingAsync(movieId).Result;
 
         var movie = await _context.Movies.FindAsync(movieId);
         if (movie != null)
         {
             if (ratings.Count > 0)
-            {
-                movie.Rating = ratings.Sum(um => um.Rating) / ratings.Count;
-            }
+                movie.Rating = ratings.Sum() / ratings.Count;
             else
-            {
                 movie.Rating = 0;
-            }
+
             _context.Movies.Update(movie);
             await _context.SaveChangesAsync();
         }
@@ -203,17 +198,19 @@ public class MovieService
     }
 
     public async Task<List<Movie>> SearchInPersonalListAsync(string title, string userId, string listType)
-{
-    if (string.IsNullOrWhiteSpace(title))
-        return new List<Movie>();
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            return new List<Movie>();
 
-    title = title.ToLower();
-    bool isWatched = listType != "watchlist";
+        title = title.ToLower();
+        bool isWatched = listType != "watchlist";
 
-    var movies = await _userMovieService.GetUserMoviesAsync(userId, isWatched);
+        var movies = await _userMovieService.GetUserMoviesAsync(userId, isWatched);
 
-    return movies
-        .Where(m => m.Title != null && m.Title.ToLower().Contains(title))
-        .ToList();
-}
+        return movies
+            .Where(m => m.Movie != null && !string.IsNullOrEmpty(m.Movie.Title) && m.Movie.Title.ToLower().Contains(title))
+            .Select(m => m.Movie!)
+            .Where(movie => movie != null)
+            .ToList();
+    }
 }

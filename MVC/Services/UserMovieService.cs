@@ -2,6 +2,7 @@ using MVC.Models;
 using MVC.ViewModels;
 using MVC.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace MVC.Services;
 
@@ -24,7 +25,7 @@ public class UserMovieService
         return (true, string.Empty);
     }
 
-    public async Task<(bool Success, string ErrorMessage)> DeleteUserMovieAsync(int movieId, string userId)
+    public async Task<(bool Success, string ErrorMessage)> DeleteUserMovieAsync(string userId, int movieId)
     {
         var userMovie = await _context.UserMovies.FirstOrDefaultAsync(um => um.MovieId == movieId && um.UserId == userId);
         if (userMovie == null)
@@ -48,15 +49,27 @@ public class UserMovieService
         return (true, string.Empty);
     }
 
-    public async Task<List<Movie>> GetUserMoviesAsync(string userId, bool isWatched)
+    public async Task<List<UserMovie>> GetUserMoviesAsync(string userId, bool isWatched)
     {
         if (!_context.UserMovies.Any(um => um.UserId == userId))
             throw new InvalidOperationException("UserMovie connection is not found!");
-
+    
         return await _context.UserMovies
-            .Where(um => um.UserId == userId && um.IsWatched == isWatched && um.Movie != null)
-            .Select(um => um.Movie!)
+            .Where(um => um.UserId == userId && um.IsWatched == isWatched)
             .ToListAsync();
     }
+
+    public async Task<List<int>> GetMovieRatingAsync(int movieId)
+    {
+        if (!_context.UserMovies.Any(um => um.MovieId == movieId))
+            throw new InvalidOperationException("UserMovie connection is not found!");
+
+        return await _context.UserMovies
+            .Where(um => um.MovieId == movieId && um.Rating >= 0)
+            .Select(um => um.Rating)
+            .ToListAsync();
+    }
+
+
 
 }

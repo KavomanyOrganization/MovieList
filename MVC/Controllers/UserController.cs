@@ -136,7 +136,7 @@ public class UserController : Controller
         {
             return RedirectToAction("Login");
         }
-        await _userService.DeleteUserMovie(user, id);
+        await _userMovieService.DeleteUserMovieAsync(user.Id, id);
         await _movieService.CalculateRating(id);
 
         var referer = Request.Headers["Referer"].ToString();
@@ -158,7 +158,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
 
-        var userMovies = await _userService.GetUserMovies(user, true);
+        var userMovies = await _userMovieService.GetUserMoviesAsync(user.Id, true);
 
         if (userMovies == null || !userMovies.Any())
         {
@@ -216,7 +216,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
 
-        await _userService.ConnectUserMovie(user, movieId, false, -1);
+        await _userMovieService.AddUserMovieAsync(user.Id, movieId, false, -1);
 
         var referer = Request.Headers["Referer"].ToString();
         if (!string.IsNullOrEmpty(referer))
@@ -237,7 +237,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
 
-        var userMovies = await _userService.GetUserMovies(user, false);
+        var userMovies = await _userMovieService.GetUserMoviesAsync(user.Id, false);
 
         if (userMovies == null || !userMovies.Any())
         {
@@ -272,7 +272,7 @@ public class UserController : Controller
         }
         else
         {
-            ViewBag.UserMovies = await _userService.GetUserMovies(currentUser, true);
+            ViewBag.UserMovies = await _userMovieService.GetUserMoviesAsync(currentUser.Id, true);
             return View("GetAllSeenIt", movies);
         }
     }

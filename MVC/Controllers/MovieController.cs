@@ -14,12 +14,15 @@ public class MovieController : Controller
     protected readonly MovieService _movieService;
     protected readonly UserService _userService;
     protected readonly MovieCreatorService _movieCreatorService;
+    protected readonly UserMovieService _userMovieService;
 
-    public MovieController(MovieService movieService, UserService userService, MovieCreatorService movieCreatorService)
+    public MovieController(MovieService movieService, UserService userService, 
+                            MovieCreatorService movieCreatorService, UserMovieService userMovieService)
     {
         _movieService = movieService;
         _userService = userService;
         _movieCreatorService = movieCreatorService;
+        _userMovieService = userMovieService;
     }
 
     public async Task<IActionResult> Create()
@@ -168,8 +171,8 @@ public class MovieController : Controller
             var user = await _userService.GetCurrentUserAsync(User);
             if (user != null)
             {
-                var userMovies = (await _userService.GetUserMovies(user, true)).ToList();
-                userMovies.AddRange(await _userService.GetUserMovies(user, false));
+                var userMovies = (await _userMovieService.GetUserMoviesAsync(user.Id, true)).ToList();
+                userMovies.AddRange(await _userMovieService.GetUserMoviesAsync(user.Id, false));
                 
                 ViewBag.IsInUserLists = userMovies.Any(um => um.MovieId == id);
                 ViewBag.IsCreator = await _movieCreatorService.IsCreatorAsync(id, user.Id);
