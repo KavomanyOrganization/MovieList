@@ -8,13 +8,11 @@ namespace MVC.Services;
 public class MovieService
 {
     private readonly AppDbContext _context;
-    private readonly MovieCreatorService _movieCreatorService;
     private readonly UserMovieService _userMovieService;
 
-    public MovieService(AppDbContext context, MovieCreatorService movieCreatorService, UserMovieService userMovieService)
+    public MovieService(AppDbContext context, UserMovieService userMovieService)
     {
         _context = context;
-        _movieCreatorService = movieCreatorService;
         _userMovieService = userMovieService;
     }
     public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie, User user)
