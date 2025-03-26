@@ -9,11 +9,13 @@ public class MovieService
 {
     private readonly AppDbContext _context;
     private readonly MovieCreatorService _movieCreatorService;
+    private readonly UserMovieService _userMovieService;
 
-    public MovieService(AppDbContext context, MovieCreatorService movieCreatorService)
+    public MovieService(AppDbContext context, MovieCreatorService movieCreatorService, UserMovieService userMovieService)
     {
         _context = context;
         _movieCreatorService = movieCreatorService;
+        _userMovieService = userMovieService;
     }
     public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie, User user)
     {
@@ -201,32 +203,17 @@ public class MovieService
     }
 
     public async Task<List<Movie>> SearchInPersonalListAsync(string title, string userId, string listType)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            return new List<Movie>();
-        }
+{
+    if (string.IsNullOrWhiteSpace(title))
+        return new List<Movie>();
 
-        title = title.ToLower();
+    title = title.ToLower();
+    bool isWatched = listType != "watchlist";
 
-        var query = _context.UserMovies
-            .Include(um => um.Movie)
-            .Where(um => um.UserId == userId);
+    var movies = await _userMovieService.GetUserMoviesAsync(userId, isWatched);
 
-        if (listType == "watchlist")
-        {
-            query = query.Where(um => !um.IsWatched);
-        }
-        else if (listType == "seenit")
-        {
-            query = query.Where(um => um.IsWatched);
-        }
-
-        var movies = await query
-            .Where(um => um.Movie != null && um.Movie.Title!.ToLower().Contains(title))
-            .Select(um => um.Movie!)
-            .ToListAsync();
-
-        return movies;
-    }
+    return movies
+        .Where(m => m.Title != null && m.Title.ToLower().Contains(title))
+        .ToList();
+}
 }

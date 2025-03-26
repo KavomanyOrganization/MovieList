@@ -78,7 +78,6 @@ public class MovieController : Controller
 
         var currentUser = await _userService.GetCurrentUserAsync(User);
         
-        // Check if user is admin OR the creator of the movie
         if (!(User.IsInRole("Admin") || 
             (currentUser != null && await _movieCreatorService.IsCreatorAsync(id, currentUser.Id))))
             return Forbid();

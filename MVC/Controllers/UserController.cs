@@ -11,12 +11,15 @@ public class UserController : Controller
     private readonly UserService _userService;
     private readonly MovieService _movieService;
     private readonly MovieCreatorService _movieCreatorService;
+    private readonly UserMovieService _userMovieService;
 
-    public UserController(UserService userService, MovieService movieService, MovieCreatorService movieCreatorService)
+    public UserController(UserService userService, MovieService movieService, 
+    MovieCreatorService movieCreatorService, UserMovieService userMovieService)
     {
         _userService = userService;
         _movieService = movieService;
         _movieCreatorService = movieCreatorService;
+        _userMovieService = userMovieService;
     }
 
     public IActionResult Login()
@@ -113,7 +116,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }                     
 
-        await _userService.ConnectUserMovie(user, movieId, true, rating);
+        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating);
         await _movieService.CalculateRating(movieId);
 
         var referer = Request.Headers["Referer"].ToString();
