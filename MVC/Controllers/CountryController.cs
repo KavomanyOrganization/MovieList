@@ -1,107 +1,79 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MVC.Data;
-using MVC.Models;
 using MVC.ViewModels;
+using MVC.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
-namespace MVC.Controllers;
-
-public class CountryController : Controller
+namespace MVC.Controllers
 {
-    protected readonly AppDbContext _context;
-
-    public CountryController(AppDbContext appDbContext)
+    public class CountryController : Controller
     {
-        _context = appDbContext;
-    }
+        private readonly CountryService _countryService;
 
-    public async Task<IActionResult> GetAll()
-    {
-        var countries = await _context.Countries.OrderBy(c => c.Name).ToListAsync();
-        ViewBag.Countries = countries;
-        return View(new CountryViewModel());
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> Create(CountryViewModel countryViewModel)
-    {
-        if (ModelState.IsValid)
+        public CountryController(CountryService countryService)
         {
-            var existingCountry = await _context.Countries.FirstOrDefaultAsync(c =>
-                c.Name.ToLower() == countryViewModel.Name.ToLower()
-            );
+            _countryService = countryService;
+        }
 
-            if (existingCountry != null)
+        public async Task<IActionResult> GetAll()
+        {
+            ViewBag.Countries = await _countryService.GetAllCountriesAsync();
+            return View(new CountryViewModel());
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Create(CountryViewModel countryViewModel)
+        {
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("Name", "A country with this name already exists.");
-                var countries = await _context.Countries.OrderBy(c => c.Name).ToListAsync();
-                ViewBag.Countries = countries;
-                return View("GetAll", countryViewModel);
-            }
-            
-            Country country = new Country { Name = countryViewModel.Name };
+                if (!await _countryService.CreateCountryAsync(countryViewModel.Name))
+                {
+                    ModelState.AddModelError("Name", "A country with this name already exists.");
+                    ViewBag.Countries = await _countryService.GetAllCountriesAsync();
+                    return View("GetAll", countryViewModel);
+                }
 
-            _context.Countries.Add(country);
-            await _context.SaveChangesAsync();
+                return RedirectToAction("GetAll");
+            }
+
+            ViewBag.Countries = await _countryService.GetAllCountriesAsync();
+            return View("GetAll", countryViewModel);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (!await _countryService.DeleteCountryAsync(id))
+                return NotFound();
 
             return RedirectToAction("GetAll");
         }
 
-        var allCountries = await _context.Countries.OrderBy(c => c.Name).ToListAsync();
-        ViewBag.Countries = allCountries;
-        return View("GetAll", countryViewModel);
-    }
-
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var country = await _context.Countries.FindAsync(id);
-        if (country == null)
-            return NotFound();
-
-        _context.Countries.Remove(country);
-        await _context.SaveChangesAsync();
-        return RedirectToAction("GetAll");
-    }
-
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id)
-    {
-        Country? country = await _context.Countries.FindAsync(id);
-        if (country == null)
-            return NotFound();
-
-        var countryViewModel = new CountryViewModel { Name = country.Name };
-
-        ViewBag.CountryId = id;
-        return View(countryViewModel);
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> Update(int id, CountryViewModel countryViewModel)
-    {
-        Country? country = await _context.Countries.FindAsync(id);
-        if (country == null)
-            return NotFound();
-            
-        bool isDuplicate = await _context.Countries
-        .AnyAsync(c => c.Name.ToLower() == countryViewModel.Name.ToLower() && c.Id != id);
-
-        if (isDuplicate)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id)
         {
-            ModelState.AddModelError("Name", "A country with this name already exists.");
+            var country = await _countryService.GetCountryByIdAsync(id);
+            if (country == null)
+                return NotFound();
+
+            var countryViewModel = new CountryViewModel { Name = country.Name };
             ViewBag.CountryId = id;
             return View(countryViewModel);
         }
 
-        country.Name = countryViewModel.Name;
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Update(int id, CountryViewModel countryViewModel)
+        {
+            if (!await _countryService.UpdateCountryAsync(id, countryViewModel.Name))
+            {
+                ModelState.AddModelError("Name", "A ciuntry with this name already exists.");
+                ViewBag.CountryId = id;
+                return View(countryViewModel);
+            }
 
-        _context.Countries.Update(country);
-        await _context.SaveChangesAsync();
-        return RedirectToAction("GetAll");
+            return RedirectToAction("GetAll");
+        }
     }
 }
