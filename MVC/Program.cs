@@ -12,6 +12,7 @@ builder.Services.AddScoped<MVC.Services.MovieCreatorService>();
 builder.Services.AddScoped<MVC.Services.UserMovieService>();
 builder.Services.AddScoped<MVC.Services.GenreService>();
 builder.Services.AddScoped<MVC.Services.CountryService>();
+builder.Services.AddScoped<MVC.Services.ReportService>();
 
 
 // Add services to the container.
