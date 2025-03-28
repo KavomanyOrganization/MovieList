@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MVC.Data;
 using MVC.Models;
 using MVC.ViewModels;
+using MVC.Interfaces;
 
 namespace MVC.Services;
-public class ReportService
+public class ReportService : IReportService
 {
     private readonly AppDbContext _context;
 
