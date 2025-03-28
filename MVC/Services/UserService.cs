@@ -3,9 +3,10 @@ using MVC.Models;
 using MVC.ViewModels;
 using MVC.Data;
 using Microsoft.EntityFrameworkCore;
+using MVC.Interfaces;
 
 namespace MVC.Services;
-public class UserService
+public class UserService : IUserService
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
