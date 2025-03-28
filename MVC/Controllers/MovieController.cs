@@ -149,6 +149,8 @@ public class MovieController : Controller
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
+        if (!User.IsInRole("Admin")) return Forbid();
+        
         await _movieService.DeleteMovieAsync(id);
         _movieGenreService.DeleteMovieGenres(id);
         _movieCountryService.DeleteMovieCountries(id);
