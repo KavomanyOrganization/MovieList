@@ -1,13 +1,15 @@
 using MVC.Models;
-using MVC.ViewModels;
 
-namespace MovieList.MVC.Interfaces;
+namespace MVC.Interfaces;
 public interface IMovieService
 {
-    Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie, User user);
+    Task AddMovieAsync(Movie movie);
     Task<List<Movie>> GetAllMoviesAsync();
     Task<Movie> GetMovieById(int id);
-
-    Task<List<Report>> GetReportsForMovieAsync(int movieId);
     Task<Movie> GetMovieByIdWithRelationsAsync(int id);
+    Task UpdateMovieAsync(Movie movie);
+    Task DeleteMovieAsync(int id);
+    Task CalculateRating(int movieId);
+    Task<List<Movie>> SearchMoviesAsync(string searchTerm);
+    Task<List<Movie>> SearchInPersonalListAsync(string title, string userId, string listType);
 }

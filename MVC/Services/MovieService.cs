@@ -1,11 +1,11 @@
 using MVC.Models;
-using MVC.ViewModels;
 using MVC.Data;
 using Microsoft.EntityFrameworkCore;
+using MVC.Interfaces;
 
 namespace MVC.Services;
 
-public class MovieService
+public class MovieService : IMovieService
 {
     private readonly AppDbContext _context;
     private readonly UserMovieService _userMovieService;
@@ -15,14 +15,13 @@ public class MovieService
         _context = context;
         _userMovieService = userMovieService;
     }
-    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie)
+    public async Task AddMovieAsync(Movie movie)
     {
         if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
-            return (false, "Movie already exists!");
+            throw new InvalidOperationException("Movie already exists!");
 
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
-        return (true, string.Empty);
     }
 
     public async Task<List<Movie>> GetAllMoviesAsync()
@@ -47,15 +46,14 @@ public class MovieService
         return movie ?? throw new InvalidOperationException("Movie not found.");
     }
 
-    public async Task<(bool Success, string ErrorMessage)> UpdateMovieAsync(Movie movie)
+    public async Task UpdateMovieAsync(Movie movie)
     {
         if (await _context.Movies.AnyAsync(m => m.Id != movie.Id && m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
         {
-            return (false, "Movie already exists!");
+            throw new InvalidOperationException("Movie already exists!");
         }
         _context.Movies.Update(movie);
         await _context.SaveChangesAsync();
-        return (true, string.Empty);
     }
 
     public async Task DeleteMovieAsync(int id)

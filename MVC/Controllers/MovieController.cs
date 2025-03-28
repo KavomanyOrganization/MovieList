@@ -67,18 +67,10 @@ public class MovieController : Controller
             movieViewModel.Description
         );
 
-        var result = await _movieService.AddMovieAsync(movie);
+        await _movieService.AddMovieAsync(movie);
         await _movieCreatorService.AddMovieCreatorAsync(movie.Id, currentUser.Id);
         await _movieGenreService.AddMovieGenre(movieViewModel, movie);
         await _movieCountryService.AddMovieCountry(movieViewModel, movie);
-
-        if (!result.Success)
-        {
-            ViewBag.ErrorMessage = result.ErrorMessage;
-            ViewBag.Genres = await _genreService.GetGenresDictionaryAsync();
-            ViewBag.Countries = await _countryService.GetCountriesDictionaryAsync();
-            return View(movieViewModel);
-        }
 
         return RedirectToAction("ViewRating", "Movie");
     }
@@ -149,16 +141,7 @@ public class MovieController : Controller
         _movieGenreService.UpdateMovieGenre(movie, movieViewModel.SelectedGenreIds);
         _movieCountryService.UpdateMovieCountry(movie, movieViewModel.SelectedCountryIds);
 
-        var result = await _movieService.UpdateMovieAsync(movie);
-        if (!result.Success)
-        {
-            ViewBag.ErrorMessage = result.ErrorMessage;
-
-            movieViewModel.Genres = await _genreService.GetGenresDictionaryAsync();
-            movieViewModel.Countries = await _countryService.GetCountriesDictionaryAsync();
-            ViewBag.MovieId = id;
-            return View(movieViewModel);
-        }
+        await _movieService.UpdateMovieAsync(movie);
 
         return RedirectToAction("ViewRating", "Movie");
     }
