@@ -119,50 +119,6 @@ public class UserService
     {
         return await _userManager.GetUserAsync(userPrincipal);
     }
-
-    public async Task ConnectUserMovie(User user, int movieId, bool isWatched=false, int Rating = -1) 
-    {
-        var movie = await _context.Movies.FindAsync(movieId);
-        if (movie == null) return;
-
-        var usermovie = await _context.UserMovies.FindAsync(user.Id, movieId);
-        if (usermovie == null)
-        {
-            usermovie = new UserMovie
-            {
-                UserId = user.Id,
-                User = user,
-                MovieId = movieId,
-                Movie = movie,
-                IsWatched = isWatched,
-                Rating = Rating
-            };
-            _context.UserMovies.Add(usermovie);
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            usermovie.IsWatched = isWatched;
-            usermovie.Rating = Rating;
-            _context.UserMovies.Update(usermovie);
-            await _context.SaveChangesAsync();
-        }
-    }
-
-    public async Task<IEnumerable<UserMovie>> GetUserMovies(User user, bool isWatched)
-    {
-        return await _context.UserMovies.Where(um => um.UserId == user.Id && um.IsWatched == isWatched).ToListAsync();
-    }
-
-    public async Task DeleteUserMovie(User user, int movieId)
-    {
-        var usermovie = await _context.UserMovies.FindAsync(user.Id, movieId);
-        if (usermovie != null)
-        {
-            _context.UserMovies.Remove(usermovie);
-            await _context.SaveChangesAsync();
-        }
-    }
     
 }
 
