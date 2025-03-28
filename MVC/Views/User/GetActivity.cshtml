@@ -2,8 +2,8 @@
 
 @{
     ViewData["Title"] = "User Activity";
-    var currentUser = Context.User?.Identity?.Name ?? "Guest"; 
-    var isAdmin = Context!.User!.IsInRole("Admin");
+    var currentUser = Context.User.Identity.Name;
+    var isAdmin = Context.User.IsInRole("Admin");
 }
 
 <h2>User Activity</h2>
