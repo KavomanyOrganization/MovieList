@@ -52,5 +52,11 @@ public class MovieCreatorService
         return user;
     }
 
+    public async Task DeleteMovieCreatorsAsync(int movieId)
+    {
+        var movieCreators = await _context.MovieCreators.Where(mc => mc.MovieId == movieId).ToListAsync();
+        _context.MovieCreators.RemoveRange(movieCreators);
+        await _context.SaveChangesAsync();
+    }
 
 }

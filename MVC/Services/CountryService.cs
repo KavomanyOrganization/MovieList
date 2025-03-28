@@ -64,5 +64,10 @@ namespace MVC.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<Dictionary<int, string>> GetCountriesDictionaryAsync()
+        {
+            return await _context.Countries.ToDictionaryAsync(c => c.Id, c => c.Name);
+        }
     }
 }

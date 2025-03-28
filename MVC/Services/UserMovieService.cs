@@ -70,6 +70,11 @@ public class UserMovieService
             .ToListAsync();
     }
 
-
+    public async Task DeleteUserMoviesAsync(int movieId)
+    {
+        var userMovies = await _context.UserMovies.Where(um => um.MovieId == movieId).ToListAsync();
+        _context.UserMovies.RemoveRange(userMovies);
+        await _context.SaveChangesAsync();
+    }
 
 }
