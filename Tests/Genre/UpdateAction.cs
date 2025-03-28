@@ -23,6 +23,7 @@ public class UpdateAction
             _mockGenreService.Object
         );
     }
+    [Fact]
     public async Task Update_WhenUserIsAdmin_ShouldUpdateGenreSuccessfully()
     {
         // Arrange
