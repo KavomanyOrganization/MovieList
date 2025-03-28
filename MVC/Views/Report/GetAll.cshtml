@@ -42,7 +42,7 @@
                     {
                         <tr>
                             <td>
-                                <a href="@Url.Action("Details", "Movie", new { id = report.Movie.Id })" style="text-decoration: none; color: inherit;">
+                                <a href="@Url.Action("Details", "Movie", new { id = report.Movie!.Id })" style="text-decoration: none; color: inherit;">
                                     @if (!string.IsNullOrEmpty(report.Movie.Cover))
                                     {
                                         <img src="@report.Movie.Cover" alt="@report.Movie.Title" class="img-thumbnail" style="max-height: 100px;" />
