@@ -1,52 +1,27 @@
 using MVC.Models;
-using MVC.ViewModels;
 using MVC.Data;
 using Microsoft.EntityFrameworkCore;
+using MVC.Interfaces;
 
 namespace MVC.Services;
 
-public class MovieService
+public class MovieService : IMovieService
 {
     private readonly AppDbContext _context;
-    private readonly UserMovieService _userMovieService;
+    private readonly IUserMovieService _userMovieService;
 
-    public MovieService(AppDbContext context, UserMovieService userMovieService)
+    public MovieService(AppDbContext context, IUserMovieService userMovieService)
     {
         _context = context;
         _userMovieService = userMovieService;
     }
-    public async Task<(bool Success, string ErrorMessage)> AddMovieAsync(Movie movie, User user)
+    public async Task AddMovieAsync(Movie movie)
     {
         if (await _context.Movies.AnyAsync(m => m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
-            return (false, "Movie already exists!");
+            throw new InvalidOperationException("Movie already exists!");
 
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
-        return (true, string.Empty);
-    }
-
-    public async Task ConnectToGenre(MovieViewModel movieViewModel, Movie movie)
-    {
-        if (movieViewModel.SelectedGenreIds != null && movieViewModel.SelectedGenreIds.Any())
-        {
-            foreach (var genreId in movieViewModel.SelectedGenreIds)
-            {
-                _context.MovieGenres.Add(new MovieGenre { MovieId = movie.Id, GenreId = genreId });
-            }
-            await _context.SaveChangesAsync();
-        }
-    }
-
-    public async Task ConnectToCountry(MovieViewModel movieViewModel, Movie movie)
-    {
-        if (movieViewModel.SelectedCountryIds != null && movieViewModel.SelectedCountryIds.Any())
-        {
-            foreach (var countryId in movieViewModel.SelectedCountryIds)
-            {
-                _context.MovieCountries.Add(new MovieCountry { MovieId = movie.Id, CountryId = countryId });
-            }
-            await _context.SaveChangesAsync();
-        }
     }
 
     public async Task<List<Movie>> GetAllMoviesAsync()
@@ -57,13 +32,6 @@ public class MovieService
     public async Task<Movie> GetMovieById(int id)
     {
         return await _context.Movies.FindAsync(id) ?? throw new InvalidOperationException("Movie not found.");
-    }
-
-    public async Task<List<Report>> GetReportsForMovieAsync(int movieId)
-    {
-        return await _context.Reports
-                            .Where(r => r.MovieId == movieId)
-                            .ToListAsync();
     }
 
     public async Task<Movie> GetMovieByIdWithRelationsAsync(int id)
@@ -78,25 +46,14 @@ public class MovieService
         return movie ?? throw new InvalidOperationException("Movie not found.");
     }
 
-    public async Task<Dictionary<int, string>> GetGenresDictionaryAsync()
-    {
-        return await _context.Genres.ToDictionaryAsync(g => g.Id, g => g.Name);
-    }
-
-    public async Task<Dictionary<int, string>> GetCountriesDictionaryAsync()
-    {
-        return await _context.Countries.ToDictionaryAsync(c => c.Id, c => c.Name);
-    }
-
-    public async Task<(bool Success, string ErrorMessage)> UpdateMovieAsync(Movie movie)
+    public async Task UpdateMovieAsync(Movie movie)
     {
         if (await _context.Movies.AnyAsync(m => m.Id != movie.Id && m.Title == movie.Title && m.Year == movie.Year && m.Director == movie.Director))
         {
-            return (false, "Movie already exists!");
+            throw new InvalidOperationException("Movie already exists!");
         }
         _context.Movies.Update(movie);
         await _context.SaveChangesAsync();
-        return (true, string.Empty);
     }
 
     public async Task DeleteMovieAsync(int id)
@@ -123,48 +80,6 @@ public class MovieService
 
             _context.Movies.Update(movie);
             await _context.SaveChangesAsync();
-        }
-    }
-
-    public void UpdateMovieGenres(Movie movie, List<int> newGenreIds)
-    {
-        var existingGenreIds = movie.MovieGenres.Select(mg => mg.GenreId).ToList();
-        var genresToAdd = newGenreIds.Except(existingGenreIds).ToList();
-        var genresToRemove = existingGenreIds.Except(newGenreIds).ToList();
-
-        foreach (var genreId in genresToAdd)
-        {
-            movie.MovieGenres.Add(new MovieGenre { GenreId = genreId });
-        }
-
-        foreach (var genreId in genresToRemove)
-        {
-            var genreToRemove = movie.MovieGenres.FirstOrDefault(mg => mg.GenreId == genreId);
-            if (genreToRemove != null)
-            {
-                movie.MovieGenres.Remove(genreToRemove);
-            }
-        }
-    }
-
-    public void UpdateMovieCountries(Movie movie, List<int> newCountryIds)
-    {
-        var existingCountryIds = movie.MovieCountries.Select(mc => mc.CountryId).ToList();
-        var countriesToAdd = newCountryIds.Except(existingCountryIds).ToList();
-        var countriesToRemove = existingCountryIds.Except(newCountryIds).ToList();
-
-        foreach (var countryId in countriesToAdd)
-        {
-            movie.MovieCountries.Add(new MovieCountry { CountryId = countryId });
-        }
-
-        foreach (var countryId in countriesToRemove)
-        {
-            var countryToRemove = movie.MovieCountries.FirstOrDefault(mc => mc.CountryId == countryId);
-            if (countryToRemove != null)
-            {
-                movie.MovieCountries.Remove(countryToRemove);
-            }
         }
     }
 

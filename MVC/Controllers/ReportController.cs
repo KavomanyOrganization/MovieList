@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MVC.Services;
 using MVC.ViewModels;
-using Microsoft.Extensions.Logging;
+using MVC.Interfaces;
 
 namespace MVC.Controllers
 {
     public class ReportController : Controller
     {
-        private readonly ReportService _reportService;
+        private readonly IReportService _reportService;
 
         public ReportController(ReportService reportService)
         {

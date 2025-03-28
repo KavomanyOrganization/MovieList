@@ -4,17 +4,18 @@ using Microsoft.AspNetCore.Identity;
 using MVC.Models;
 using MVC.Services;
 using MVC.ViewModels;
+using MVC.Interfaces;
 
 namespace MVC.Controllers;
 public class UserController : Controller
 {
-    private readonly UserService _userService;
-    private readonly MovieService _movieService;
-    private readonly MovieCreatorService _movieCreatorService;
-    private readonly UserMovieService _userMovieService;
+    private readonly IUserService _userService;
+    private readonly IMovieService _movieService;
+    private readonly IMovieCreatorService _movieCreatorService;
+    private readonly IUserMovieService _userMovieService;
 
-    public UserController(UserService userService, MovieService movieService, 
-    MovieCreatorService movieCreatorService, UserMovieService userMovieService)
+    public UserController(IUserService userService, IMovieService movieService, 
+                        IMovieCreatorService movieCreatorService, IUserMovieService userMovieService)
     {
         _userService = userService;
         _movieService = movieService;

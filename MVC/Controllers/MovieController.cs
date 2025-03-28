@@ -5,30 +5,43 @@ using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using System.Diagnostics;
+using MVC.Interfaces;
 
 namespace MVC.Controllers;
 
 public class MovieController : Controller
 {
-    protected readonly MovieService _movieService;
-    protected readonly UserService _userService;
-    protected readonly MovieCreatorService _movieCreatorService;
-    protected readonly UserMovieService _userMovieService;
+    protected readonly IMovieService _movieService;
+    protected readonly IUserService _userService;
+    protected readonly IMovieCreatorService _movieCreatorService;
+    protected readonly IUserMovieService _userMovieService;
+    protected readonly IReportService _reportService;
+    protected readonly IMovieCountryService _movieCountryService;
+    protected readonly ICountryService _countryService;
+    protected readonly IGenreService _genreService;
+    protected readonly IMovieGenreService _movieGenreService;
 
-    public MovieController(MovieService movieService, UserService userService, 
-                            MovieCreatorService movieCreatorService, UserMovieService userMovieService)
+    public MovieController(IMovieService movieService, IUserService userService, 
+                            IMovieCreatorService movieCreatorService, IUserMovieService userMovieService,
+                            IReportService reportService, IMovieCountryService movieCountryService,
+                            ICountryService countryService, IMovieGenreService movieGenreService,
+                            IGenreService genreService)
     {
         _movieService = movieService;
         _userService = userService;
         _movieCreatorService = movieCreatorService;
         _userMovieService = userMovieService;
+        _reportService = reportService;
+        _movieCountryService = movieCountryService;
+        _countryService = countryService;
+        _genreService = genreService;
+        _movieGenreService = movieGenreService;
     }
 
     public async Task<IActionResult> Create()
     {
-        ViewBag.Genres = await _movieService.GetGenresDictionaryAsync();
-        ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
+        ViewBag.Genres = await _genreService.GetGenresDictionaryAsync();
+        ViewBag.Countries = await _countryService.GetCountriesDictionaryAsync();
         return View();
     }
 
@@ -38,8 +51,8 @@ public class MovieController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Genres = await _movieService.GetGenresDictionaryAsync();
-            ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
+            ViewBag.Genres = await _genreService.GetGenresDictionaryAsync();
+            ViewBag.Countries = await _countryService.GetCountriesDictionaryAsync();
             return View(movieViewModel);
         }
         var currentUser = await _userService.GetCurrentUserAsync(User);
@@ -54,18 +67,10 @@ public class MovieController : Controller
             movieViewModel.Description
         );
 
-        var result = await _movieService.AddMovieAsync(movie, currentUser);
+        await _movieService.AddMovieAsync(movie);
         await _movieCreatorService.AddMovieCreatorAsync(movie.Id, currentUser.Id);
-        await _movieService.ConnectToGenre(movieViewModel, movie);
-        await _movieService.ConnectToCountry(movieViewModel, movie);
-
-        if (!result.Success)
-        {
-            ViewBag.ErrorMessage = result.ErrorMessage;
-            ViewBag.Genres = await _movieService.GetGenresDictionaryAsync();
-            ViewBag.Countries = await _movieService.GetCountriesDictionaryAsync();
-            return View(movieViewModel);
-        }
+        await _movieGenreService.AddMovieGenre(movieViewModel, movie);
+        await _movieCountryService.AddMovieCountry(movieViewModel, movie);
 
         return RedirectToAction("ViewRating", "Movie");
     }
@@ -95,8 +100,8 @@ public class MovieController : Controller
             Description = movie.Description,
             SelectedGenreIds = movie.MovieGenres.Select(mg => mg.GenreId).ToList(),
             SelectedCountryIds = movie.MovieCountries.Select(mc => mc.CountryId).ToList(),
-            Genres = await _movieService.GetGenresDictionaryAsync(),
-            Countries = await _movieService.GetCountriesDictionaryAsync()
+            Genres = await _genreService.GetGenresDictionaryAsync(),
+            Countries = await _countryService.GetCountriesDictionaryAsync()
         };
 
         ViewBag.MovieId = id;
@@ -120,8 +125,8 @@ public class MovieController : Controller
 
         if (!ModelState.IsValid)
         {
-            movieViewModel.Genres = await _movieService.GetGenresDictionaryAsync();
-            movieViewModel.Countries = await _movieService.GetCountriesDictionaryAsync();
+            movieViewModel.Genres = await _genreService.GetGenresDictionaryAsync();
+            movieViewModel.Countries = await _countryService.GetCountriesDictionaryAsync();
             ViewBag.MovieId = id;
             return View(movieViewModel);
         }
@@ -133,19 +138,10 @@ public class MovieController : Controller
         movie.Director = movieViewModel.Director;
         movie.Description = movieViewModel.Description;
 
-        _movieService.UpdateMovieGenres(movie, movieViewModel.SelectedGenreIds);
-        _movieService.UpdateMovieCountries(movie, movieViewModel.SelectedCountryIds);
+        _movieGenreService.UpdateMovieGenre(movie, movieViewModel.SelectedGenreIds);
+        _movieCountryService.UpdateMovieCountry(movie, movieViewModel.SelectedCountryIds);
 
-        var result = await _movieService.UpdateMovieAsync(movie);
-        if (!result.Success)
-        {
-            ViewBag.ErrorMessage = result.ErrorMessage;
-
-            movieViewModel.Genres = await _movieService.GetGenresDictionaryAsync();
-            movieViewModel.Countries = await _movieService.GetCountriesDictionaryAsync();
-            ViewBag.MovieId = id;
-            return View(movieViewModel);
-        }
+        await _movieService.UpdateMovieAsync(movie);
 
         return RedirectToAction("ViewRating", "Movie");
     }
@@ -154,6 +150,12 @@ public class MovieController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         await _movieService.DeleteMovieAsync(id);
+        _movieGenreService.DeleteMovieGenres(id);
+        _movieCountryService.DeleteMovieCountries(id);
+        await _reportService.DeleteReportsForMovieAsync(id);
+        await _userMovieService.DeleteUserMoviesAsync(id);
+        await _movieCreatorService.DeleteMovieCreatorsAsync(id);
+
         return RedirectToAction("ViewRating", "Movie");
     }
 
@@ -179,7 +181,7 @@ public class MovieController : Controller
             }
         }
         
-        var reports = await _movieService.GetReportsForMovieAsync(id);
+        var reports = await _reportService.GetReportsForMovieAsync(id);
 
         var reportViewModel = reports.Select(r => new ReportViewModel
         {

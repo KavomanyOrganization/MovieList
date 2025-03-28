@@ -1,73 +1,83 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MVC.Data;
 using MVC.Models;
 using MVC.ViewModels;
+using MVC.Interfaces;
 
-namespace MVC.Services
+namespace MVC.Services;
+public class ReportService : IReportService
 {
-    public class ReportService
+    private readonly AppDbContext _context;
+
+    public ReportService(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        _context = context;
+    }
 
-        public ReportService(AppDbContext context)
+    public async Task<List<Report>> GetAllReportsAsync()
+    {
+        return await _context.Reports
+            .Include(r => r.Movie)
+            .OrderByDescending(r => r.CreationDate)
+            .ToListAsync();
+    }
+
+    public async Task<Report?> GetReportByIdAsync(int id)
+    {
+        return await _context.Reports.FindAsync(id);
+    }
+
+    public async Task<List<Report>> GetReportsForMovieAsync(int movieId)
+    {
+        return await _context.Reports
+                            .Where(r => r.MovieId == movieId)
+                            .ToListAsync();
+    }
+
+    public async Task<bool> CreateReportAsync(ReportViewModel reportViewModel)
+    {
+        var movie = await _context.Movies.FindAsync(reportViewModel.MovieId);
+        if (movie == null) return false;
+
+        var report = new Report
         {
-            _context = context;
-        }
+            Comment = reportViewModel.Comment,
+            CreationDate = DateTime.UtcNow,
+            MovieId = reportViewModel.MovieId
+        };
 
-        public async Task<List<Report>> GetAllReportsAsync()
-        {
-            return await _context.Reports
-                .Include(r => r.Movie)
-                .OrderByDescending(r => r.CreationDate)
-                .ToListAsync();
-        }
+        _context.Reports.Add(report);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
-        public async Task<Report?> GetReportByIdAsync(int id)
-        {
-            return await _context.Reports.FindAsync(id);
-        }
+    public async Task<bool> DeleteReportAsync(int id)
+    {
+        var report = await _context.Reports.FindAsync(id);
+        if (report == null) return false;
 
-        public async Task<bool> CreateReportAsync(ReportViewModel reportViewModel)
-        {
-            var movie = await _context.Movies.FindAsync(reportViewModel.MovieId);
-            if (movie == null) return false;
+        _context.Reports.Remove(report);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
-            var report = new Report
-            {
-                Comment = reportViewModel.Comment,
-                CreationDate = DateTime.UtcNow,
-                MovieId = reportViewModel.MovieId
-            };
+    public async Task<List<Report>> FilterReportsAsync(DateTime? startDate, DateTime? endDate)
+    {
+        startDate = (startDate ?? DateTime.Now.AddMonths(-1)).ToUniversalTime();
+        endDate = (endDate ?? DateTime.Now).ToUniversalTime();
 
-            _context.Reports.Add(report);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        return await _context.Reports
+            .Include(r => r.Movie)
+            .Where(r => r.CreationDate >= startDate.Value && r.CreationDate <= endDate.Value.AddDays(1))
+            .OrderByDescending(r => r.CreationDate)
+            .ToListAsync();
+    }
 
-        public async Task<bool> DeleteReportAsync(int id)
-        {
-            var report = await _context.Reports.FindAsync(id);
-            if (report == null) return false;
-
-            _context.Reports.Remove(report);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<List<Report>> FilterReportsAsync(DateTime? startDate, DateTime? endDate)
-        {
-            startDate = (startDate ?? DateTime.Now.AddMonths(-1)).ToUniversalTime();
-            endDate = (endDate ?? DateTime.Now).ToUniversalTime();
-
-            return await _context.Reports
-                .Include(r => r.Movie)
-                .Where(r => r.CreationDate >= startDate.Value && r.CreationDate <= endDate.Value.AddDays(1))
-                .OrderByDescending(r => r.CreationDate)
-                .ToListAsync();
-        }
+    public async Task DeleteReportsForMovieAsync(int movieId)
+    {
+        var reports = await _context.Reports.Where(r => r.MovieId == movieId).ToListAsync();
+        _context.Reports.RemoveRange(reports);
+        await _context.SaveChangesAsync();
     }
 }
+

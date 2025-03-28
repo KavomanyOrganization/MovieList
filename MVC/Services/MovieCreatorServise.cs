@@ -1,11 +1,11 @@
 using MVC.Models;
-using MVC.ViewModels;
 using MVC.Data;
 using Microsoft.EntityFrameworkCore;
+using MVC.Interfaces;
 
 namespace MVC.Services;
 
-public class MovieCreatorService
+public class MovieCreatorService : IMovieCreatorService
 {
     private readonly AppDbContext _context;
 
@@ -14,25 +14,23 @@ public class MovieCreatorService
         _context = context;
     }
 
-    public async Task<(bool Success, string ErrorMessage)> AddMovieCreatorAsync(int movieId, string creatorId)
+    public async Task AddMovieCreatorAsync(int movieId, string creatorId)
     {
         if (await _context.MovieCreators.AnyAsync(mc => mc.MovieId == movieId && mc.UserId == creatorId))
-            return (false, "Creator already exists!");
+            throw new InvalidOperationException("Creator already exists!");
 
         _context.MovieCreators.Add(new MovieCreator { MovieId = movieId, UserId = creatorId });
         await _context.SaveChangesAsync();
-        return (true, string.Empty);
     }
 
-    public async Task<(bool Success, string ErrorMessage)> DeleteMovieCreatorAsync(int movieId, string creatorId)
+    public async Task DeleteMovieCreatorAsync(int movieId, string creatorId)
     {
         var movieCreator = await _context.MovieCreators.FirstOrDefaultAsync(mc => mc.MovieId == movieId && mc.UserId == creatorId);
         if (movieCreator == null)
-            return (false, "Creator not found!");
+            throw new InvalidOperationException("No creator found for the specified movie.");
 
         _context.MovieCreators.Remove(movieCreator);
         await _context.SaveChangesAsync();
-        return (true, string.Empty);
     }
 
     public async Task<bool> IsCreatorAsync(int movieId, string creatorId)
@@ -52,5 +50,11 @@ public class MovieCreatorService
         return user;
     }
 
+    public async Task DeleteMovieCreatorsAsync(int movieId)
+    {
+        var movieCreators = await _context.MovieCreators.Where(mc => mc.MovieId == movieId).ToListAsync();
+        _context.MovieCreators.RemoveRange(movieCreators);
+        await _context.SaveChangesAsync();
+    }
 
 }

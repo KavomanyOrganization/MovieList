@@ -3,14 +3,15 @@ using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using MVC.Interfaces;
 
 namespace MVC.Controllers
 {
     public class CountryController : Controller
     {
-        private readonly CountryService _countryService;
+        private readonly ICountryService _countryService;
 
-        public CountryController(CountryService countryService)
+        public CountryController(ICountryService countryService)
         {
             _countryService = countryService;
         }
