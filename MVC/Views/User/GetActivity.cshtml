@@ -2,8 +2,8 @@
 
 @{
     ViewData["Title"] = "User Activity";
-    var currentUser = Context.User.Identity.Name; // Отримуємо поточного користувача
-    var isAdmin = Context.User.IsInRole("Admin"); // Перевіряємо, чи є поточний користувач адміністратором
+    var currentUser = Context.User?.Identity?.Name ?? "Guest"; 
+    var isAdmin = Context!.User!.IsInRole("Admin");
 }
 
 <h2>User Activity</h2>

@@ -61,8 +61,12 @@
                         <div class="mb-3">
                             <label class="form-label">Genres</label>
                             <select asp-for="SelectedGenreIds" class="form-control select2-genres" multiple="multiple">
-                                @foreach (var genre in Model.Genres) {
-                                    <option value="@genre.Key">@genre.Value</option>
+                                @if (Model.Genres != null)
+                                {
+                                    foreach (var genre in Model.Genres)
+                                    {
+                                        <option value="@genre.Key">@genre.Value</option>
+                                    }
                                 }
                             </select>
                             <span asp-validation-for="SelectedGenreIds" class="text-danger"></span>
@@ -71,8 +75,12 @@
                         <div class="mb-3">
                             <label class="form-label">Countries</label>
                             <select asp-for="SelectedCountryIds" class="form-control select2-countries" multiple="multiple">
-                                @foreach (var country in Model.Countries) {
-                                    <option value="@country.Key">@country.Value</option>
+                                @if (Model.Countries != null)
+                                {
+                                    foreach (var country in Model.Countries)
+                                    {
+                                        <option value="@country.Key">@country.Value</option>
+                                    }
                                 }
                             </select>
                             <span asp-validation-for="SelectedCountryIds" class="text-danger"></span>
