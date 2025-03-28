@@ -62,11 +62,22 @@ namespace MVC.Controllers
             return View(genreViewModel);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Update(int id, GenreViewModel genreViewModel)
         {
-            if (!await _genreService.UpdateGenreAsync(id, genreViewModel.Name))
+            if (!ModelState.IsValid)
+            {
+                return View(genreViewModel);
+            }
+
+            var genre = await _genreService.GetGenreByIdAsync(id);
+            if (genre == null)
+            {
+                return NotFound();
+            }
+
+            bool isUpdated = await _genreService.UpdateGenreAsync(id, genreViewModel.Name);
+            if (!isUpdated)
             {
                 ModelState.AddModelError("Name", "A genre with this name already exists.");
                 ViewBag.GenreId = id;
@@ -75,5 +86,6 @@ namespace MVC.Controllers
 
             return RedirectToAction("GetAll");
         }
+
     }
 }
