@@ -2,10 +2,11 @@ using MVC.Models;
 using MVC.ViewModels;
 using MVC.Data;
 using Microsoft.EntityFrameworkCore;
+using MVC.Interfaces;
 
 namespace MVC.Services;
 
-public class MovieCountryService
+public class MovieCountryService : IMovieCountryService
 {
     private readonly AppDbContext _context;
 

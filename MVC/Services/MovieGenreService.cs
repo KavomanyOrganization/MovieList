@@ -1,9 +1,10 @@
 using MVC.Models;
 using MVC.ViewModels;
 using MVC.Data;
+using MVC.Interfaces;
 
 namespace MVC.Services;
-public class MovieGenreService
+public class MovieGenreService : IMovieGenreService
 {
     private readonly AppDbContext _context;
 
