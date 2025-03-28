@@ -9,4 +9,5 @@ public interface ICountryService
     Task<bool> CreateCountryAsync(string name);
     Task<bool> UpdateCountryAsync(int id, string name);
     Task<bool> DeleteCountryAsync(int id);
+    Task<Dictionary<int, string>> GetCountriesDictionaryAsync();
 }

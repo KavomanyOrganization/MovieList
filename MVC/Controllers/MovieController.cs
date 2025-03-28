@@ -5,27 +5,27 @@ using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using System.Diagnostics;
+using MVC.Interfaces;
 
 namespace MVC.Controllers;
 
 public class MovieController : Controller
 {
-    protected readonly MovieService _movieService;
-    protected readonly UserService _userService;
-    protected readonly MovieCreatorService _movieCreatorService;
-    protected readonly UserMovieService _userMovieService;
-    protected readonly ReportService _reportService;
-    protected readonly MovieCountryService _movieCountryService;
-    protected readonly CountryService _countryService;
-    protected readonly GenreService _genreService;
-    protected readonly MovieGenreService _movieGenreService;
+    protected readonly IMovieService _movieService;
+    protected readonly IUserService _userService;
+    protected readonly IMovieCreatorService _movieCreatorService;
+    protected readonly IUserMovieService _userMovieService;
+    protected readonly IReportService _reportService;
+    protected readonly IMovieCountryService _movieCountryService;
+    protected readonly ICountryService _countryService;
+    protected readonly IGenreService _genreService;
+    protected readonly IMovieGenreService _movieGenreService;
 
-    public MovieController(MovieService movieService, UserService userService, 
-                            MovieCreatorService movieCreatorService, UserMovieService userMovieService,
-                            ReportService reportService, MovieCountryService movieCountryService,
-                            CountryService countryService, MovieGenreService movieGenreService,
-                            GenreService genreService)
+    public MovieController(IMovieService movieService, IUserService userService, 
+                            IMovieCreatorService movieCreatorService, IUserMovieService userMovieService,
+                            IReportService reportService, IMovieCountryService movieCountryService,
+                            ICountryService countryService, IMovieGenreService movieGenreService,
+                            IGenreService genreService)
     {
         _movieService = movieService;
         _userService = userService;

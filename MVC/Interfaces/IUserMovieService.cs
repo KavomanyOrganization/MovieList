@@ -8,4 +8,5 @@ public interface IUserMovieService
     Task UpdateUserMovieAsync(int movieId, string userId, bool isWatched, int rating = -1);
     Task<List<UserMovie>> GetUserMoviesAsync(string userId, bool isWatched);
     Task<List<int>> GetMovieRatingAsync(int movieId);
+    Task DeleteUserMoviesAsync(int movieId);
 }

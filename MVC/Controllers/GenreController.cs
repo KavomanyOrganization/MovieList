@@ -2,15 +2,15 @@ using MVC.ViewModels;
 using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
+using MVC.Interfaces;
 
 namespace MVC.Controllers
 {
     public class GenreController : Controller
     {
-        private readonly GenreService _genreService;
+        private readonly IGenreService _genreService;
 
-        public GenreController(GenreService genreService)
+        public GenreController(IGenreService genreService)
         {
             _genreService = genreService;
         }

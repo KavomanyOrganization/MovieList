@@ -8,9 +8,9 @@ namespace MVC.Services;
 public class MovieService : IMovieService
 {
     private readonly AppDbContext _context;
-    private readonly UserMovieService _userMovieService;
+    private readonly IUserMovieService _userMovieService;
 
-    public MovieService(AppDbContext context, UserMovieService userMovieService)
+    public MovieService(AppDbContext context, IUserMovieService userMovieService)
     {
         _context = context;
         _userMovieService = userMovieService;
