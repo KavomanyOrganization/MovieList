@@ -67,9 +67,20 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(int id, CountryViewModel countryViewModel)
         {
-            if (!await _countryService.UpdateCountryAsync(id, countryViewModel.Name))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Name", "A ciuntry with this name already exists.");
+                return View(countryViewModel);
+            }
+            var country = await _countryService.GetCountryByIdAsync(id);
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            bool isUpdated = await _countryService.UpdateCountryAsync(id, countryViewModel.Name);
+            if (!isUpdated)
+            {
+                ModelState.AddModelError("Name", "A country with this name already exists.");
                 ViewBag.CountryId = id;
                 return View(countryViewModel);
             }
