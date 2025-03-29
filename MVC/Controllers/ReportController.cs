@@ -12,7 +12,7 @@ namespace MVC.Controllers
     {
         private readonly IReportService _reportService;
 
-        public ReportController(ReportService reportService)
+        public ReportController(IReportService reportService)
         {
             _reportService = reportService;
         }
@@ -59,8 +59,15 @@ namespace MVC.Controllers
                 return NotFound();
             }
 
-            return Redirect(Request.Headers["Referer"].ToString());
+            string referer = Request.Headers["Referer"].ToString();
+            if (string.IsNullOrEmpty(referer))
+            {
+                return RedirectToAction("GetAll", "Report");
+            }
+
+            return Redirect(referer);
         }
+
 
         public async Task<IActionResult> Filter(DateTime? startDate, DateTime? endDate)
         {
