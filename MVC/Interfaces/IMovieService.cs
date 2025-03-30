@@ -5,7 +5,7 @@ public interface IMovieService
 {
     Task AddMovieAsync(Movie movie);
     Task<List<Movie>> GetAllMoviesAsync();
-    Task<Movie> GetMovieById(int id);
+    Task<Movie?> GetMovieById(int id);
     Task<Movie> GetMovieByIdWithRelationsAsync(int id);
     Task UpdateMovieAsync(Movie movie);
     Task DeleteMovieAsync(int id);

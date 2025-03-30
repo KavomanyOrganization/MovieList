@@ -61,14 +61,13 @@ public class DetailsActionTests
     {
         // Arrange
         var movie = new MVC.Models.Movie { Id = 1, Title = "Test Movie" };
-        var reports = new List<Report>(); // Додаємо порожній список репортів
+        var reports = new List<Report>(); 
         
         _mockMovieService.Setup(s => s.GetMovieById(1))
             .ReturnsAsync(movie);
         _mockReportService.Setup(s => s.GetReportsForMovieAsync(1))
             .ReturnsAsync(reports);
         
-        // Налаштовуємо поведінку для аутентифікованого користувача
         var user = new User { Id = "test-user" };
         _mockUserService.Setup(u => u.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
@@ -79,7 +78,6 @@ public class DetailsActionTests
         _mockMovieCreatorService.Setup(m => m.IsCreatorAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(false);
 
-        // Створюємо контекст користувача для контролера
         var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new Claim(ClaimTypes.Name, "test@example.com")
@@ -112,7 +110,6 @@ public class DetailsActionTests
         _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
             
-        // Налаштовуємо обидва виклики GetUserMoviesAsync
         _mockUserMovieService.Setup(s => s.GetUserMoviesAsync("user1", true))
             .ReturnsAsync(new List<UserMovie> { new UserMovie { MovieId = 1 } });
         _mockUserMovieService.Setup(s => s.GetUserMoviesAsync("user1", false))
@@ -153,7 +150,6 @@ public class DetailsActionTests
         _mockReportService.Setup(s => s.GetReportsForMovieAsync(1))
             .ReturnsAsync(reports);
         
-        // Налаштовуємо поведінку для аутентифікованого користувача
         var user = new User { Id = "test-user" };
         _mockUserService.Setup(u => u.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
@@ -164,7 +160,6 @@ public class DetailsActionTests
         _mockMovieCreatorService.Setup(m => m.IsCreatorAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(false);
 
-        // Створюємо контекст користувача для контролера
         var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
             new Claim(ClaimTypes.Name, "test@example.com")
