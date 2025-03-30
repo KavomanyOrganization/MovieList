@@ -29,7 +29,7 @@ public class MovieService : IMovieService
         return await _context.Movies.ToListAsync();
     }
 
-    public async Task<Movie> GetMovieById(int id)
+    public async Task<Movie?> GetMovieById(int id)
     {
         return await _context.Movies.FindAsync(id) ?? throw new InvalidOperationException("Movie not found.");
     }
