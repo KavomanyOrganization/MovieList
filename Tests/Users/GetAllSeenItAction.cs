@@ -14,7 +14,7 @@ using MVC.Interfaces;
 
 namespace Tests.Users
 {
-    public class GetAllSeenItTestsAction
+    public class GetAllSeenItAction
     {
         private readonly Mock<IUserService> _mockUserService;
         private readonly Mock<IUserMovieService> _mockUserMovieService;
@@ -22,7 +22,7 @@ namespace Tests.Users
         private readonly Mock<IMovieCreatorService> _mockMovieCreatorService;
         private readonly UserController _controller;
 
-        public GetAllSeenItTestsAction()
+        public GetAllSeenItAction()
         {
             _mockUserService = new Mock<IUserService>();
             _mockUserMovieService = new Mock<IUserMovieService>();
