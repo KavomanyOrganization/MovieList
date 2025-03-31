@@ -233,7 +233,7 @@ public class UpdateActionTests
 
         var movieViewModel = new MovieViewModel
         {
-            Title = "", // Invalid model
+            Title = "", 
             Year = 2023
         };
 

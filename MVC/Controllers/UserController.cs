@@ -192,7 +192,7 @@ public class UserController : Controller
 
         foreach (var movie in movies)
         {
-            if (movie.CreationDate >= startDate.Value && movie.CreationDate <= endDate.Value+TimeSpan.FromDays(1))
+            if (movie.CreationDate >= startDate.Value && movie.CreationDate <= endDate.Value)
             {
                 var creator = await _movieCreatorService.GetCreatorAsync(movie.Id);
                 if (creator != null)
