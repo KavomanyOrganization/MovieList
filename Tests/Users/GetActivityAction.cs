@@ -38,7 +38,7 @@ namespace Tests.Users
         [Fact]
         public async Task GetActivity_WithNoDateParameters_ReturnsMoviesFromLastMonth()
         {
-            // Arrange
+             
             var expectedStartDate = DateTime.Now.AddMonths(-1);
             var expectedEndDate = DateTime.Now;
 
@@ -56,10 +56,10 @@ namespace Tests.Users
             _mockMovieCreatorService.Setup(s => s.GetCreatorAsync(It.IsAny<int>()))
                 .ReturnsAsync(testCreator);
 
-            // Act
+             
             var result = await _controller.GetActivity(null, null);
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<Dictionary<MVC.Models.Movie, MVC.Models.User>>(viewResult.Model);
             Assert.Equal(2, model.Count);
@@ -70,7 +70,7 @@ namespace Tests.Users
         [Fact]
         public async Task GetActivity_WithSpecificDateRange_ReturnsMoviesInRange()
         {
-            // Arrange
+             
             var startDate = new DateTime(2025, 3, 15);
             var endDate = new DateTime(2025, 3, 20);
 
@@ -89,10 +89,10 @@ namespace Tests.Users
             _mockMovieCreatorService.Setup(s => s.GetCreatorAsync(It.IsAny<int>()))
                 .ReturnsAsync(testCreator);
 
-            // Act
+             
             var result = await _controller.GetActivity(startDate, endDate);
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<Dictionary<MVC.Models.Movie, MVC.Models.User>>(viewResult.Model);
             Assert.Equal(2, model.Count);
@@ -104,7 +104,7 @@ namespace Tests.Users
         [Fact]
         public async Task GetActivity_WithNoMoviesInRange_ReturnsEmptyDictionary()
         {
-            // Arrange
+             
             var startDate = new DateTime(2025, 1, 1);
             var endDate = new DateTime(2025, 1, 10);
 
@@ -117,10 +117,10 @@ namespace Tests.Users
             _mockMovieService.Setup(s => s.GetAllMoviesAsync())
                 .ReturnsAsync(testMovies);
 
-            // Act
+             
             var result = await _controller.GetActivity(startDate, endDate);
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<Dictionary<MVC.Models.Movie, MVC.Models.User>>(viewResult.Model);
             Assert.Empty(model);
@@ -129,7 +129,7 @@ namespace Tests.Users
         [Fact]
         public async Task GetActivity_WhenCreatorIsNull_SkipsMovie()
         {
-            // Arrange
+             
             var testMovies = new List<MVC.Models.Movie>
             {
                 new MVC.Models.Movie { Id = 1, Title = "With Creator", CreationDate = DateTime.Now.AddDays(-5) },
@@ -147,10 +147,10 @@ namespace Tests.Users
             _mockMovieCreatorService.Setup(s => s.GetCreatorAsync(2))
                 .ReturnsAsync((MVC.Models.User?)null);
 
-            // Act
+             
             var result = await _controller.GetActivity(null, null);
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<Dictionary<MVC.Models.Movie, MVC.Models.User>>(viewResult.Model);
             Assert.Single(model);
@@ -161,7 +161,7 @@ namespace Tests.Users
         [Fact]
         public async Task GetActivity_CorrectlyHandlesEndDateInclusive()
         {
-            // Arrange
+             
             var startDate = new DateTime(2025, 3, 1);
             var endDate = new DateTime(2025, 3, 15);
             
@@ -180,10 +180,10 @@ namespace Tests.Users
             _mockMovieCreatorService.Setup(s => s.GetCreatorAsync(It.IsAny<int>()))
                 .ReturnsAsync(testCreator);
 
-            // Act
+             
             var result = await _controller.GetActivity(startDate, endDate);
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<Dictionary<MVC.Models.Movie, MVC.Models.User>>(viewResult.Model);
             Assert.Equal(2, model.Count);
