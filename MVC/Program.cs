@@ -3,11 +3,25 @@ using Microsoft.EntityFrameworkCore;
 using MVC.Models;
 using DotNetEnv;
 using MVC.Data;
+using MVC.Services;
+using MVC.Interfaces;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<MVC.Services.MovieService>();
-builder.Services.AddScoped<MVC.Services.UserService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMovieCreatorService, MovieCreatorService>();
+builder.Services.AddScoped<IUserMovieService, UserMovieService>();
+
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IMovieGenreService, MovieGenreService>();
+
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<IMovieCountryService, MovieCountryService>();
+
+builder.Services.AddScoped<IReportService, ReportService>();
+
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

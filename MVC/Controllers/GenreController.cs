@@ -1,103 +1,91 @@
 using MVC.ViewModels;
-using MVC.Models;
-using MVC.Data;
+using MVC.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using MVC.Interfaces;
 
-namespace MVC.Controllers;
-
-public class GenreController : Controller{
-    protected readonly AppDbContext _context;
-
-    public GenreController(AppDbContext appDbContext){
-        _context = appDbContext;
-    }
-
-    public async Task<IActionResult> GetAll()
+namespace MVC.Controllers
+{
+    public class GenreController : Controller
     {
-        var genres = await _context.Genres.OrderBy(g => g.Name).ToListAsync();
-        ViewBag.Genres = genres;
-        return View(new GenreViewModel());
-    }
+        private readonly IGenreService _genreService;
 
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> Create(GenreViewModel genreViewModel)
-    {
-        if (ModelState.IsValid)
+        public GenreController(IGenreService genreService)
         {
-            var existingGenre = await _context.Genres.FirstOrDefaultAsync(g =>
-                g.Name.ToLower() == genreViewModel.Name.ToLower()
-            );
+            _genreService = genreService;
+        }
 
-            if (existingGenre != null)
+        public async Task<IActionResult> GetAll()
+        {
+            ViewBag.Genres = await _genreService.GetAllGenresAsync();
+            return View(new GenreViewModel());
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Create(GenreViewModel genreViewModel)
+        {
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("Name", "A genre with this name already exists.");
-                var genres = await _context.Genres.OrderBy(g => g.Name).ToListAsync();
-                ViewBag.Genres = genres;
-                return View("GetAll", genreViewModel);
-            }
-            
-            Genre genre = new Genre { Name = genreViewModel.Name };
+                if (!await _genreService.CreateGenreAsync(genreViewModel.Name))
+                {
+                    ModelState.AddModelError("Name", "A genre with this name already exists.");
+                    ViewBag.Genres = await _genreService.GetAllGenresAsync();
+                    return View("GetAll", genreViewModel);
+                }
 
-            _context.Genres.Add(genre);
-            await _context.SaveChangesAsync();
+                return RedirectToAction("GetAll");
+            }
+
+            ViewBag.Genres = await _genreService.GetAllGenresAsync();
+            return View("GetAll", genreViewModel);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (!await _genreService.DeleteGenreAsync(id))
+                return NotFound();
 
             return RedirectToAction("GetAll");
         }
 
-        var allGenres = await _context.Genres.OrderBy(g => g.Name).ToListAsync();
-        ViewBag.Genres = allGenres;
-        return View("GetAll", genreViewModel);
-    }
-
-    [Authorize(Roles="Admin")]
-    public async Task<IActionResult> Delete(int id){
-        var genre = await _context.Genres.FindAsync(id);
-        if (genre == null)
-            return NotFound();
-
-        _context.Genres.Remove(genre);
-        await _context.SaveChangesAsync();
-        return RedirectToAction("GetAll");
-    }
-
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id)
-    {
-        Genre? genre = await _context.Genres.FindAsync(id);
-        if (genre == null)
-            return NotFound();
-            
-        var genreViewModel = new GenreViewModel { Name = genre.Name };
-        
-        ViewBag.GenreId = id;
-        return View(genreViewModel);
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPost]
-    public async Task<IActionResult> Update(int id, GenreViewModel genreViewModel){
-        Genre? genre = await _context.Genres.FindAsync(id);
-        if (genre == null)
-            return NotFound();
-
-        bool isDuplicate = await _context.Genres
-        .AnyAsync(g => g.Name == genreViewModel.Name && g.Id != id);
-
-        if (isDuplicate)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id)
         {
-            ModelState.AddModelError("Name", "A genre with this name already exists.");
+            var genre = await _genreService.GetGenreByIdAsync(id);
+            if (genre == null)
+                return NotFound();
+
+            var genreViewModel = new GenreViewModel { Name = genre.Name };
             ViewBag.GenreId = id;
             return View(genreViewModel);
         }
 
-        genre.Name = genreViewModel.Name;
+        [HttpPost]
+        public async Task<IActionResult> Update(int id, GenreViewModel genreViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(genreViewModel);
+            }
 
-        _context.Genres.Update(genre);
-        await _context.SaveChangesAsync();
-        return RedirectToAction("GetAll");
+            var genre = await _genreService.GetGenreByIdAsync(id);
+            if (genre == null)
+            {
+                return NotFound();
+            }
+
+            bool isUpdated = await _genreService.UpdateGenreAsync(id, genreViewModel.Name);
+            if (!isUpdated)
+            {
+                ModelState.AddModelError("Name", "A genre with this name already exists.");
+                ViewBag.GenreId = id;
+                return View(genreViewModel);
+            }
+
+            return RedirectToAction("GetAll");
+        }
+
     }
 }

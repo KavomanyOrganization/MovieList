@@ -24,8 +24,8 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         
                         <div class="mb-3">
-                            <label asp-for="Title" class="form-label">Title</label>
-                            <input asp-for="Title" class="form-control" />
+                            <label asp-for="Title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" required />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                         
@@ -59,8 +59,8 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Genres</label>
-                            <select asp-for="SelectedGenreIds" class="form-control select2-genres" multiple="multiple">
+                            <label class="form-label">Genres <span class="text-danger">*</span></label>
+                            <select asp-for="SelectedGenreIds" class="form-control select2-genres" multiple="multiple" required>
                                 @foreach (var genre in ViewBag.Genres) {
                                     <option value="@genre.Key">@genre.Value</option>
                                 }
@@ -69,8 +69,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Countries</label>
-                            <select asp-for="SelectedCountryIds" class="form-control select2-countries" multiple="multiple">
+                            <label class="form-label">Countries <span class="text-danger">*</span></label>
+                            <select asp-for="SelectedCountryIds" class="form-control select2-countries" multiple="multiple" required>
                                 @foreach (var country in ViewBag.Countries) {
                                     <option value="@country.Key">@country.Value</option>
                                 }

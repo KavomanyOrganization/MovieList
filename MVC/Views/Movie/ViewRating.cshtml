@@ -5,16 +5,17 @@
     ViewData["Title"] = "Movie Ratings";
     var currentUser = await UserManager.GetUserAsync(User);
     var isUserBanned = currentUser?.IsBanned ?? false;
+    var searchTerm = Context.Request.Query["searchTerm"].ToString();
+    var hasSearchTerm = !string.IsNullOrEmpty(searchTerm);
 }
 
 <div class="container mt-4">
     <h1>Movie Ratings</h1>
-
-    @if (User.IsInRole("User") || User.IsInRole("Admin"))
-    {
-        <div class="row mb-4">
-            <div class="col">
-                <div class="d-flex justify-content-between align-items-center">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                @if (User.IsInRole("User") || User.IsInRole("Admin"))
+                {
                     @if (isUserBanned)
                     {
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bannedUserModal">
@@ -27,20 +28,30 @@
                             <i class="bi bi-plus-circle"></i> Add Movie
                         </a>
                     }
-                    <form asp-controller="Movie" asp-action="Search" method="get" class="d-flex ms-auto">
-                        <div class="input-group" style="max-width: 300px;">
-                            <input type="text" name="searchTerm" class="form-control" placeholder="Search..." />
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-primary rounded-end">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
+                }
+                else
+                {
+                    <div></div> <!-- Empty div to maintain flex spacing -->
+                }
+                <form asp-controller="Movie" asp-action="Search" method="get" class="d-flex ms-auto" id="searchForm">
+                    <div class="input-group" style="max-width: 400px;">
+                        <input type="text" name="searchTerm" class="form-control" placeholder="Search..." value="@searchTerm" />
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            @if (hasSearchTerm)
+                            {
+                                <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            }
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
-    }
+    </div>
 
     @if (Model.Any())
     {
@@ -106,7 +117,15 @@
     else
     {
         <div class="alert alert-info">
-            <p>No movies have been added yet. Click the "Add Movie" button to get started.</p>
+            @if (hasSearchTerm)
+            {
+                <p>No movies found matching your search criteria.</p>
+                <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-outline-primary">Clear search</a>
+            }
+            else
+            {
+                <p>No movies have been added yet. Click the "Add Movie" button to get started.</p>
+            }
         </div>
     }
 </div>

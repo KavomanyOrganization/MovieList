@@ -4,17 +4,23 @@ using Microsoft.AspNetCore.Identity;
 using MVC.Models;
 using MVC.Services;
 using MVC.ViewModels;
+using MVC.Interfaces;
 
 namespace MVC.Controllers;
 public class UserController : Controller
 {
-    private readonly UserService _userService;
-    private readonly MovieService _movieService;
+    private readonly IUserService _userService;
+    private readonly IMovieService _movieService;
+    private readonly IMovieCreatorService _movieCreatorService;
+    private readonly IUserMovieService _userMovieService;
 
-    public UserController(UserService userService, MovieService movieService)
+    public UserController(IUserService userService, IMovieService movieService, 
+                        IMovieCreatorService movieCreatorService, IUserMovieService userMovieService)
     {
         _userService = userService;
         _movieService = movieService;
+        _movieCreatorService = movieCreatorService;
+        _userMovieService = userMovieService;
     }
 
     public IActionResult Login()
@@ -111,7 +117,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }                     
 
-        await _userService.ConnectUserMovie(user, movieId, true, rating);
+        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating);
         await _movieService.CalculateRating(movieId);
 
         var referer = Request.Headers["Referer"].ToString();
@@ -131,7 +137,7 @@ public class UserController : Controller
         {
             return RedirectToAction("Login");
         }
-        await _userService.DeleteUserMovie(user, id);
+        await _userMovieService.DeleteUserMovieAsync(user.Id, id);
         await _movieService.CalculateRating(id);
 
         var referer = Request.Headers["Referer"].ToString();
@@ -153,7 +159,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
 
-        var userMovies = await _userService.GetUserMovies(user, true);
+        var userMovies = await _userMovieService.GetUserMoviesAsync(user.Id, true);
 
         if (userMovies == null || !userMovies.Any())
         {
@@ -186,9 +192,9 @@ public class UserController : Controller
 
         foreach (var movie in movies)
         {
-            if (movie.CreationDate >= startDate.Value && movie.CreationDate <= endDate.Value+TimeSpan.FromDays(1))
+            if (movie.CreationDate >= startDate.Value && movie.CreationDate <= endDate.Value)
             {
-                var creator = await _movieService.GetCreatorAsync(movie.Id);
+                var creator = await _movieCreatorService.GetCreatorAsync(movie.Id);
                 if (creator != null)
                 {
                     moviesCreators.Add(new KeyValuePair<Movie, User>(movie, creator));
@@ -211,7 +217,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
 
-        await _userService.ConnectUserMovie(user, movieId, false, -1);
+        await _userMovieService.AddUserMovieAsync(user.Id, movieId, false, -1);
 
         var referer = Request.Headers["Referer"].ToString();
         if (!string.IsNullOrEmpty(referer))
@@ -232,7 +238,7 @@ public class UserController : Controller
             return RedirectToAction("Login");
         }
 
-        var userMovies = await _userService.GetUserMovies(user, false);
+        var userMovies = await _userMovieService.GetUserMoviesAsync(user.Id, false);
 
         if (userMovies == null || !userMovies.Any())
         {
@@ -267,7 +273,7 @@ public class UserController : Controller
         }
         else
         {
-            ViewBag.UserMovies = await _userService.GetUserMovies(currentUser, true);
+            ViewBag.UserMovies = await _userMovieService.GetUserMoviesAsync(currentUser.Id, true);
             return View("GetAllSeenIt", movies);
         }
     }

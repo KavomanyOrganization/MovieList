@@ -8,7 +8,7 @@
         var user = await UserManager.GetUserAsync(User);
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user me-2"></i> @user.UserName
+                <i class="fas fa-user me-2"></i> @(user?.UserName ?? "Guest")
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="navbarDropdown">
                 <li>
