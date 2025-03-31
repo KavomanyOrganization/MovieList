@@ -10,9 +10,9 @@ using MVC.Interfaces;
 using MVC.Models;
 using Xunit;
 
-namespace MVC.Tests
+namespace Tests.Users
 {
-    public class GetAllToWatchActionTests
+    public class GetAllToWatchAction
     {
         private readonly Mock<IUserService> _mockUserService;
         private readonly Mock<IMovieService> _mockMovieService;
@@ -20,7 +20,7 @@ namespace MVC.Tests
         private readonly Mock<IUserMovieService> _mockUserMovieService;
         private readonly UserController _controller;
 
-        public GetAllToWatchActionTests()
+        public GetAllToWatchAction()
         {
             _mockUserService = new Mock<IUserService>();
             _mockMovieService = new Mock<IMovieService>();
@@ -38,14 +38,14 @@ namespace MVC.Tests
         [Fact]
         public async Task GetAllToWatch_UserNotFound_RedirectsToLogin()
         {
-            // Arrange
+             
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync((User?)null);
 
-            // Act
+             
             var result = await _controller.GetAllToWatch();
 
-            // Assert
+             
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Login", redirectResult.ActionName);
         }
@@ -53,7 +53,7 @@ namespace MVC.Tests
         [Fact]
         public async Task GetAllToWatch_NoUserMovies_ReturnsEmptyList()
         {
-            // Arrange
+             
             var user = new User { Id = "user123" };
             
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
@@ -62,19 +62,19 @@ namespace MVC.Tests
             _mockUserMovieService.Setup(s => s.GetUserMoviesAsync(user.Id, false))
                 .ReturnsAsync(new List<UserMovie>());
 
-            // Act
+             
             var result = await _controller.GetAllToWatch();
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<List<Movie>>(viewResult.Model);
+            var model = Assert.IsAssignableFrom<List<MVC.Models.Movie>>(viewResult.Model);
             Assert.Empty(model);
         }
 
         [Fact]
         public async Task GetAllToWatch_WithUserMovies_ReturnsMoviesList()
         {
-            // Arrange
+             
             var userId = "user123";
             var user = new User { Id = userId };
             
@@ -84,8 +84,8 @@ namespace MVC.Tests
                 new UserMovie { UserId = userId, MovieId = 2 }
             };
             
-            var movie1 = new Movie { Id = 1, Title = "Movie 1" };
-            var movie2 = new Movie { Id = 2, Title = "Movie 2" };
+            var movie1 = new MVC.Models.Movie { Id = 1, Title = "Movie 1" };
+            var movie2 = new MVC.Models.Movie { Id = 2, Title = "Movie 2" };
             
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(user);
@@ -99,12 +99,12 @@ namespace MVC.Tests
             _mockMovieService.Setup(s => s.GetMovieById(2))
                 .ReturnsAsync(movie2);
 
-            // Act
+             
             var result = await _controller.GetAllToWatch();
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<List<Movie>>(viewResult.Model);
+            var model = Assert.IsAssignableFrom<List<MVC.Models.Movie>>(viewResult.Model);
             
             Assert.Equal(2, model.Count);
             Assert.Contains(model, m => m.Id == 1);
@@ -114,7 +114,7 @@ namespace MVC.Tests
         [Fact]
         public async Task GetAllToWatch_SetsViewBagUserMovies()
         {
-            // Arrange
+             
             var userId = "user123";
             var user = new User { Id = userId };
             
@@ -131,12 +131,12 @@ namespace MVC.Tests
                 .ReturnsAsync(userMovies);
                 
             _mockMovieService.Setup(s => s.GetMovieById(It.IsAny<int>()))
-                .ReturnsAsync(new Movie());
+                .ReturnsAsync(new MVC.Models.Movie());
 
-            // Act
+             
             var result = await _controller.GetAllToWatch();
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(userMovies, viewResult.ViewData["UserMovies"]);
         }
@@ -144,7 +144,7 @@ namespace MVC.Tests
         [Fact]
         public async Task GetAllToWatch_SkipsNullMovies()
         {
-            // Arrange
+             
             var userId = "user123";
             var user = new User { Id = userId };
             
@@ -154,7 +154,7 @@ namespace MVC.Tests
                 new UserMovie { UserId = userId, MovieId = 2 }
             };
             
-            var movie1 = new Movie { Id = 1, Title = "Movie 1" };
+            var movie1 = new MVC.Models.Movie { Id = 1, Title = "Movie 1" };
             
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(user);
@@ -166,14 +166,14 @@ namespace MVC.Tests
                 .ReturnsAsync(movie1);
                 
             _mockMovieService.Setup(s => s.GetMovieById(2))
-                .ReturnsAsync((Movie?)null!);
+                .ReturnsAsync((MVC.Models.Movie?)null!);
                 
-            // Act
+             
             var result = await _controller.GetAllToWatch();
 
-            // Assert
+             
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<List<Movie>>(viewResult.Model);
+            var model = Assert.IsAssignableFrom<List<MVC.Models.Movie>>(viewResult.Model);
             
             Assert.Single(model);
             Assert.Contains(model, m => m.Id == 1);
