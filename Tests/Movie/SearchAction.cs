@@ -40,13 +40,11 @@ public class SearchActionTests
             new MVC.Models.Movie { Id = 3, Title = "No Match", Rating = 3.5 }
         };
         
-        // Фільтруємо фільми локально для тесту
         var expectedMovies = allMovies
             .Where(m => m.Title!.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(m => m.Rating)
             .ToList();
 
-        // Налаштовуємо мок для повернення очікуваних фільмів
         _mockMovieService.Setup(s => s.SearchMoviesAsync(searchTerm))
             .ReturnsAsync(expectedMovies);
 
@@ -61,7 +59,7 @@ public class SearchActionTests
         var filteredMovies = model.ToList();
         
         Assert.Equal(2, filteredMovies.Count);
-        Assert.Equal("Test Movie", filteredMovies[0].Title); // Має бути першим через вищий рейтинг
+        Assert.Equal("Test Movie", filteredMovies[0].Title); 
         Assert.Equal("Another Test", filteredMovies[1].Title);
     }
 

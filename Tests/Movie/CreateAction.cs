@@ -128,7 +128,7 @@ public class CreateActionTests
         // Arrange
         var movieViewModel = new MovieViewModel
         {
-            Title = "", // Invalid as it's empty
+            Title = "", 
             Year = 2023
         };
 
