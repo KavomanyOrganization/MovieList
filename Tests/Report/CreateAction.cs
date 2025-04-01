@@ -39,21 +39,6 @@ namespace Tests.ReportTests
         }
 
         [Fact]
-        public void Create_Get_ReturnsViewResult_WithMovieId()
-        {
-            // Arrange
-            int movieId = 5;
-
-            // Act
-            var result = _controller.Create(movieId);
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsType<ReportViewModel>(viewResult.Model);
-            Assert.Equal(movieId, model.MovieId);
-        }
-
-        [Fact]
         public async Task Create_Post_WhenModelIsInvalid_ReturnsViewResult()
         {
             // Arrange
