@@ -72,3 +72,9 @@ body {
     width: auto;
     max-width: 100%;
 }
+
+.watched-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
