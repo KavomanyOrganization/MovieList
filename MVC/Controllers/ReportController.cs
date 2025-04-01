@@ -25,9 +25,9 @@ namespace MVC.Controllers
         }
 
         [Authorize]
-        public IActionResult Create(int movieId)
+        public IActionResult Create(int movieId, string userId)
         {
-            var model = new ReportViewModel { MovieId = movieId };
+            var model = new ReportViewModel { MovieId = movieId, UserId = userId };
             return View(model);
         }
 
@@ -40,7 +40,7 @@ namespace MVC.Controllers
                 return View(reportViewModel);
             }
 
-            var success = await _reportService.CreateReportAsync(reportViewModel);
+            var success = await _reportService.CreateReportAsync(reportViewModel, HttpContext.User);
             if (!success)
             {
                 return NotFound();
