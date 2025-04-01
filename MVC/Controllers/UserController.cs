@@ -208,6 +208,7 @@ public class UserController : Controller
 
         return View(moviesCreatorsDict);
     }
+
     [Authorize]
     public async Task<IActionResult> AddToWatch(int movieId)
     {
@@ -255,6 +256,7 @@ public class UserController : Controller
 
         return View(movies);
     }
+
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> SearchInList(string title, string listType)
@@ -277,6 +279,7 @@ public class UserController : Controller
             return View("GetAllSeenIt", movies);
         }
     }
+
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
     {
