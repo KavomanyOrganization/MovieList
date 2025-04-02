@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="dqAwI21ptG_BoxTXhNec" name="Page-1">
-        <mxGraphModel dx="4988" dy="3433" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="simple">
+        <mxGraphModel dx="3697" dy="2198" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="simple">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -38,7 +38,7 @@
                     <mxGeometry y="90" width="160" height="10" as="geometry"/>
                 </mxCell>
                 <mxCell id="33" value="&lt;b&gt;Genre&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1490" y="575" width="160" height="70" as="geometry"/>
+                    <mxGeometry x="-1860" y="590" width="160" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="35" value="+Name: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="33" vertex="1">
                     <mxGeometry y="30" width="160" height="30" as="geometry"/>
@@ -101,13 +101,13 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="120" value="&lt;b&gt;GenreViewModel&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-2020" y="505" width="140" height="52" as="geometry"/>
+                    <mxGeometry x="-1840" y="505" width="140" height="52" as="geometry"/>
                 </mxCell>
                 <mxCell id="121" value="+ Name: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="120" vertex="1">
                     <mxGeometry y="26" width="140" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="124" value="GenreController" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1830" y="505" width="280" height="130" as="geometry"/>
+                    <mxGeometry x="-1600" y="505" width="280" height="130" as="geometry"/>
                 </mxCell>
                 <mxCell id="129" value="+ GetAll():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="124" vertex="1">
                     <mxGeometry y="26" width="280" height="26" as="geometry"/>
@@ -121,10 +121,14 @@
                 <mxCell id="131" value="+ Update(int, string):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="124" vertex="1">
                     <mxGeometry y="104" width="280" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="132" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="131" target="35" edge="1">
-                    <mxGeometry width="160" relative="1" as="geometry">
-                        <mxPoint x="-860" y="735" as="sourcePoint"/>
+                <mxCell id="132" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.038;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="131" target="35" edge="1">
+                    <mxGeometry x="-0.0581" width="160" relative="1" as="geometry">
+                        <mxPoint x="-1490" y="640" as="sourcePoint"/>
                         <mxPoint x="-700" y="735" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="-1640" y="630"/>
+                        </Array>
+                        <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="134" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0;exitY=0.077;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="124" target="120" edge="1">
@@ -134,7 +138,7 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="136" value="&lt;b&gt;Country&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1490" y="805" width="160" height="70" as="geometry"/>
+                    <mxGeometry x="-1860" y="890" width="160" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="137" value="+Name: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" parent="136" vertex="1">
                     <mxGeometry y="30" width="160" height="30" as="geometry"/>
@@ -143,13 +147,13 @@
                     <mxGeometry y="60" width="160" height="10" as="geometry"/>
                 </mxCell>
                 <mxCell id="139" value="&lt;b&gt;CountryViewModel&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-2060" y="771" width="140" height="52" as="geometry"/>
+                    <mxGeometry x="-1840" y="779" width="140" height="52" as="geometry"/>
                 </mxCell>
                 <mxCell id="140" value="+ Name: type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="139" vertex="1">
                     <mxGeometry y="26" width="140" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="141" value="CountryController" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1840" y="745" width="290" height="130" as="geometry"/>
+                    <mxGeometry x="-1600" y="740" width="290" height="130" as="geometry"/>
                 </mxCell>
                 <mxCell id="143" value="+ GetAll():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="141" vertex="1">
                     <mxGeometry y="26" width="290" height="26" as="geometry"/>
@@ -163,7 +167,7 @@
                 <mxCell id="145" value="+ Update(int, string):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="141" vertex="1">
                     <mxGeometry y="104" width="290" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="146" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="142" target="136" edge="1">
+                <mxCell id="146" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0;exitY=0.846;exitDx=0;exitDy=0;entryX=0.995;entryY=0.144;entryDx=0;entryDy=0;exitPerimeter=0;entryPerimeter=0;" parent="1" source="144" target="137" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="-650" y="829" as="sourcePoint"/>
                         <mxPoint x="-490" y="829" as="targetPoint"/>
@@ -263,12 +267,12 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="177" value="&lt;b&gt;GenreMovie&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1490" y="494" width="160" height="36" as="geometry"/>
+                    <mxGeometry x="-2060" y="521" width="160" height="36" as="geometry"/>
                 </mxCell>
                 <mxCell id="180" value="&lt;b&gt;CountryMovie&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-1490" y="715" width="160" height="40" as="geometry"/>
+                    <mxGeometry x="-2060" y="830" width="160" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="183" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="177" target="33" edge="1">
+                <mxCell id="183" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="177" target="35" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="-899" y="262" as="sourcePoint"/>
                         <mxPoint x="-741" y="261" as="targetPoint"/>
@@ -672,6 +676,70 @@
                     <mxGeometry x="0.0111" y="2" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="354" value="GenreService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-1200" y="505" width="310" height="208" as="geometry"/>
+                </mxCell>
+                <mxCell id="355" value="+ GetAllGenresAsync():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;List&amp;lt;Genre&amp;gt;&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="354">
+                    <mxGeometry y="26" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="356" value="+ GenreExistASync(string, id):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="354">
+                    <mxGeometry y="52" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="357" value="+ GetGenreByIdAsync(int):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;Genre&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="354">
+                    <mxGeometry y="78" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="358" value="+ CreateGenreAsync(string):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="354">
+                    <mxGeometry y="104" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="363" value="+ UpdateGenreAsync(int, string):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="354">
+                    <mxGeometry y="130" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="364" value="+ DeleteGenreAsync(int):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="354">
+                    <mxGeometry y="156" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="365" value="+ GetGenresDictionary():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;Dictionary&amp;lt;int, string&amp;gt;&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="354">
+                    <mxGeometry y="182" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="361" style="edgeStyle=none;html=1;entryX=1.008;entryY=-0.038;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;endArrow=none;endFill=0;endSize=12;startArrow=open;startFill=0;exitX=0.894;exitY=0.008;exitDx=0;exitDy=0;exitPerimeter=0;startSize=12;" edge="1" parent="1" source="354" target="103">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-950" y="500" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="362" value="Use" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="361">
+                    <mxGeometry x="-0.0274" y="-1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="366" style="edgeStyle=none;html=1;dashed=1;endArrow=open;endFill=0;endSize=12;" edge="1" parent="1" source="127" target="356">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="367" value="&lt;i&gt;IGenreService&lt;/i&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-800" y="505" width="310" height="208" as="geometry"/>
+                </mxCell>
+                <mxCell id="368" value="+ GetAllGenresAsync():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;List&amp;lt;Genre&amp;gt;&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="367">
+                    <mxGeometry y="26" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="369" value="+ GenreExistASync(string, id):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="367">
+                    <mxGeometry y="52" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="370" value="+ GetGenreByIdAsync(int):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;Genre&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="367">
+                    <mxGeometry y="78" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="371" value="+ CreateGenreAsync(string):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="367">
+                    <mxGeometry y="104" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="372" value="+ UpdateGenreAsync(int, string):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="367">
+                    <mxGeometry y="130" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="373" value="+ DeleteGenreAsync(int):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;bool&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="367">
+                    <mxGeometry y="156" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="374" value="+ GetGenresDictionary():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;Dictionary&amp;lt;int, string&amp;gt;&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="367">
+                    <mxGeometry y="182" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="375" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;endArrow=block;endFill=0;endSize=12;" edge="1" parent="1" source="358" target="371">
+                    <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
