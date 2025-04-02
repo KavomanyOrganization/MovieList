@@ -11,4 +11,5 @@ public interface IUserService{
     Task<(bool Succeeded, string? ErrorMessage)> RegisterAsync(RegisterViewModel model);
     Task LogoutAsync();
     Task<User?> GetCurrentUserAsync(System.Security.Claims.ClaimsPrincipal userPrincipal);
+    Task<User> GetUserByIdAsync(string id);
 }
