@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="dqAwI21ptG_BoxTXhNec" name="Page-1">
-        <mxGraphModel dx="4818" dy="2966" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="simple">
+        <mxGraphModel dx="3850" dy="2344" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="simple">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -212,7 +212,7 @@
                 <mxCell id="168" value="+ Logout():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="156" vertex="1">
                     <mxGeometry y="78" width="330" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="238" value="+ Details():&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="156" vertex="1">
+                <mxCell id="238" value="+ Details(string):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="156" vertex="1">
                     <mxGeometry y="104" width="330" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="167" value="+ AddSeenIt(int):&amp;nbsp;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Task&amp;lt;IActionResult&lt;/span&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;gt;&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="156" vertex="1">
@@ -315,7 +315,7 @@
                     <mxGeometry y="234" width="355" height="42" as="geometry"/>
                 </mxCell>
                 <mxCell id="196" value="UserService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="170" y="180" width="350" height="208" as="geometry"/>
+                    <mxGeometry x="170" y="180" width="350" height="234" as="geometry"/>
                 </mxCell>
                 <mxCell id="260" value="+ LoginAsync(LoginViewModel): Task&amp;lt;&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="196" vertex="1">
                     <mxGeometry y="26" width="350" height="26" as="geometry"/>
@@ -337,6 +337,9 @@
                 </mxCell>
                 <mxCell id="266" value="+ GetCurrentUserAsync(): Task&amp;lt;User&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="196" vertex="1">
                     <mxGeometry y="182" width="350" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="407" value="+ GetUserByIdAsync(string): Task&amp;lt;User&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="196">
+                    <mxGeometry y="208" width="350" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="200" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0.194;exitY=-0.005;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="1" source="196" target="2" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
@@ -410,7 +413,7 @@
                         <mxPoint x="-110" y="461" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="269" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0.259;exitY=1.034;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;exitPerimeter=0;" parent="1" source="266" target="148" edge="1">
+                <mxCell id="269" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;exitX=0.254;exitY=1.068;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;exitPerimeter=0;" parent="1" source="407" target="148" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="-270" y="435" as="sourcePoint"/>
                         <mxPoint x="-20" y="467" as="targetPoint"/>
