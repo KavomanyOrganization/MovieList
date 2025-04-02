@@ -66,11 +66,11 @@ namespace Tests.Users
                 Email = "test@example.com" 
             };
 
-            _mockUserService.Setup(s => s.GetCurrentUserAsync(_user))
-                .ReturnsAsync(user);
+            _mockUserService.Setup(s => s.GetUserByIdAsync("userId"))
+                    .ReturnsAsync(user);
 
              
-            var result = await _controller.Details();
+            var result = await _controller.Details("userId");
 
              
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -88,7 +88,7 @@ namespace Tests.Users
                 .ReturnsAsync((User?)null);
 
              
-            var result = await _controller.Details();
+            var result = await _controller.Details(null);
 
              
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
@@ -104,7 +104,7 @@ namespace Tests.Users
                 .ReturnsAsync(new User());
 
              
-            await _controller.Details();
+            await _controller.Details(null);
 
              
             _mockUserService.Verify(s => s.GetCurrentUserAsync(_user), Times.Once);
@@ -118,7 +118,7 @@ namespace Tests.Users
                 .ThrowsAsync(new System.Exception("Service error"));
 
              
-            await Assert.ThrowsAsync<System.Exception>(() => _controller.Details());
+            await Assert.ThrowsAsync<System.Exception>(() => _controller.Details(null));
         }
 
         [Fact]
@@ -131,7 +131,7 @@ namespace Tests.Users
                 .ReturnsAsync(new User());
 
              
-            await _controller.Details();
+            await _controller.Details(null);
 
              
             Assert.Same(_user, capturedUserPrincipal);

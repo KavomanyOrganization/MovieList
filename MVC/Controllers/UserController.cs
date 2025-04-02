@@ -81,12 +81,17 @@ public class UserController : Controller
     [Authorize]
     public async Task<IActionResult> Details(string userId)
     {
+        User user;
+
         if (string.IsNullOrEmpty(userId))
         {
-            var currentUser = await _userService.GetCurrentUserAsync(User);
-            return View(currentUser);
+            user = await _userService.GetCurrentUserAsync(User);
         }
-        var user = await _userService.GetUserByIdAsync(userId);
+        else
+        {
+            user = await _userService.GetUserByIdAsync(userId);
+        }
+
         if (user == null)
         {
             return RedirectToAction("Login");
