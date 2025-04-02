@@ -61,7 +61,13 @@
                             </td>
                             <td>@report.Comment</td>
                             <td>@report.CreationDate.ToString("dd MMM yyyy")</td>
-                            <td>@report.User?.UserName</td>
+                            <td>
+                                <a href="@Url.Action("Details", "User", new { userId = report.User?.Id })" 
+                                class="user-link" 
+                                style="text-decoration: none; color: inherit;">
+                                    @report.User?.UserName
+                                </a>
+                            </td>
                             @if (User.IsInRole("Admin"))
                             {
                                 <td>
