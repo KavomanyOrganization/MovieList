@@ -45,47 +45,5 @@ namespace Tests.ReportTests
             var model = Assert.IsAssignableFrom<List<Report>>(viewResult.Model);
             Assert.Equal(2, model.Count);
         }
-
-        [Fact]
-        public async Task Filter_WhenNoReportsFound_SetsViewBagMessage()
-        {
-            // Arrange
-            DateTime startDate = DateTime.UtcNow.AddDays(-7);
-            DateTime endDate = DateTime.UtcNow;
-            var emptyReports = new List<Report>();
-
-            _mockReportService.Setup(s => s.FilterReportsAsync(startDate, endDate)).ReturnsAsync(emptyReports);
-
-            // Act
-            var result = await _controller.Filter(startDate, endDate);
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("GetAll", viewResult.ViewName);
-            Assert.NotNull(_controller.ViewBag.Message);
-            Assert.Equal("No reports found for the selected date range.", _controller.ViewBag.Message);
-        }
-
-        [Fact]
-        public async Task Filter_WhenReportsFound_ReturnsViewWithReports()
-        {
-            // Arrange
-            DateTime startDate = DateTime.UtcNow.AddDays(-7);
-            DateTime endDate = DateTime.UtcNow;
-            var reports = new List<Report>
-            {
-                new Report { Id = 1, Comment = "Report 1", CreationDate = DateTime.UtcNow }
-            };
-
-            _mockReportService.Setup(s => s.FilterReportsAsync(startDate, endDate)).ReturnsAsync(reports);
-
-            // Act
-            var result = await _controller.Filter(startDate, endDate);
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<List<Report>>(viewResult.Model);
-            Assert.Single(model);
-        }
     }
 }

@@ -18,9 +18,20 @@ public class UserMovieService : IUserMovieService
     public async Task AddUserMovieAsync(string userId, int movieId, bool isWatched, int rating = -1)
     {
         if (await _context.UserMovies.AnyAsync(um => um.MovieId == movieId && um.UserId == userId))
+        {
             await UpdateUserMovieAsync(movieId, userId, isWatched, rating);
+            return;
+        }
 
-        _context.UserMovies.Add(new UserMovie { MovieId = movieId, UserId = userId, IsWatched = isWatched, Rating = rating });
+        var userMovie = new UserMovie
+        {
+            UserId = userId,
+            MovieId = movieId,
+            IsWatched = isWatched,
+            Rating = rating
+        };
+
+        _context.UserMovies.Add(userMovie);
         await _context.SaveChangesAsync();
     }
 
@@ -34,7 +45,7 @@ public class UserMovieService : IUserMovieService
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateUserMovieAsync(int movieId, string userId, bool isWatched, int rating= -1 )
+    public async Task UpdateUserMovieAsync(int movieId, string userId, bool isWatched, int rating= -1)
     {
         var userMovie = await _context.UserMovies.FirstOrDefaultAsync(um => um.MovieId == movieId && um.UserId == userId);
         if (userMovie == null)
@@ -49,7 +60,7 @@ public class UserMovieService : IUserMovieService
     public async Task<List<UserMovie>> GetUserMoviesAsync(string userId, bool isWatched)
     {
         if (!_context.UserMovies.Any(um => um.UserId == userId))
-            throw new InvalidOperationException("UserMovie connection is not found!");
+            return new List<UserMovie>();
     
         return await _context.UserMovies
             .Where(um => um.UserId == userId && um.IsWatched == isWatched)
