@@ -120,6 +120,10 @@ public class UserService : IUserService
     {
         return await _userManager.GetUserAsync(userPrincipal);
     }
+    public async Task<User> GetUserByIdAsync(string id)
+    {
+        return await _userManager.FindByIdAsync(id);
+    }
     
 }
 

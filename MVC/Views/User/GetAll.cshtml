@@ -23,7 +23,7 @@
             @foreach (var user in Model)
             {
                 <div class="col">
-                    <div class="card rounded-4 shadow-sm border-0 h-100  @(user.IsBanned ? "banned-user" : "")">
+                    <div class="card rounded-4 shadow-sm border-0 h-100 @(user.IsBanned ? "banned-user" : "")">
                         <div class="card-header bg-light border-0 rounded-top-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
@@ -31,7 +31,10 @@
                                         <span class="fw-bold fs-4">@user.UserName?.Substring(0, 1).ToUpper()</span>
                                     </div>
                                     <div>
-                                        <h5 class="card-title mb-0 fw-bold">@user.UserName</h5>
+                                        <a href="@Url.Action("Details", "User", new { userId = user.Id })" 
+                                        class="text-decoration-none text-dark">
+                                            <h5 class="card-title mb-0 fw-bold">@user.UserName</h5>
+                                        </a>
                                         <p class="card-subtitle text-muted small mb-0 text-break">@user.Email</p>
                                     </div>
                                 </div>

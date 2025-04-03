@@ -31,6 +31,7 @@
                         <th style="white-space: nowrap;">Title</th>
                         <th style="white-space: nowrap;">Comment</th>
                         <th style="white-space: nowrap;">Creation Date</th>
+                        <th style="white-space: nowrap;">User</th>
                         @if (User.IsInRole("Admin"))
                         {
                             <th style="white-space: nowrap; text-align: center;">Actions</th>
@@ -60,6 +61,13 @@
                             </td>
                             <td>@report.Comment</td>
                             <td>@report.CreationDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <a href="@Url.Action("Details", "User", new { userId = report.User?.Id })" 
+                                class="user-link" 
+                                style="text-decoration: none; color: inherit;">
+                                    @report.User?.UserName
+                                </a>
+                            </td>
                             @if (User.IsInRole("Admin"))
                             {
                                 <td>
@@ -70,6 +78,21 @@
                                             <i class="bi bi-x-circle"></i> Close Report
                                         </a>
                                     </div>
+
+                                <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id" method="post">
+                                    @if (report.User.IsBanned)
+                                    {
+                                        <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm">
+                                            <i class="bi bi-check-circle"></i> Unban
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm">
+                                            <i class="bi bi-slash-circle"></i> Ban
+                                        </button>
+                                    }
+                                </form>
                                 </td>
                             }
                         </tr>

@@ -189,7 +189,8 @@ public class MovieController : Controller
         {
             MovieId = r.MovieId,
             Comment = r.Comment,
-            CreationDate = r.CreationDate
+            CreationDate = r.CreationDate,
+            UserId = r.UserId
         }).ToList();
 
         ViewBag.Movie = movie;

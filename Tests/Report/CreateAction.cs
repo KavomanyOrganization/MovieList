@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MVC.Controllers;
 using MVC.Interfaces;
-using MVC.Models;
 using MVC.ViewModels;
 using Xunit;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +38,23 @@ namespace Tests.ReportTests
         }
 
         [Fact]
+        public void Create_Get_ReturnsViewResult_WithMovieId()
+        {
+            // Arrange
+            int movieId = 5;
+            string userId = "1";
+
+            // Act
+            var result = _controller.Create(movieId, userId);
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<ReportViewModel>(viewResult.Model);
+            Assert.Equal(movieId, model.MovieId);
+            Assert.Equal(userId, model.UserId);
+        }
+
+        [Fact]
         public async Task Create_Post_WhenModelIsInvalid_ReturnsViewResult()
         {
             // Arrange
@@ -58,10 +74,11 @@ namespace Tests.ReportTests
         {
             // Arrange
             var reportViewModel = new ReportViewModel { MovieId = 5, Comment = "Test Comment" };
-            _mockReportService.Setup(s => s.CreateReportAsync(reportViewModel))
+            _mockReportService.Setup(s => s.CreateReportAsync(reportViewModel, _controller.HttpContext.User))
                               .ReturnsAsync(true);
 
             _controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+            
             // Act
             var result = await _controller.Create(reportViewModel);
 
@@ -77,7 +94,7 @@ namespace Tests.ReportTests
         {
             // Arrange
             var reportViewModel = new ReportViewModel { MovieId = 5, Comment = "Test Comment" };
-            _mockReportService.Setup(s => s.CreateReportAsync(reportViewModel))
+            _mockReportService.Setup(s => s.CreateReportAsync(reportViewModel, _controller.HttpContext.User))
                               .ReturnsAsync(false);
 
             // Act

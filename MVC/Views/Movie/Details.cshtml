@@ -178,6 +178,7 @@
                                             <textarea id="comment" name="comment" class="form-control" rows="4" required></textarea>
                                         </div>
                                         <input type="hidden" name="MovieId" value="@Model.Id" />
+                                        <input type="hidden" name="UserId" value="@currentUser.Id" />
                                         <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                     <button type="submit" class="btn btn-success">
