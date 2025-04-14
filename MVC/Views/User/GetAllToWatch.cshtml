@@ -1,0 +1,114 @@
+@model IEnumerable<MVC.Models.Movie>
+
+@{
+    ViewData["Title"] = "ToWatch!";
+    var searchTerm = Context.Request.Query["title"].ToString();
+    var hasSearchTerm = !string.IsNullOrEmpty(searchTerm);
+}
+
+<div class="container mt-4">
+    <h2>To Watch!</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form asp-controller="User" asp-action="SearchInList" method="get" class="d-flex">
+                <input type="text" name="title" class="form-control me-2" placeholder="Search in To Watch!..." required value="@searchTerm">
+                <input type="hidden" name="listType" value="watchlist">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+                @if (hasSearchTerm)
+                {
+                    <a asp-controller="User" asp-action="GetAllToWatch" class="btn btn-outline-secondary ms-2">Clear</a>
+                }
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-md-2 mb-3 d-flex justify-content-center">
+                    <div class="card movie-card">
+                        <div class="card-body">
+                            <div class="card-image text-center" onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'" style="cursor: pointer;">
+                                @if (!string.IsNullOrEmpty(item.Cover))
+                                {
+                                    <img src="@item.Cover" alt="@item.Title" class="img-fluid rounded" />
+                                }
+                                else
+                                {
+                                    <span>No cover available</span>
+                                }
+                            </div>
+                            <div class="text-center mt-2">
+                                <h5 class="card-title" title="@item.Title">@(item.Title ?? "No Title")</h5>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
+                                        Seen It!
+                                    </button>
+                                    <a href="@Url.Action("RemoveFromLists", "User", new { id = item.Id })" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();">
+                                        <i class="bi bi-dash-circle"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Rating -->
+                <div class="modal fade" id="rateMovieModal-@item.Id" tabindex="-1" aria-labelledby="rateMovieModalLabel-@item.Id" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rateMovieModalLabel-@item.Id">Rate Movie</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form asp-controller="User" asp-action="RateMovie" method="post">
+                                    <input type="hidden" name="movieId" value="@item.Id" />
+                                    <div class="form-group">
+                                        <label for="rating-@item.Id">Rating (1-10):</label>
+                                        <input type="number" id="rating-@item.Id" name="rating" class="form-control" min="1" max="10" required />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-success">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                @if (hasSearchTerm)
+                {
+                    <p>No movies found matching "@searchTerm" in your To Watch! list.</p>
+                    <a asp-controller="User" asp-action="GetAllToWatch" class="btn btn-outline-primary">Show all movies</a>
+                }
+                else
+                {
+                    <p>The list is empty! You haven't added any films to your watchlist yet.</p>
+                    <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Watch popular films</a>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const rateMovieForms = document.querySelectorAll('form[asp-controller="User"][asp-action="RateMovie"]');
+        rateMovieForms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                const ratingInput = form.querySelector('input[type="number"]');
+                if (ratingInput.value < 1 || ratingInput.value > 10) {
+                    alert('Please enter a rating between 1 and 10.');
+                    event.preventDefault();
+                }
+            });
+        });
+    });
+</script>

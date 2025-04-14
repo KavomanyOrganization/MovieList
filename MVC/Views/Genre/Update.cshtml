@@ -1,0 +1,20 @@
+@model MVC.ViewModels.GenreViewModel
+
+@{
+    ViewData["Title"] = "Edit Genre";
+}
+
+<div class="container mt-4 w-50 mx-auto">
+    <h1 class="text-center">Edit Genre</h1>
+
+    <form asp-action="Update" method="post">
+        <div class="mb-3">
+            <label for="Name" class="form-label">Genre Name</label>
+            <input type="text" class="form-control" id="Name" asp-for="Name" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a asp-action="GetAll" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
