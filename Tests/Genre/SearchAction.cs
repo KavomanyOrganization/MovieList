@@ -23,7 +23,7 @@ public class SearchActionTests
     }
 
     [Fact]
-    public async Task Search_WithTerm_ReturnsFilteredGenresInDescendingOrder()
+    public async Task Search_WithTerm_ReturnsFilteredGenresOrderByName()
     {
         // Arrange
         var searchTerm = "test";
@@ -57,7 +57,7 @@ public class SearchActionTests
     }
 
     [Fact]
-    public async Task Search_EmptyTerm_ReturnsAllGenresDescending()
+    public async Task Search_EmptyTerm_ReturnsAllGenresOrderByName()
     {
         // Arrange
         var searchTerm = "";

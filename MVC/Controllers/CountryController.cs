@@ -91,7 +91,7 @@ namespace MVC.Controllers
         public async Task<IActionResult> Search(string searchTerm)
         {
             var countries = await _countryService.SearchCountriesAsync(searchTerm);
-            ViewBag.Countries = countries.OrderByDescending(c => c.Name).ToList();
+            ViewBag.Countries = countries.OrderBy(c => c.Name).ToList();
             return View("GetAll", new CountryViewModel());
         }
     }
