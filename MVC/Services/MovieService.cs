@@ -118,12 +118,15 @@ public class MovieService : IMovieService
         title = title.ToLower();
         bool isWatched = listType != "watchlist";
 
-        var movies = await _userMovieService.GetUserMoviesAsync(userId, isWatched);
+        var userMovies = await _context.UserMovies
+            .Include(um => um.Movie)
+            .Where(um => 
+                um.UserId == userId && 
+                um.IsWatched == isWatched &&
+                um.Movie != null && um.Movie.Title != null && um.Movie.Title.ToLower().Contains(title))
+            .Select(um => um.Movie)
+            .ToListAsync();
 
-        return movies
-            .Where(m => m.Movie != null && !string.IsNullOrEmpty(m.Movie.Title) && m.Movie.Title.ToLower().Contains(title))
-            .Select(m => m.Movie!)
-            .Where(movie => movie != null)
-            .ToList();
+        return userMovies.Where(m => m != null).Cast<Movie>().ToList();
     }
 }

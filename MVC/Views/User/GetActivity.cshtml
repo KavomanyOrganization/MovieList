@@ -39,16 +39,39 @@
             <tbody>
                 @foreach (var entry in Model)
                 {
+                    var user = entry.Value;
+                    bool isBanned = user.BannedUntil.HasValue && user.BannedUntil > DateTime.Now;
+                    
                     <tr>
                         <td><a href="@Url.Action("Details", "Movie", new { id = entry.Key.Id })">
                             @entry.Key.Title</a></td>
                         <td>@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
-                        <td>@entry.Value.UserName</td>
                         <td>
-                            @if (isAdmin && entry.Value.UserName != currentUser)
+                            @user.UserName
+                            @if (isBanned)
                             {
-                                <form asp-controller="User" asp-action="Ban" asp-route-id="@entry.Value.Id" method="post">
-                                    @if (entry.Value.IsBanned)
+                                <span class="badge bg-danger ms-1">Banned</span>
+                                
+                                @if (user.BannedUntil.HasValue)
+                                {
+                                    <div class="small text-danger">
+                                        Until: @user.BannedUntil.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                    </div>
+                                    
+                                    TimeSpan timeLeft = user.BannedUntil.Value.ToLocalTime() - DateTime.Now;
+                                    string formattedTimeLeft = $"{timeLeft.Days}d {timeLeft.Hours}h {timeLeft.Minutes}m";
+                                    
+                                    <div class="small text-danger">
+                                        Time left: @formattedTimeLeft
+                                    </div>
+                                }
+                            }
+                        </td>
+                        <td>
+                            @if (isAdmin && user.UserName != currentUser)
+                            {
+                                <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
+                                    @if (isBanned)
                                     {
                                         <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm action-button">
                                             <i class="bi bi-check-circle"></i> Unban
@@ -56,9 +79,21 @@
                                     }
                                     else
                                     {
-                                        <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm action-button">
-                                            <i class="bi bi-slash-circle"></i> Ban
-                                        </button>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <select name="banDurationHours" class="form-select form-select-sm ban-duration">
+                                                <option value="6">6 hours</option>
+                                                <option value="12">12 hours</option>
+                                                <option value="24" selected>24 hours</option>
+                                                <option value="72">3
+                                                 days</option>
+                                                <option value="168">1 week</option>
+                                                <option value="720">30 days</option>
+                                                <option value="">Forever</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm action-button">
+                                                <i class="bi bi-slash-circle"></i> Ban
+                                            </button>
+                                        </div>
                                     }
                                 </form>
                             }
@@ -75,12 +110,20 @@ else
 }
 
 <style>
-    /* Стилі для кнопок */
     .action-button {
-        width: 90px; /* Фіксована ширина */
+        min-width: 90px; /* Мінімальна ширина */
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 5px; /* Відстань між іконкою та текстом */
+    }
+    
+    .ban-duration {
+        width: 120px;
+    }
+    
+    .small.text-danger {
+        margin-bottom: 0;
+        font-size: 11px;
     }
 </style>
