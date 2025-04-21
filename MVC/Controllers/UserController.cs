@@ -114,7 +114,7 @@ public class UserController : Controller
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> RateMovie(int movieId, int rating)
+    public async Task<IActionResult> RateMovie(int movieId, int rating, DateTime? watchedDate)
     {
         if (rating < 1 || rating > 10)
         {
@@ -127,8 +127,10 @@ public class UserController : Controller
         {
             return RedirectToAction("Login");
         }                     
+        DateTime? utcWatchedDate = watchedDate.HasValue ? 
+        DateTime.SpecifyKind(watchedDate.Value, DateTimeKind.Utc) : DateTime.UtcNow;
 
-        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating);
+        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating, utcWatchedDate);
         await _movieService.CalculateRating(movieId);
 
         var referer = Request.Headers["Referer"].ToString();
@@ -328,5 +330,26 @@ public class UserController : Controller
             return Redirect(referer);
         }
         return RedirectToAction("GetAll");
+    }
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> CountSeenIt(string userId)
+    {
+        User user;
+        if (string.IsNullOrEmpty(userId))
+        {
+            user = await _userService.GetCurrentUserAsync(User);
+        }
+        else
+        {
+            user = await _userService.GetUserByIdAsync(userId);
+        }
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        var count = await _userMovieService.CountUserSeenItMoviesAsync(user.Id);
+        return Ok(count);
     }
 }

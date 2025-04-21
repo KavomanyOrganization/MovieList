@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -37,20 +38,16 @@ namespace Tests.Users
                 _mockUserMovieService.Object
             );
             
-
-             
             _controller.TempData = new TempDataDictionary(
                 new DefaultHttpContext(),
                 Mock.Of<ITempDataProvider>()
             );
-
              
             _user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.NameIdentifier, "user-id"),
                 new Claim(ClaimTypes.Name, "testuser")
             }, "mock"));
-
              
             var httpContext = new DefaultHttpContext();
             httpContext.User = _user;
@@ -63,9 +60,10 @@ namespace Tests.Users
         [Fact]
         public async Task RateMovie_ValidRating_AddsRatingAndCalculatesAverage()
         {
-             
+            // Arrange
             int movieId = 123;
             int rating = 8;
+            DateTime watchedDate = DateTime.UtcNow;
             var user = new User { Id = "user-id", UserName = "testuser" };
 
             _mockUserService
@@ -73,7 +71,7 @@ namespace Tests.Users
                 .ReturnsAsync(user);
 
             _mockUserMovieService
-                .Setup(s => s.AddUserMovieAsync(user.Id, movieId, true, rating))
+                .Setup(s => s.AddUserMovieAsync(user.Id, movieId, true, rating, It.IsAny<DateTime?>()))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
@@ -82,7 +80,6 @@ namespace Tests.Users
                 .Returns(Task.CompletedTask)
                 .Verifiable();
 
-             
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Headers[HeaderNames.Referer] = "https://example.com/movies";
             httpContext.User = _user;
@@ -91,53 +88,53 @@ namespace Tests.Users
                 HttpContext = httpContext
             };
 
-             
-            var result = await _controller.RateMovie(movieId, rating);
+            // Act
+            var result = await _controller.RateMovie(movieId, rating, watchedDate);
 
-             
+            // Assert
             var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("https://example.com/movies", redirectResult.Url);
             
-             
-            _mockUserMovieService.Verify(s => s.AddUserMovieAsync(user.Id, movieId, true, rating), Times.Once);
+            _mockUserMovieService.Verify(s => s.AddUserMovieAsync(user.Id, movieId, true, rating, It.IsAny<DateTime?>()), Times.Once);
             _mockMovieService.Verify(s => s.CalculateRating(movieId), Times.Once);
         }
 
         [Fact]
         public async Task RateMovie_InvalidRating_RedirectsToGetAllSeenIt()
         {
-             
+            // Arrange
             int movieId = 123;
-            int rating = 11;  
+            int rating = 11;  // Invalid: greater than 10
+            DateTime? watchedDate = DateTime.UtcNow;
 
-             
-            var result = await _controller.RateMovie(movieId, rating);
+            // Act
+            var result = await _controller.RateMovie(movieId, rating, watchedDate);
 
-             
+            // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("GetAllSeenIt", redirectResult.ActionName);
             Assert.Equal("User", redirectResult.ControllerName);
             
-             
             Assert.False(_controller.ModelState.IsValid);
             Assert.True(_controller.ModelState.ErrorCount > 0);
             
-             
             _mockUserMovieService.Verify(s => s.AddUserMovieAsync(
-                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>()), 
+                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<DateTime?>()), 
                 Times.Never);
         }
 
         [Fact]
         public async Task RateMovie_LowRating_RedirectsToGetAllSeenIt()
         {
-             
+            // Arrange
             int movieId = 123;
-            int rating = 0;  
+            int rating = 0;  // Invalid: less than 1
+            DateTime? watchedDate = DateTime.UtcNow;
 
-             
-            var result = await _controller.RateMovie(movieId, rating);
+            // Act
+            var result = await _controller.RateMovie(movieId, rating, watchedDate);
 
+            // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("GetAllSeenIt", redirectResult.ActionName);
             Assert.Equal("User", redirectResult.ControllerName);
@@ -148,29 +145,35 @@ namespace Tests.Users
         [Fact]
         public async Task RateMovie_UserNotFound_RedirectsToLogin()
         {
+            // Arrange
             int movieId = 123;
             int rating = 8;
+            DateTime? watchedDate = DateTime.UtcNow;
             
             _mockUserService
                 .Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync((User)null);
 
-            var result = await _controller.RateMovie(movieId, rating);
+            // Act
+            var result = await _controller.RateMovie(movieId, rating, watchedDate);
 
+            // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Login", redirectResult.ActionName);
             Assert.Null(redirectResult.ControllerName);
 
             _mockUserMovieService.Verify(s => s.AddUserMovieAsync(
-                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>()), 
+                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<DateTime?>()), 
                 Times.Never);
         }
 
         [Fact]
         public async Task RateMovie_NoReferer_RedirectsToGetAllSeenIt()
         {
+            // Arrange
             int movieId = 123;
             int rating = 8;
+            DateTime? watchedDate = DateTime.UtcNow;
             var user = new User { Id = "user-id", UserName = "testuser" };
 
             _mockUserService
@@ -178,7 +181,7 @@ namespace Tests.Users
                 .ReturnsAsync(user);
 
             _mockUserMovieService
-                .Setup(s => s.AddUserMovieAsync(user.Id, movieId, true, rating))
+                .Setup(s => s.AddUserMovieAsync(user.Id, movieId, true, rating, It.IsAny<DateTime?>()))
                 .Returns(Task.CompletedTask);
 
             _mockMovieService
@@ -192,8 +195,10 @@ namespace Tests.Users
                 HttpContext = httpContext
             };
 
-            var result = await _controller.RateMovie(movieId, rating);
+            // Act
+            var result = await _controller.RateMovie(movieId, rating, watchedDate);
 
+            // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("GetAllSeenIt", redirectResult.ActionName);
             Assert.Equal("User", redirectResult.ControllerName);
@@ -204,8 +209,10 @@ namespace Tests.Users
         [Fact]
         public async Task RateMovie_ServiceThrowsException_HandlesErrorGracefully()
         {
+            // Arrange
             int movieId = 123;
             int rating = 8;
+            DateTime? watchedDate = DateTime.UtcNow;
             var user = new User { Id = "user-id", UserName = "testuser" };
 
             _mockUserService
@@ -213,18 +220,21 @@ namespace Tests.Users
                 .ReturnsAsync(user);
 
             _mockUserMovieService
-                .Setup(s => s.AddUserMovieAsync(user.Id, movieId, true, rating))
+                .Setup(s => s.AddUserMovieAsync(user.Id, movieId, true, rating, It.IsAny<DateTime?>()))
                 .ThrowsAsync(new System.Exception("Database error"));
 
-            await Assert.ThrowsAsync<System.Exception>(() => _controller.RateMovie(movieId, rating));
+            // Act & Assert
+            await Assert.ThrowsAsync<System.Exception>(() => _controller.RateMovie(movieId, rating, watchedDate));
         }
 
         [Fact]
         public void RateMovie_HasAuthorizeAttribute()
         {
-            var methodInfo = typeof(UserController).GetMethod("RateMovie", new[] { typeof(int), typeof(int) });
+            // Arrange & Act
+            var methodInfo = typeof(UserController).GetMethod("RateMovie", new[] { typeof(int), typeof(int), typeof(DateTime?) });
             Assert.NotNull(methodInfo);
 
+            // Assert
             var authorizeAttributes = methodInfo.GetCustomAttributes(typeof(Microsoft.AspNetCore.Authorization.AuthorizeAttribute), false);
             var httpPostAttributes = methodInfo.GetCustomAttributes(typeof(Microsoft.AspNetCore.Mvc.HttpPostAttribute), false);
             
