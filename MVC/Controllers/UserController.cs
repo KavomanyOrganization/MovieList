@@ -317,39 +317,24 @@ public class UserController : Controller
     }
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> Ban(string id)
+    public async Task<IActionResult> Ban(string id, int? banDurationHours)
     {
-        var result = await _userService.BanUserAsync(id);
+        var result = await _userService.BanUserAsync(id, banDurationHours);
         if (!result.Succeeded)
         {
             TempData["ErrorMessage"] = result.ErrorMessage;
         }
+        else
+        {
+            var actionType = banDurationHours.HasValue ? "banned" : "updated";
+            TempData["SuccessMessage"] = $"User {actionType} successfully";
+        }
+        
         var referer = Request.Headers["Referer"].ToString();
         if (!string.IsNullOrEmpty(referer))
         {
             return Redirect(referer);
         }
         return RedirectToAction("GetAll");
-    }
-    [Authorize]
-    [HttpGet]
-    public async Task<IActionResult> CountSeenIt(string userId)
-    {
-        User user;
-        if (string.IsNullOrEmpty(userId))
-        {
-            user = await _userService.GetCurrentUserAsync(User);
-        }
-        else
-        {
-            user = await _userService.GetUserByIdAsync(userId);
-        }
-        if (user == null)
-        {
-            return RedirectToAction("Login");
-        }
-
-        var count = await _userMovieService.CountUserSeenItMoviesAsync(user.Id);
-        return Ok(count);
     }
 }

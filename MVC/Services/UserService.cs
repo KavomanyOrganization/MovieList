@@ -64,20 +64,35 @@ public class UserService : IUserService
             return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
-    public async Task<(bool Succeeded, string? ErrorMessage)> BanUserAsync(string userId)
+    public async Task<(bool Succeeded, string? ErrorMessage)> BanUserAsync(string userId, int? banDurationHours = null)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            return (false, "User not found");
+            return (false, "Користувача не знайдено");
         }
 
         if (await _userManager.IsInRoleAsync(user, "Admin"))
         {
-            return (false, "Cannot ban admin users");
+            return (false, "Неможливо заблокувати адміністраторів");
         }
 
-        user.IsBanned = !user.IsBanned;
+        // Якщо тривалість не вказана і користувач вже заблокований, розблоковуємо
+        if (!banDurationHours.HasValue && user.BannedUntil.HasValue && user.BannedUntil > DateTime.UtcNow)
+        {
+            user.BannedUntil = null;
+        }
+        // Інакше встановлюємо блокування на вказаний термін
+        else if (banDurationHours.HasValue)
+        {
+            user.BannedUntil = DateTime.UtcNow.AddHours(banDurationHours.Value);
+        }
+        // Якщо тривалість не вказана і користувач не заблокований
+        else
+        {
+            user.BannedUntil = DateTime.UtcNow.AddHours(24); // за замовчуванням 24 години
+        }
+
         var result = await _userManager.UpdateAsync(user);
 
         if (result.Succeeded)
