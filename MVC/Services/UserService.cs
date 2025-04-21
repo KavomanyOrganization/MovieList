@@ -77,20 +77,19 @@ public class UserService : IUserService
             return (false, "Неможливо заблокувати адміністраторів");
         }
 
-        // Якщо тривалість не вказана і користувач вже заблокований, розблоковуємо
         if (!banDurationHours.HasValue && user.BannedUntil.HasValue && user.BannedUntil > DateTime.UtcNow)
         {
             user.BannedUntil = null;
         }
-        // Інакше встановлюємо блокування на вказаний термін
+        
         else if (banDurationHours.HasValue)
         {
             user.BannedUntil = DateTime.UtcNow.AddHours(banDurationHours.Value);
         }
-        // Якщо тривалість не вказана і користувач не заблокований
+        
         else
         {
-            user.BannedUntil = DateTime.UtcNow.AddHours(24); // за замовчуванням 24 години
+            user.BannedUntil = DateTime.UtcNow.AddHours(24); 
         }
 
         var result = await _userManager.UpdateAsync(user);
