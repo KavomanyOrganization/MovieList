@@ -178,6 +178,7 @@ public class UserController : Controller
         {
             return View(new List<Movie>());
         }
+        userMovies = userMovies.OrderByDescending(um => um.WatchedAt).ToList();
 
         ViewBag.UserMovies = userMovies;
 
