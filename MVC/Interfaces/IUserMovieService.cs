@@ -9,4 +9,5 @@ public interface IUserMovieService
     Task<List<UserMovie>> GetUserMoviesAsync(string userId, bool isWatched);
     Task<List<int>> GetMovieRatingAsync(int movieId);
     Task DeleteUserMoviesAsync(int movieId);
+    Task<int> CountUserSeenItMoviesAsync(string userId);
 }
