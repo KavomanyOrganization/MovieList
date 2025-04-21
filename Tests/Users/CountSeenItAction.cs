@@ -7,6 +7,7 @@ using MVC.Controllers;
 using MVC.Interfaces;
 using Xunit;
 using MVC.Models;
+using MVC.Services;
 
 namespace Tests.Users
 {
