@@ -125,6 +125,5 @@ namespace Tests.Users
             
             Assert.Equal(userMovies, viewResult.ViewData["UserMovies"]);
         }
-
     }
 }
