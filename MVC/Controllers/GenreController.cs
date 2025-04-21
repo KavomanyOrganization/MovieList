@@ -90,9 +90,8 @@ namespace MVC.Controllers
         public async Task<IActionResult> Search(string searchTerm)
         {
             var genres = await _genreService.SearchGenresAsync(searchTerm);
-            ViewBag.Genres = genres.OrderByDescending(g => g.Name).ToList();
+            ViewBag.Genres = genres.OrderBy(g => g.Name).ToList();
             return View("GetAll", new GenreViewModel());
         }
-
     }
 }
