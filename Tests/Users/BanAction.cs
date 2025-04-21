@@ -12,134 +12,180 @@ using System.Linq;
 
 namespace Tests.Users
 {
-    public class BanAction
+    public class UserServiceTests
     {
         private readonly Mock<UserManager<User>> _mockUserManager;
         private readonly Mock<SignInManager<User>> _mockSignInManager;
         private readonly Mock<AppDbContext> _mockContext;
         private readonly UserService _userService;
 
-        public BanAction()
+        public UserServiceTests()
         {
-             
-            var store = new Mock<IUserStore<User>>();
+            
+            var userStoreMock = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(
-                store.Object, null, null, null, null, null, null, null, null);
+                userStoreMock.Object, null, null, null, null, null, null, null, null);
 
-             
-            var userPrincipalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
+            
+            var contextAccessorMock = new Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
+            var userPrincipalFactoryMock = new Mock<IUserClaimsPrincipalFactory<User>>();
             _mockSignInManager = new Mock<SignInManager<User>>(
-                _mockUserManager.Object,
-                Mock.Of<Microsoft.AspNetCore.Http.IHttpContextAccessor>(),
-                userPrincipalFactory.Object,
-                null, null, null, null);
+                _mockUserManager.Object, contextAccessorMock.Object, userPrincipalFactoryMock.Object, null, null, null, null);
 
-             
+            
             _mockContext = new Mock<AppDbContext>(new DbContextOptions<AppDbContext>());
 
-             
-            _userService = new UserService(
-                _mockUserManager.Object,
-                _mockSignInManager.Object,
-                _mockContext.Object);
+            
+            _userService = new UserService(_mockUserManager.Object, _mockSignInManager.Object, _mockContext.Object);
         }
 
         [Fact]
-        public async Task BanUserAsync_UserNotFound_ReturnsError()
+        public async Task BanUserAsync_UserNotFound_ReturnsFalse()
         {
-             
-            var userId = "non-existent-user";
-            _mockUserManager.Setup(x => x.FindByIdAsync(userId))
-                .ReturnsAsync((User?)null);
+            
+            string userId = "non-existent-user";
+            _mockUserManager.Setup(um => um.FindByIdAsync(userId))
+                .ReturnsAsync((User)null);
 
-             
-            var result = await _userService.BanUserAsync(userId);
+            
+            var result = await _userService.BanUserAsync(userId, 24);
 
-             
+            
             Assert.False(result.Succeeded);
-            Assert.Equal("User not found", result.ErrorMessage);
+            Assert.Equal("Користувача не знайдено", result.ErrorMessage);
         }
 
         [Fact]
-        public async Task BanUserAsync_AdminUser_ReturnsCantBanAdminError()
+        public async Task BanUserAsync_AdminUser_ReturnsFalse()
         {
-             
-            var adminUser = new User { Id = "admin1", UserName = "admin", Email = "admin@example.com" };
-            _mockUserManager.Setup(x => x.FindByIdAsync(adminUser.Id))
+            
+            string userId = "admin-user";
+            var adminUser = new User { Id = userId, UserName = "admin" };
+            
+            _mockUserManager.Setup(um => um.FindByIdAsync(userId))
                 .ReturnsAsync(adminUser);
-            _mockUserManager.Setup(x => x.IsInRoleAsync(adminUser, "Admin"))
+            _mockUserManager.Setup(um => um.IsInRoleAsync(adminUser, "Admin"))
                 .ReturnsAsync(true);
 
-             
-            var result = await _userService.BanUserAsync(adminUser.Id);
-
-             
-            Assert.False(result.Succeeded);
-            Assert.Equal("Cannot ban admin users", result.ErrorMessage);
-        }
-
-        [Fact]
-        public async Task BanUserAsync_RegularUser_TogglesBanStatusToTrue()
-        {
-             
-            var regularUser = new User { Id = "user1", UserName = "user", Email = "user@example.com", IsBanned = false };
-            _mockUserManager.Setup(x => x.FindByIdAsync(regularUser.Id))
-                .ReturnsAsync(regularUser);
-            _mockUserManager.Setup(x => x.IsInRoleAsync(regularUser, "Admin"))
-                .ReturnsAsync(false);
-            _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<User>()))
-                .ReturnsAsync(IdentityResult.Success);
-
-             
-            var result = await _userService.BanUserAsync(regularUser.Id);
-
-             
-            Assert.True(result.Succeeded);
-            Assert.Null(result.ErrorMessage);
-            Assert.True(regularUser.IsBanned);
-        }
-
-        [Fact]
-        public async Task BanUserAsync_BannedUser_TogglesBanStatusToFalse()
-        {
-             
-            var bannedUser = new User { Id = "user2", UserName = "banned", Email = "banned@example.com", IsBanned = true };
-            _mockUserManager.Setup(x => x.FindByIdAsync(bannedUser.Id))
-                .ReturnsAsync(bannedUser);
-            _mockUserManager.Setup(x => x.IsInRoleAsync(bannedUser, "Admin"))
-                .ReturnsAsync(false);
-            _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<User>()))
-                .ReturnsAsync(IdentityResult.Success);
-
-             
-            var result = await _userService.BanUserAsync(bannedUser.Id);
-
-             
-            Assert.True(result.Succeeded);
-            Assert.Null(result.ErrorMessage);
-            Assert.False(bannedUser.IsBanned);
-        }
-
-        [Fact]
-        public async Task BanUserAsync_UpdateFails_ReturnsError()
-        {
-             
-            var user = new User { Id = "user3", UserName = "failuser", Email = "fail@example.com", IsBanned = false };
-            var errors = new List<IdentityError> { new IdentityError { Description = "Database error" } };
             
-            _mockUserManager.Setup(x => x.FindByIdAsync(user.Id))
-                .ReturnsAsync(user);
-            _mockUserManager.Setup(x => x.IsInRoleAsync(user, "Admin"))
-                .ReturnsAsync(false);
-            _mockUserManager.Setup(x => x.UpdateAsync(It.IsAny<User>()))
-                .ReturnsAsync(IdentityResult.Failed(errors.ToArray()));
+            var result = await _userService.BanUserAsync(userId, 24);
 
-             
-            var result = await _userService.BanUserAsync(user.Id);
-
-             
+            
             Assert.False(result.Succeeded);
-            Assert.Equal("Database error", result.ErrorMessage);
+            Assert.Equal("Неможливо заблокувати адміністраторів", result.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task BanUserAsync_WithDuration_SetsBanUntilDate()
+        {
+            
+            string userId = "regular-user";
+            int banDuration = 48;
+            var regularUser = new User { Id = userId, UserName = "user" };
+            
+            _mockUserManager.Setup(um => um.FindByIdAsync(userId))
+                .ReturnsAsync(regularUser);
+            _mockUserManager.Setup(um => um.IsInRoleAsync(regularUser, "Admin"))
+                .ReturnsAsync(false);
+            _mockUserManager.Setup(um => um.UpdateAsync(It.IsAny<User>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            
+            var result = await _userService.BanUserAsync(userId, banDuration);
+
+            
+            Assert.True(result.Succeeded);
+            Assert.Null(result.ErrorMessage);
+            Assert.NotNull(regularUser.BannedUntil);
+            
+            
+            var expectedBanTime = DateTime.UtcNow.AddHours(banDuration);
+            var timeDifference = Math.Abs((expectedBanTime - regularUser.BannedUntil.Value).TotalMinutes);
+            Assert.True(timeDifference < 1); 
+            
+            _mockUserManager.Verify(um => um.UpdateAsync(regularUser), Times.Once);
+        }
+
+        [Fact]
+        public async Task BanUserAsync_NoDurationForUnbannedUser_SetsDefaultBanDuration()
+        {
+            
+            string userId = "regular-user";
+            var regularUser = new User { Id = userId, UserName = "user", BannedUntil = null };
+            
+            _mockUserManager.Setup(um => um.FindByIdAsync(userId))
+                .ReturnsAsync(regularUser);
+            _mockUserManager.Setup(um => um.IsInRoleAsync(regularUser, "Admin"))
+                .ReturnsAsync(false);
+            _mockUserManager.Setup(um => um.UpdateAsync(It.IsAny<User>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            
+            var result = await _userService.BanUserAsync(userId);
+
+            
+            Assert.True(result.Succeeded);
+            Assert.NotNull(regularUser.BannedUntil);
+            
+            
+            var expectedBanTime = DateTime.UtcNow.AddHours(24);
+            var timeDifference = Math.Abs((expectedBanTime - regularUser.BannedUntil.Value).TotalMinutes);
+            Assert.True(timeDifference < 1); 
+        }
+
+        [Fact]
+        public async Task BanUserAsync_NoDurationForBannedUser_RemovesBan()
+        {
+            
+            string userId = "banned-user";
+            var bannedUser = new User 
+            { 
+                Id = userId, 
+                UserName = "banned", 
+                BannedUntil = DateTime.UtcNow.AddDays(1) 
+            };
+            
+            _mockUserManager.Setup(um => um.FindByIdAsync(userId))
+                .ReturnsAsync(bannedUser);
+            _mockUserManager.Setup(um => um.IsInRoleAsync(bannedUser, "Admin"))
+                .ReturnsAsync(false);
+            _mockUserManager.Setup(um => um.UpdateAsync(It.IsAny<User>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            
+            var result = await _userService.BanUserAsync(userId, null);
+
+            
+            Assert.True(result.Succeeded);
+            Assert.Null(bannedUser.BannedUntil);
+            _mockUserManager.Verify(um => um.UpdateAsync(bannedUser), Times.Once);
+        }
+
+        [Fact]
+        public async Task BanUserAsync_UpdateFails_ReturnsFalseWithErrors()
+        {
+            
+            string userId = "regular-user";
+            var regularUser = new User { Id = userId, UserName = "user" };
+            var identityErrors = new List<IdentityError> 
+            {
+                new IdentityError { Description = "Error 1" },
+                new IdentityError { Description = "Error 2" }
+            };
+            
+            _mockUserManager.Setup(um => um.FindByIdAsync(userId))
+                .ReturnsAsync(regularUser);
+            _mockUserManager.Setup(um => um.IsInRoleAsync(regularUser, "Admin"))
+                .ReturnsAsync(false);
+            _mockUserManager.Setup(um => um.UpdateAsync(It.IsAny<User>()))
+                .ReturnsAsync(IdentityResult.Failed(identityErrors.ToArray()));
+
+            
+            var result = await _userService.BanUserAsync(userId, 24);
+
+            
+            Assert.False(result.Succeeded);
+            Assert.Equal("Error 1, Error 2", result.ErrorMessage);
         }
     }
 }

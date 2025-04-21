@@ -7,7 +7,7 @@ using MVC.Models;
 using MVC.ViewModels;
 using Xunit;
 
-namespace Tests.Country;
+namespace Tests.CountryTests;
 
 public class CreateActionTests
 {

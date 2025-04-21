@@ -49,14 +49,14 @@ namespace Tests.Users
         [Fact]
         public async Task AddToWatch_UserNotFound_RedirectsToLogin()
         {
-             
+            // Arrange
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync((User?)null);
 
-             
+            // Act
             var result = await _controller.AddToWatch(1);
 
-             
+            // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Login", redirectResult.ActionName);
         }
@@ -64,25 +64,26 @@ namespace Tests.Users
         [Fact]
         public async Task AddToWatch_ValidUser_CallsAddUserMovieAsync()
         {
-             
+            // Arrange
             var userId = "user123";
             var movieId = 5;
             var user = new User { Id = userId };
 
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(user);
-
-             
+            
+            // Act
             await _controller.AddToWatch(movieId);
-
-             
-            _mockUserMovieService.Verify(s => s.AddUserMovieAsync(userId, movieId, false, -1), Times.Once);
+            
+            // Assert
+            // Use DateTime.UtcNow.Date to match the implementation in the controller
+            _mockUserMovieService.Verify(s => s.AddUserMovieAsync(user.Id, movieId, false, -1, null), Times.Once);
         }
 
         [Fact]
         public async Task AddToWatch_WithReferer_RedirectsToReferer()
         {
-             
+            // Arrange
             var userId = "user123";
             var movieId = 5;
             var user = new User { Id = userId };
@@ -91,13 +92,19 @@ namespace Tests.Users
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(user);
 
-             
-            _controller.HttpContext.Request.Headers["Referer"] = refererUrl;
+            // Set Referer header
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Headers["Referer"] = refererUrl;
+            httpContext.User = _controller.HttpContext.User;
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
-             
+            // Act
             var result = await _controller.AddToWatch(movieId);
 
-             
+            // Assert
             var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal(refererUrl, redirectResult.Url);
         }
@@ -105,7 +112,7 @@ namespace Tests.Users
         [Fact]
         public async Task AddToWatch_WithoutReferer_RedirectsToMovieDetails()
         {
-             
+            // Arrange
             var userId = "user123";
             var movieId = 5;
             var user = new User { Id = userId };
@@ -113,13 +120,18 @@ namespace Tests.Users
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(user);
 
-             
-            _controller.HttpContext.Request.Headers.Remove("Referer");
+            // Ensure no Referer header
+            var httpContext = new DefaultHttpContext();
+            httpContext.User = _controller.HttpContext.User;
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
-             
+            // Act
             var result = await _controller.AddToWatch(movieId);
 
-             
+            // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Details", redirectResult.ActionName);
             Assert.Equal("Movie", redirectResult.ControllerName);
@@ -129,20 +141,35 @@ namespace Tests.Users
         [Fact]
         public async Task AddToWatch_UserMovieServiceThrowsException_FailsGracefully()
         {
-             
+            // Arrange
             var userId = "user123";
             var movieId = 5;
             var user = new User { Id = userId };
             
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
-                .ReturnsAsync(user);
-                
+            .ReturnsAsync(user);
+            
             _mockUserMovieService.Setup(s => s.AddUserMovieAsync(It.IsAny<string>(), It.IsAny<int>(), 
-                                                                It.IsAny<bool>(), It.IsAny<int>()))
-                .ThrowsAsync(new Exception("Database error"));
+                                    It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<DateTime?>()))
+            .ThrowsAsync(new Exception("Database error"));
 
-             
-            await Assert.ThrowsAsync<Exception>(() => _controller.AddToWatch(movieId));
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<Exception>(() => _controller.AddToWatch(movieId));
+            Assert.Equal("Database error", exception.Message);
+        }
+
+        [Fact]
+        public void AddToWatch_HasAuthorizeAttribute()
+        {
+            // Arrange & Act
+            var methodInfo = typeof(UserController).GetMethod("AddToWatch", new[] { typeof(int) });
+            Assert.NotNull(methodInfo);
+
+            // Assert
+            var authorizeAttributes = methodInfo.GetCustomAttributes(typeof(Microsoft.AspNetCore.Authorization.AuthorizeAttribute), false);
+            
+            Assert.Single(authorizeAttributes);
+            Assert.IsType<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>(authorizeAttributes[0]);
         }
     }
 }

@@ -87,5 +87,12 @@ namespace MVC.Controllers
 
             return RedirectToAction("GetAll");
         }
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            var countries = await _countryService.SearchCountriesAsync(searchTerm);
+            ViewBag.Countries = countries.OrderBy(c => c.Name).ToList();
+            return View("GetAll", new CountryViewModel());
+        }
     }
 }

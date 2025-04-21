@@ -157,9 +157,15 @@ namespace MVC.Migrations
                     b.Property<int>("MovieId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reports");
                 });
@@ -172,6 +178,9 @@ namespace MVC.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("BannedUntil")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -181,9 +190,6 @@ namespace MVC.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsBanned")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
@@ -244,6 +250,9 @@ namespace MVC.Migrations
 
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("WatchedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("UserId", "MovieId");
 
@@ -449,7 +458,15 @@ namespace MVC.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MVC.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Movie");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MVC.Models.UserMovie", b =>

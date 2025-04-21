@@ -64,20 +64,34 @@ public class UserService : IUserService
             return (false, string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
-    public async Task<(bool Succeeded, string? ErrorMessage)> BanUserAsync(string userId)
+    public async Task<(bool Succeeded, string? ErrorMessage)> BanUserAsync(string userId, int? banDurationHours = null)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            return (false, "User not found");
+            return (false, "Користувача не знайдено");
         }
 
         if (await _userManager.IsInRoleAsync(user, "Admin"))
         {
-            return (false, "Cannot ban admin users");
+            return (false, "Неможливо заблокувати адміністраторів");
         }
 
-        user.IsBanned = !user.IsBanned;
+        if (!banDurationHours.HasValue && user.BannedUntil.HasValue && user.BannedUntil > DateTime.UtcNow)
+        {
+            user.BannedUntil = null;
+        }
+        
+        else if (banDurationHours.HasValue)
+        {
+            user.BannedUntil = DateTime.UtcNow.AddHours(banDurationHours.Value);
+        }
+        
+        else
+        {
+            user.BannedUntil = DateTime.UtcNow.AddHours(24); 
+        }
+
         var result = await _userManager.UpdateAsync(user);
 
         if (result.Succeeded)
@@ -119,6 +133,10 @@ public class UserService : IUserService
     public async Task<User?> GetCurrentUserAsync(System.Security.Claims.ClaimsPrincipal userPrincipal)
     {
         return await _userManager.GetUserAsync(userPrincipal);
+    }
+    public async Task<User> GetUserByIdAsync(string id)
+    {
+        return await _userManager.FindByIdAsync(id);
     }
     
 }

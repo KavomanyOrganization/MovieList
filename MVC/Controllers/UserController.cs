@@ -79,13 +79,24 @@ public class UserController : Controller
     }
 
     [Authorize]
-    public async Task<IActionResult> Details()
+    public async Task<IActionResult> Details(string userId)
     {
-        var user = await _userService.GetCurrentUserAsync(User);
+        User user;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            user = await _userService.GetCurrentUserAsync(User);
+        }
+        else
+        {
+            user = await _userService.GetUserByIdAsync(userId);
+        }
+
         if (user == null)
         {
             return RedirectToAction("Login");
         }
+
         return View(user);
     }
 
@@ -103,7 +114,7 @@ public class UserController : Controller
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> RateMovie(int movieId, int rating)
+    public async Task<IActionResult> RateMovie(int movieId, int rating, DateTime? watchedDate)
     {
         if (rating < 1 || rating > 10)
         {
@@ -116,8 +127,10 @@ public class UserController : Controller
         {
             return RedirectToAction("Login");
         }                     
+        DateTime? utcWatchedDate = watchedDate.HasValue ? 
+        DateTime.SpecifyKind(watchedDate.Value, DateTimeKind.Utc) : DateTime.UtcNow;
 
-        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating);
+        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating, utcWatchedDate);
         await _movieService.CalculateRating(movieId);
 
         var referer = Request.Headers["Referer"].ToString();
@@ -165,6 +178,7 @@ public class UserController : Controller
         {
             return View(new List<Movie>());
         }
+        userMovies = userMovies.OrderByDescending(um => um.WatchedAt).ToList();
 
         ViewBag.UserMovies = userMovies;
 
@@ -208,6 +222,7 @@ public class UserController : Controller
 
         return View(moviesCreatorsDict);
     }
+
     [Authorize]
     public async Task<IActionResult> AddToWatch(int movieId)
     {
@@ -255,6 +270,7 @@ public class UserController : Controller
 
         return View(movies);
     }
+
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> SearchInList(string title, string listType)
@@ -277,6 +293,7 @@ public class UserController : Controller
             return View("GetAllSeenIt", movies);
         }
     }
+
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
     {
@@ -301,18 +318,45 @@ public class UserController : Controller
     }
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> Ban(string id)
+    public async Task<IActionResult> Ban(string id, int? banDurationHours)
     {
-        var result = await _userService.BanUserAsync(id);
+        var result = await _userService.BanUserAsync(id, banDurationHours);
         if (!result.Succeeded)
         {
             TempData["ErrorMessage"] = result.ErrorMessage;
         }
+        else
+        {
+            var actionType = banDurationHours.HasValue ? "banned" : "updated";
+            TempData["SuccessMessage"] = $"User {actionType} successfully";
+        }
+        
         var referer = Request.Headers["Referer"].ToString();
         if (!string.IsNullOrEmpty(referer))
         {
             return Redirect(referer);
         }
         return RedirectToAction("GetAll");
+    }
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> CountSeenIt(string userId)
+    {
+        User user;
+        if (string.IsNullOrEmpty(userId))
+        {
+            user = await _userService.GetCurrentUserAsync(User);
+        }
+        else
+        {
+            user = await _userService.GetUserByIdAsync(userId);
+        }
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        var count = await _userMovieService.CountUserSeenItMoviesAsync(user.Id);
+        return Ok(count);
     }
 }

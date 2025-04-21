@@ -86,6 +86,12 @@ namespace MVC.Controllers
 
             return RedirectToAction("GetAll");
         }
-
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            var genres = await _genreService.SearchGenresAsync(searchTerm);
+            ViewBag.Genres = genres.OrderBy(g => g.Name).ToList();
+            return View("GetAll", new GenreViewModel());
+        }
     }
 }

@@ -94,8 +94,8 @@ namespace Tests.Users
             var testUser = new User { Id = "test-user-id" };
             var userMovies = new List<UserMovie>
             {
-                new UserMovie { UserId = testUser.Id, MovieId = 1, IsWatched = true },
-                new UserMovie { UserId = testUser.Id, MovieId = 2, IsWatched = true }
+            new UserMovie { UserId = testUser.Id, MovieId = 1, IsWatched = true, WatchedAt = DateTime.Now.AddDays(-1) },
+            new UserMovie { UserId = testUser.Id, MovieId = 2, IsWatched = true, WatchedAt = DateTime.Now }
             };
             
             var movies = new List<MVC.Models.Movie>
@@ -120,11 +120,10 @@ namespace Tests.Users
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<IEnumerable<MVC.Models.Movie>>(viewResult.Model);
             Assert.Equal(2, model.Count());
-            Assert.Equal("Movie 1", model.First().Title);
-            Assert.Equal("Movie 2", model.Last().Title);
-            
-            Assert.Equal(userMovies, viewResult.ViewData["UserMovies"]);
+            Assert.Equal("Movie 2", model.First().Title);
+            Assert.Equal("Movie 1", model.Last().Title);
+                        
+            Assert.Equal(userMovies.OrderBy(um => um.MovieId), ((IEnumerable<UserMovie>)viewResult.ViewData["UserMovies"]).OrderBy(um => um.MovieId));
         }
-
     }
 }

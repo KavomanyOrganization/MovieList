@@ -9,7 +9,7 @@ using Xunit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Tests.Country;
+namespace Tests.CountryTests;
 
 public class UpdateAction
 {
@@ -24,7 +24,7 @@ public class UpdateAction
         );
     }
     [Fact]
-    public async Task Update_WhenUserIsAdmin_ShouldUpdateGenreSuccessfully()
+    public async Task Update_WhenUserIsAdmin_ShouldUpdateCountrySuccessfully()
     {
         // Arrange
         int countryId = 1;
@@ -59,7 +59,7 @@ public class UpdateAction
         Assert.Equal("GetAll", redirectResult.ActionName);
     }
     [Fact]
-    public async Task Update_WhenGenreDoesNotExist_ShouldReturnNotFound()
+    public async Task Update_WhenCountryDoesNotExist_ShouldReturnNotFound()
     {
         // Arrange
         int countryId = 999;
@@ -75,7 +75,7 @@ public class UpdateAction
         Assert.IsType<NotFoundResult>(result);
     }
     [Fact]
-    public async Task Update_WhenGenreNameAlreadyExists_ShouldReturnViewWithError()
+    public async Task Update_WhenCountryNameAlreadyExists_ShouldReturnViewWithError()
     {
         // Arrange
         int countryId = 1;
