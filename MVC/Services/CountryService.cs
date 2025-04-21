@@ -66,4 +66,21 @@ public class CountryService : ICountryService
     {
         return await _context.Countries.ToDictionaryAsync(c => c.Id, c => c.Name);
     }
+    public async Task<List<Country>> SearchCountriesAsync(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return await GetAllCountriesAsync();
+        }
+
+        searchTerm = searchTerm.ToLower();
+
+        var countries = await _context.Countries
+            .Where(c =>
+                (c.Name != null && c.Name.ToLower().Contains(searchTerm))
+            )
+            .ToListAsync();
+
+        return countries;
+    }
 }
