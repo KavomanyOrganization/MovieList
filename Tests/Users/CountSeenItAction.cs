@@ -47,7 +47,7 @@ namespace Tests.Users
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
                 .ReturnsAsync(user);
             _mockUserMovieService.Setup(s => s.CountUserSeenItMoviesAsync(user.Id))
-                .ReturnsAsync(5);  // Приклад: повертає 5 фільмів
+                .ReturnsAsync(5);
 
             // Act
             var result = await _controller.CountSeenIt(userId);
@@ -55,7 +55,7 @@ namespace Tests.Users
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var count = Assert.IsType<int>(okResult.Value);
-            Assert.Equal(5, count); // Перевірка, що кількість фільмів відповідає 5
+            Assert.Equal(5, count);
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace Tests.Users
             _mockUserService.Setup(s => s.GetUserByIdAsync(userId))
                 .ReturnsAsync(user);
             _mockUserMovieService.Setup(s => s.CountUserSeenItMoviesAsync(user.Id))
-                .ReturnsAsync(3);  // Приклад: повертає 3 фільми
+                .ReturnsAsync(3);
 
             // Act
             var result = await _controller.CountSeenIt(userId);
@@ -75,7 +75,7 @@ namespace Tests.Users
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var count = Assert.IsType<int>(okResult.Value);
-            Assert.Equal(3, count); // Перевірка, що кількість фільмів відповідає 3
+            Assert.Equal(3, count);
         }
 
         [Fact]
@@ -84,14 +84,14 @@ namespace Tests.Users
             // Arrange
             var userId = "invalidId";
             _mockUserService.Setup(s => s.GetUserByIdAsync(userId))
-                .ReturnsAsync((User)null);  // Користувач не знайдений
+                .ReturnsAsync((User)null);
 
             // Act
             var result = await _controller.CountSeenIt(userId);
 
             // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Login", redirectResult.ActionName); // Перевірка, що відбувся редирект на Login
+            Assert.Equal("Login", redirectResult.ActionName); 
         }
 
         [Fact]
@@ -100,14 +100,14 @@ namespace Tests.Users
             // Arrange
             var userId = null as string;
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<System.Security.Claims.ClaimsPrincipal>()))
-                .ReturnsAsync((User)null);  // Поточний користувач не знайдений
+                .ReturnsAsync((User)null);
 
             // Act
             var result = await _controller.CountSeenIt(userId);
 
             // Assert
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Login", redirectResult.ActionName); // Перевірка, що відбувся редирект на Login
+            Assert.Equal("Login", redirectResult.ActionName);
         }
     }
 }
