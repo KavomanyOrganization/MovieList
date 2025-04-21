@@ -84,5 +84,11 @@ public class UserMovieService : IUserMovieService
         _context.UserMovies.RemoveRange(userMovies);
         await _context.SaveChangesAsync();
     }
+    public async Task<int> CountUserSeenItMoviesAsync(string userId)
+    {
+        return await _context.UserMovies
+            .Where(um => um.UserId == userId && um.IsWatched)
+            .CountAsync();
+    }
 
 }
