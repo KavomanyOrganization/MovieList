@@ -10,4 +10,5 @@ public interface IGenreService
     Task<bool> UpdateGenreAsync(int id, string name);
     Task<bool> DeleteGenreAsync(int id);
     Task<Dictionary<int, string>> GetGenresDictionaryAsync();
+    Task<List<Genre>> SearchGenresAsync(string searchTerm);
 }

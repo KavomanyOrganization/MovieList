@@ -66,4 +66,21 @@ public class GenreService : IGenreService
     {
         return await _context.Genres.ToDictionaryAsync(g => g.Id, g => g.Name);
     }
+    public async Task<List<Genre>> SearchGenresAsync(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return await GetAllGenresAsync();
+        }
+
+        searchTerm = searchTerm.ToLower();
+
+        var genres = await _context.Genres
+            .Where(g =>
+                (g.Name != null && g.Name.ToLower().Contains(searchTerm))
+            )
+            .ToListAsync();
+
+        return genres;
+    }
 }
