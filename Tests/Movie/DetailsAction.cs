@@ -63,7 +63,7 @@ public class DetailsActionTests
         var movie = new MVC.Models.Movie { Id = 1, Title = "Test Movie" };
         var reports = new List<Report>(); 
         
-        _mockMovieService.Setup(s => s.GetMovieById(1))
+        _mockMovieService.Setup(s => s.GetMovieByIdWithRelationsAsync(1))
             .ReturnsAsync(movie);
         _mockReportService.Setup(s => s.GetReportsForMovieAsync(1))
             .ReturnsAsync(reports);
@@ -103,36 +103,41 @@ public class DetailsActionTests
         var movie = new MVC.Models.Movie { Id = 1 };
         var user = new User { Id = "user1" };
         
-        _mockMovieService.Setup(s => s.GetMovieById(1))
+        _mockMovieService.Setup(s => s.GetMovieByIdWithRelationsAsync(1))
             .ReturnsAsync(movie);
-        _mockReportService.Setup(s => s.GetReportsForMovieAsync(1))
-            .ReturnsAsync(new List<Report>());
+
         _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
-            
-        _mockUserMovieService.Setup(s => s.GetUserMoviesAsync("user1", true))
-            .ReturnsAsync(new List<UserMovie> { new UserMovie { MovieId = 1 } });
-        _mockUserMovieService.Setup(s => s.GetUserMoviesAsync("user1", false))
+
+        _mockUserMovieService.Setup(s => s.GetUserMoviesAsync(user.Id, true))
+            .ReturnsAsync(new List<UserMovie> { new UserMovie { MovieId = 1, UserId = user.Id } });
+
+        _mockUserMovieService.Setup(s => s.GetUserMoviesAsync(user.Id, false))
             .ReturnsAsync(new List<UserMovie>());
-            
-        _mockMovieCreatorService.Setup(s => s.IsCreatorAsync(1, "user1"))
+
+        _mockMovieCreatorService.Setup(s => s.IsCreatorAsync(1, user.Id))
             .ReturnsAsync(true);
+
+        _mockReportService.Setup(s => s.GetReportsForMovieAsync(1))
+            .ReturnsAsync(new List<Report>());
 
         var userClaims = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
         {
-            new Claim(ClaimTypes.Name, "test@example.com")
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
         }, "TestAuthentication"));
+
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = userClaims }
         };
 
         // Act
-        await _controller.Details(1);
+        var result = await _controller.Details(1);
 
         // Assert
-        Assert.True(_controller.ViewBag.IsInUserLists);
-        Assert.True(_controller.ViewBag.IsCreator);
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.True((bool)viewResult.ViewData["IsInUserLists"]);
+        Assert.True((bool)viewResult.ViewData["IsCreator"]);
     }
 
     [Fact]
@@ -145,7 +150,7 @@ public class DetailsActionTests
             new Report { MovieId = 1, Comment = "Test Comment" }
         };
         
-        _mockMovieService.Setup(s => s.GetMovieById(1))
+        _mockMovieService.Setup(s => s.GetMovieByIdWithRelationsAsync(1))
             .ReturnsAsync(movie);
         _mockReportService.Setup(s => s.GetReportsForMovieAsync(1))
             .ReturnsAsync(reports);
