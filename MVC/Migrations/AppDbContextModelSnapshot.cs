@@ -251,6 +251,9 @@ namespace MVC.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("WatchedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("UserId", "MovieId");
 
                     b.HasIndex("MovieId");

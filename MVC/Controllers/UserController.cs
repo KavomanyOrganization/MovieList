@@ -114,7 +114,7 @@ public class UserController : Controller
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> RateMovie(int movieId, int rating)
+    public async Task<IActionResult> RateMovie(int movieId, int rating, DateTime? watchedDate)
     {
         if (rating < 1 || rating > 10)
         {
@@ -127,8 +127,10 @@ public class UserController : Controller
         {
             return RedirectToAction("Login");
         }                     
+        DateTime? utcWatchedDate = watchedDate.HasValue ? 
+        DateTime.SpecifyKind(watchedDate.Value, DateTimeKind.Utc) : DateTime.UtcNow;
 
-        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating);
+        await _userMovieService.AddUserMovieAsync(user.Id, movieId, true, rating, utcWatchedDate);
         await _movieService.CalculateRating(movieId);
 
         var referer = Request.Headers["Referer"].ToString();
