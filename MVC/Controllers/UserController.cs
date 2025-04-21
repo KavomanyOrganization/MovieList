@@ -337,4 +337,25 @@ public class UserController : Controller
         }
         return RedirectToAction("GetAll");
     }
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> CountSeenIt(string userId)
+    {
+        User user;
+        if (string.IsNullOrEmpty(userId))
+        {
+            user = await _userService.GetCurrentUserAsync(User);
+        }
+        else
+        {
+            user = await _userService.GetUserByIdAsync(userId);
+        }
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        var count = await _userMovieService.CountUserSeenItMoviesAsync(user.Id);
+        return Ok(count);
+    }
 }
