@@ -295,11 +295,17 @@ public class UserController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll(int page = 1)
+    public async Task<IActionResult> GetAll(int page = 1, string status = null)
     {
-        var pageSize = 9; 
+        var pageSize = 9;
         var users = await _userService.GetAllUsersAsync();
         
+        if (!string.IsNullOrEmpty(status))
+        {
+            bool isBanned = status.ToLower() == "banned";
+            users = users.Where(u => u.IsBanned == isBanned).ToList();
+        }
+
         var totalUsers = users.Count;
         var totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
         
@@ -314,7 +320,8 @@ public class UserController : Controller
         ViewBag.TotalPages = totalPages;
         ViewBag.HasPreviousPage = page > 1;
         ViewBag.HasNextPage = page < totalPages;
-        ViewBag.TotalUsers = totalUsers; // Додаємо загальну кількість у ViewBag
+        ViewBag.TotalUsers = totalUsers;
+        ViewBag.CurrentStatus = status; 
 
         return View(paginatedUsers);
     }
