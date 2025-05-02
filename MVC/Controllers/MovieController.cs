@@ -209,10 +209,26 @@ public class MovieController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult> ViewRating()
+    public async Task<IActionResult> ViewRating(int page = 1)
     {
+        var pageSize = 10;
         var movies = await _movieService.GetAllMoviesAsync();
-        return View(movies.OrderByDescending(m => m.Rating).ToList());
+        
+        var totalMovies = movies.Count();
+        var totalPages = (int)Math.Ceiling(totalMovies / (double)pageSize);
+        
+        var paginatedMovies = movies
+            .OrderByDescending(m => m.Rating)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+
+        return View(paginatedMovies);
     }
     
     [HttpGet]

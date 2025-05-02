@@ -26,7 +26,13 @@ public class MovieService : IMovieService
 
     public async Task<List<Movie>> GetAllMoviesAsync()
     {
-        return await _context.Movies.ToListAsync();
+        return await _context.Movies
+            .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)
+            .Include(m => m.MovieCountries)
+                .ThenInclude(mc => mc.Country)
+            .OrderByDescending(m => m.Rating)
+            .ToListAsync();
     }
 
     public async Task<Movie?> GetMovieById(int id)

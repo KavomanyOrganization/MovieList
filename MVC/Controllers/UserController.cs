@@ -295,11 +295,37 @@ public class UserController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(int page = 1, string status = null)
     {
+        var pageSize = 9;
         var users = await _userService.GetAllUsersAsync();
-        return View(users);
+        
+        if (!string.IsNullOrEmpty(status))
+        {
+            bool isBanned = status.ToLower() == "banned";
+            users = users.Where(u => u.IsBanned == isBanned).ToList();
+        }
+
+        var totalUsers = users.Count;
+        var totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+        
+        page = Math.Max(1, Math.Min(page, totalPages));
+
+        var paginatedUsers = users
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        ViewBag.TotalUsers = totalUsers;
+        ViewBag.CurrentStatus = status; 
+
+        return View(paginatedUsers);
     }
+
     [HttpPost]
     [Authorize(Roles="Admin")]
     public async Task<IActionResult> DeleteUser(string userId)
