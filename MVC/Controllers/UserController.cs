@@ -295,11 +295,30 @@ public class UserController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(int page = 1)
     {
+        var pageSize = 9; 
         var users = await _userService.GetAllUsersAsync();
-        return View(users);
+        
+        var totalUsers = users.Count;
+        var totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+        
+        page = Math.Max(1, Math.Min(page, totalPages));
+
+        var paginatedUsers = users
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        ViewBag.TotalUsers = totalUsers; // Додаємо загальну кількість у ViewBag
+
+        return View(paginatedUsers);
     }
+
     [HttpPost]
     [Authorize(Roles="Admin")]
     public async Task<IActionResult> DeleteUser(string userId)
