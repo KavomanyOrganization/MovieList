@@ -212,7 +212,7 @@ public class UserController : Controller
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetActivity(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> GetActivity(DateTime? startDate, DateTime? endDate, int page = 1)
     {
         if (startDate == null)
             startDate = DateTime.Now.AddMonths(-1);
@@ -234,11 +234,28 @@ public class UserController : Controller
             }
         }
 
-        var moviesCreatorsDict = moviesCreators
-            .GroupBy(pair => pair.Key)
-            .ToDictionary(g => g.Key, g => g.First().Value);
+        moviesCreators = moviesCreators.OrderByDescending(x => x.Key.CreationDate).ToList();
+        
+        var pageSize = 10;
+        var totalMovies = moviesCreators.Count;
+        var totalPages = (int)Math.Ceiling(totalMovies / (double)pageSize);
+        
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        
+        var paginatedMovies = moviesCreators
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+        ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
 
-        return View(moviesCreatorsDict);
+        return View(paginatedMovies);
     }
 
     [Authorize]
