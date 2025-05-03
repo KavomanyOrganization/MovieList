@@ -136,7 +136,7 @@ public class UserService : IUserService
     }
     public async Task<User> GetUserByIdAsync(string id)
     {
-        return await _userManager.FindByIdAsync(id);
+        return await _userManager.FindByIdAsync(id) ?? throw new InvalidOperationException("User not found");
     }
     
 }
