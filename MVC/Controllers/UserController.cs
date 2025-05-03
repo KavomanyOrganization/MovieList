@@ -85,7 +85,7 @@ public class UserController : Controller
 
         if (string.IsNullOrEmpty(userId))
         {
-            user = await _userService.GetCurrentUserAsync(User);
+            user = await _userService.GetCurrentUserAsync(User) ?? throw new InvalidOperationException("User not found.");
         }
         else
         {
@@ -471,7 +471,7 @@ public class UserController : Controller
         User user;
         if (string.IsNullOrEmpty(userId))
         {
-            user = await _userService.GetCurrentUserAsync(User);
+            user = await _userService.GetCurrentUserAsync(User) ?? throw new InvalidOperationException("User not found.");
         }
         else
         {

@@ -82,7 +82,7 @@
                                         </a>
 
                                         <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id" method="post">
-                                            @if (report.User.BannedUntil.HasValue && report.User.BannedUntil > DateTime.UtcNow)
+                                            @if (report.User!.BannedUntil.HasValue && report.User.BannedUntil > DateTime.UtcNow)
                                             {
                                                 <button type="submit" class="btn btn-success btn-sm btn-close-report">
                                                     <i class="bi bi-check-circle"></i> Unban
