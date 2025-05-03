@@ -85,7 +85,7 @@ public class UserController : Controller
 
         if (string.IsNullOrEmpty(userId))
         {
-            user = await _userService.GetCurrentUserAsync(User) ?? throw new InvalidOperationException("User not found.");
+            user = await _userService.GetCurrentUserAsync(User);
         }
         else
         {
@@ -343,7 +343,7 @@ public class UserController : Controller
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
         {
-            return RedirectToAction("Login");
+            return RedirectToAction("Login", "Account");
         }
         
         bool isWatched = listType != "watchlist";
@@ -471,7 +471,7 @@ public class UserController : Controller
         User user;
         if (string.IsNullOrEmpty(userId))
         {
-            user = await _userService.GetCurrentUserAsync(User) ?? throw new InvalidOperationException("User not found.");
+            user = await _userService.GetCurrentUserAsync(User);
         }
         else
         {

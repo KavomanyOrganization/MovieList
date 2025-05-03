@@ -81,51 +81,61 @@ namespace Tests.Users
         [Fact]
         public async Task SearchInList_WatchlistType_ReturnsWatchlistView()
         {
-             
+            // Arrange
             var searchTitle = "test movie";
             var listType = "watchlist";
-            var movies = new List<MVC.Models.Movie> { new MVC.Models.Movie { Id = 1, Title = "Test Movie" } };
+            var testMovie = new MVC.Models.Movie { Id = 1, Title = "Test Movie" };
+            var userMovies = new List<UserMovie> { new UserMovie { UserId = _testUser.Id, MovieId = 1 } };
 
             _mockUserService.Setup(x => x.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(_testUser);
-            _mockMovieService.Setup(x => x.SearchInPersonalListAsync(searchTitle, _testUser.Id, listType))
-                .ReturnsAsync(movies);
+            _mockUserMovieService.Setup(x => x.GetUserMoviesAsync(_testUser.Id, false))
+                .ReturnsAsync(userMovies);
+            _mockMovieService.Setup(x => x.GetMovieById(1))
+                .ReturnsAsync(testMovie);
 
-             
+            // Act
             var result = await _controller.SearchInList(searchTitle, listType);
 
-             
+            // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("GetAllToWatch", viewResult.ViewName);
             var model = Assert.IsAssignableFrom<List<MVC.Models.Movie>>(viewResult.Model);
             Assert.Single(model);
+            Assert.Equal(testMovie, model[0]);
         }
-
+        
         [Fact]
         public async Task SearchInList_SeenItType_ReturnsSeenItViewWithUserMovies()
         {
-             
+            // Arrange
             var searchTitle = "test movie";
             var listType = "seenit";
-            var movies = new List<MVC.Models.Movie> { new MVC.Models.Movie { Id = 1, Title = "Test Movie" } };
-            var userMovies = new List<UserMovie> { new UserMovie { UserId = _testUser.Id, MovieId = 1, Rating = 8 } };
+            var testMovie = new MVC.Models.Movie { Id = 1, Title = "Test Movie" };
+            var userMovies = new List<UserMovie> { 
+                new UserMovie { UserId = _testUser.Id, MovieId = 1, Rating = 8, WatchedAt = DateTime.Now } 
+            };
 
             _mockUserService.Setup(x => x.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(_testUser);
-            _mockMovieService.Setup(x => x.SearchInPersonalListAsync(searchTitle, _testUser.Id, listType))
-                .ReturnsAsync(movies);
             _mockUserMovieService.Setup(x => x.GetUserMoviesAsync(_testUser.Id, true))
                 .ReturnsAsync(userMovies);
+            _mockMovieService.Setup(x => x.GetMovieById(1))
+                .ReturnsAsync(testMovie);
 
-             
+            // Act
             var result = await _controller.SearchInList(searchTitle, listType);
 
-             
+            // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal("GetAllSeenIt", viewResult.ViewName);
             var model = Assert.IsAssignableFrom<List<MVC.Models.Movie>>(viewResult.Model);
             Assert.Single(model);
-            Assert.Equal(userMovies, viewResult.ViewData["UserMovies"]);
+            Assert.Equal(testMovie, model[0]);
+            
+            var viewDataUserMovies = Assert.IsType<List<UserMovie>>(viewResult.ViewData["UserMovies"]);
+            Assert.Single(viewDataUserMovies);
+            Assert.Equal(8, viewDataUserMovies[0].Rating);
         }
 
         [Fact]

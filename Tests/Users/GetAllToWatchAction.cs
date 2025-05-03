@@ -114,7 +114,7 @@ namespace Tests.Users
         [Fact]
         public async Task GetAllToWatch_SetsViewBagUserMovies()
         {
-             
+            // Arrange
             var userId = "user123";
             var user = new User { Id = userId };
             
@@ -124,21 +124,39 @@ namespace Tests.Users
                 new UserMovie { UserId = userId, MovieId = 2 }
             };
             
+            var movies = new List<MVC.Models.Movie>
+            {
+                new MVC.Models.Movie { Id = 1, Title = "Movie 1" },
+                new MVC.Models.Movie { Id = 2, Title = "Movie 2" }
+            };
+            
             _mockUserService.Setup(s => s.GetCurrentUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(user);
                 
             _mockUserMovieService.Setup(s => s.GetUserMoviesAsync(userId, false))
                 .ReturnsAsync(userMovies);
                 
-            _mockMovieService.Setup(s => s.GetMovieById(It.IsAny<int>()))
-                .ReturnsAsync(new MVC.Models.Movie());
+            _mockMovieService.Setup(s => s.GetMovieById(1))
+                .ReturnsAsync(movies[0]);
+            _mockMovieService.Setup(s => s.GetMovieById(2))
+                .ReturnsAsync(movies[1]);
 
-             
+            // Act
             var result = await _controller.GetAllToWatch();
 
-             
+            // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal(userMovies, viewResult.ViewData["UserMovies"]);
+            var model = Assert.IsAssignableFrom<List<MVC.Models.Movie>>(viewResult.Model);
+            
+            Assert.Equal(2, model.Count);
+            Assert.Contains(movies[0], model);
+            Assert.Contains(movies[1], model);
+            
+            // Verify ViewBag properties
+            Assert.Equal(1, viewResult.ViewData["CurrentPage"]);
+            Assert.Equal(1, viewResult.ViewData["TotalPages"]);
+            Assert.False((bool)viewResult.ViewData["HasPreviousPage"]!);
+            Assert.False((bool)viewResult.ViewData["HasNextPage"]!);
         }
 
         [Fact]
