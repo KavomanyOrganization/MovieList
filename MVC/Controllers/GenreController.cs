@@ -104,10 +104,27 @@ namespace MVC.Controllers
             return RedirectToAction("GetAll");
         }
         [HttpGet]
-        public async Task<IActionResult> Search(string searchTerm)
+        public async Task<IActionResult> Search(string searchTerm, int page = 1)
         {
+            var pageSize = 10;
+            
             var genres = await _genreService.SearchGenresAsync(searchTerm);
-            ViewBag.Genres = genres.OrderBy(g => g.Name).ToList();
+            var totalGenres = genres.Count();
+            var totalPages = (int)Math.Ceiling(totalGenres / (double)pageSize);
+
+            var paginatedGenres = genres
+                .OrderBy(g => g.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.HasPreviousPage = page > 1;
+            ViewBag.HasNextPage = page < totalPages;
+            ViewBag.SearchTerm = searchTerm;
+
+            ViewBag.Genres = paginatedGenres;
             return View("GetAll", new GenreViewModel());
         }
     }

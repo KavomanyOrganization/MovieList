@@ -103,10 +103,27 @@ namespace MVC.Controllers
             return RedirectToAction("GetAll");
         }
         [HttpGet]
-        public async Task<IActionResult> Search(string searchTerm)
+        public async Task<IActionResult> Search(string searchTerm, int page = 1)
         {
+            var pageSize = 8;
+            
             var countries = await _countryService.SearchCountriesAsync(searchTerm);
-            ViewBag.Countries = countries.OrderBy(c => c.Name).ToList();
+            var totalCountries = countries.Count();
+            var totalPages = (int)Math.Ceiling(totalCountries / (double)pageSize);
+
+            var paginatedCountries = countries
+                .OrderBy(c => c.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.HasPreviousPage = page > 1;
+            ViewBag.HasNextPage = page < totalPages;
+            ViewBag.SearchTerm = searchTerm;
+
+            ViewBag.Countries = paginatedCountries;
             return View("GetAll", new CountryViewModel());
         }
     }
