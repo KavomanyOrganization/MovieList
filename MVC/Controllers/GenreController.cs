@@ -17,7 +17,7 @@ namespace MVC.Controllers
 
         public async Task<IActionResult> GetAll(int page = 1)
         {
-            var pageSize = 10;
+            var pageSize = 8;
 
             var genres = await _genreService.GetAllGenresAsync();
             var totalGenres = genres.Count();

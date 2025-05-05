@@ -18,7 +18,7 @@ namespace MVC.Controllers
 
         public async Task<IActionResult> GetAll(int page = 1)
         {
-            var pageSize = 10;
+            var pageSize = 8;
             var countries = await _countryService.GetAllCountriesAsync();
             var totalCountries = countries.Count();
             var totalPages = (int)Math.Ceiling(totalCountries / (double)pageSize);
