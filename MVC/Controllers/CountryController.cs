@@ -16,9 +16,24 @@ namespace MVC.Controllers
             _countryService = countryService;
         }
 
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int page = 1)
         {
-            ViewBag.Countries = await _countryService.GetAllCountriesAsync();
+            var pageSize = 10;
+            var countries = await _countryService.GetAllCountriesAsync();
+            var totalCountries = countries.Count();
+            var totalPages = (int)Math.Ceiling(totalCountries / (double)pageSize);
+
+            var paginatedCountries = countries
+            .OrderByDescending(c => c.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize);
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.HasPreviousPage = page > 1;
+            ViewBag.HasNextPage = page < totalPages;
+
+            ViewBag.Countries = paginatedCountries;
             return View(new CountryViewModel());
         }
 
