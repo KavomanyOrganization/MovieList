@@ -33,7 +33,7 @@ namespace MVC.Controllers
             ViewBag.HasPreviousPage = page > 1;
             ViewBag.HasNextPage = page < totalPages;
 
-            ViewBag.Genres = paginatedGenres;
+            ViewBag.Genres = paginatedGenres.ToList();
             return View(new GenreViewModel());
 
         }

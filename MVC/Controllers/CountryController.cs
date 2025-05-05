@@ -33,7 +33,7 @@ namespace MVC.Controllers
             ViewBag.HasPreviousPage = page > 1;
             ViewBag.HasNextPage = page < totalPages;
 
-            ViewBag.Countries = paginatedCountries;
+            ViewBag.Countries = paginatedCountries.ToList();
             return View(new CountryViewModel());
         }
 
