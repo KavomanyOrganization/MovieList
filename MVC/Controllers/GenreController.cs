@@ -15,10 +15,27 @@ namespace MVC.Controllers
             _genreService = genreService;
         }
 
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int page = 1)
         {
-            ViewBag.Genres = await _genreService.GetAllGenresAsync();
+            var pageSize = 10;
+
+            var genres = await _genreService.GetAllGenresAsync();
+            var totalGenres = genres.Count();
+            var totalPages = (int)Math.Ceiling(totalGenres / (double)pageSize);
+
+            var paginatedGenres =  genres
+            .OrderByDescending(m => m.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize);
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.HasPreviousPage = page > 1;
+            ViewBag.HasNextPage = page < totalPages;
+
+            ViewBag.Genres = paginatedGenres;
             return View(new GenreViewModel());
+
         }
 
         [Authorize(Roles = "Admin")]
