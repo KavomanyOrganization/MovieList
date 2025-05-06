@@ -18,24 +18,27 @@
     }
 }
 
-<div class="container mt-4">
+<div class="container my-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">@Model.Title</h3>
+            <div class="card shadow-sm border-0 card-rounded">
+                <div class="card-header-gradient card-header border-0 rounded-top d-flex justify-content-between align-items-center">
+                    <h3 class="text-white mb-0 fs-3 fw-bold">@Model.Title</h3>
                     <div>
                         @if (User.IsInRole("Admin") || isCreator)
                         {
                             <div class="btn-group" role="group">
-                                <a asp-controller="Movie" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">
+                                <a asp-controller="Movie" asp-action="Update" asp-route-id="@Model.Id" 
+                                   class="btn btn-secondary-style btn-sm rounded-start" 
+                                   data-bs-toggle="tooltip" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <a asp-controller="Movie" asp-action="Delete" asp-route-id="@Model.Id" 
-                                        class="btn btn-danger btn-sm" 
-                                        onclick="return confirm('Are you sure you want to delete this movie?');">
+                                        class="btn btn-danger btn-sm rounded-end" 
+                                        onclick="return confirm('Are you sure you want to delete this movie?');" 
+                                        data-bs-toggle="tooltip" title="Delete">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 }
@@ -43,7 +46,8 @@
                         }
                     </div>
                 </div>
-                <div class="card-body">
+
+                <div class="card-body p-4">
                     <div class="row">
                         <div class="col-md-4">
                             @if (!string.IsNullOrEmpty(Model.Cover))
@@ -54,132 +58,153 @@
                             }
                             else
                             {
-                                <span>No cover available</span>
+                                <div class="image-placeholder rounded d-flex justify-content-center align-items-center shadow-sm mb-3" style="height: 300px;">
+                                    <i class="bi bi-film text-secondary" style="font-size: 4rem;"></i>
+                                </div>
                             }
                         </div>
+                        
                         <div class="col-md-8">
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="badge rating-badge fs-5 me-2">@Model.Rating.ToString("0.0")</span>
+                                    <i class="fas fa-star star-icon"></i>
+                                </div>
+                            </div>
+                            
                             <dl class="row">
-                                <dt class="col-sm-3 text-nowrap">Rating</dt>
-                                <dd class="col-sm-9">@Model.Rating</dd>
-
-                                <dt class="col-sm-3 text-nowrap">Title</dt>
+                                <dt class="col-sm-3 text-nowrap fw-bold">Title</dt>
                                 <dd class="col-sm-9">@Model.Title</dd>
 
-                                <dt class="col-sm-3 text-nowrap">Director</dt>
+                                <dt class="col-sm-3 text-nowrap fw-bold">Director</dt>
                                 <dd class="col-sm-9">@Model.Director</dd>
 
-                                <dt class="col-sm-3 text-nowrap">Year</dt>
+                                <dt class="col-sm-3 text-nowrap fw-bold">Year</dt>
                                 <dd class="col-sm-9">@Model.Year</dd>
 
-                                <dt class="col-sm-3 text-nowrap">Duration</dt>
+                                <dt class="col-sm-3 text-nowrap fw-bold">Duration</dt>
                                 <dd class="col-sm-9">@Model.Duration minutes</dd>
                                 
-                                <dt class="col-sm-3 text-nowrap">Genres</dt>
+                                <dt class="col-sm-3 text-nowrap fw-bold">Genres</dt>
                                 <dd class="col-sm-9">
                                     @if (Model.MovieGenres != null && Model.MovieGenres.Any())
                                     {
-                                        <ul class="list-inline mb-0">
+                                        <div class="d-flex flex-wrap gap-2">
                                             @foreach (var genre in Model.MovieGenres)
                                             {
-                                                <li>@(genre.Genre != null ? genre.Genre.Name : "Unknown Genre")</li>
+                                                <span class="badge bg-secondary-style text-dark px-3 py-2 rounded-pill">
+                                                    @(genre.Genre != null ? genre.Genre.Name : "Unknown Genre")
+                                                </span>
                                             }
-                                        </ul>
+                                        </div>
                                     }
                                     else
                                     {
-                                        <span>No genres specified</span>
+                                        <span class="text-muted">No genres specified</span>
                                     }
                                 </dd>
                                 
-                                <dt class="col-sm-3 text-nowrap">Countries</dt>
+                                <dt class="col-sm-3 text-nowrap fw-bold">Countries</dt>
                                 <dd class="col-sm-9">
                                     @if (Model.MovieCountries != null && Model.MovieCountries.Any())
                                     {
-                                        <ul class="list-inline mb-0">
+                                        <div class="d-flex flex-wrap gap-2">
                                             @foreach (var country in Model.MovieCountries)
                                             {
-                                                <li>@(country.Country != null ? country.Country.Name : "Unknown Country")</li>
+                                                <span class="badge bg-secondary-style text-dark px-3 py-2 rounded-pill">
+                                                    @(country.Country != null ? country.Country.Name : "Unknown Country")
+                                                </span>
                                             }
-                                        </ul>
+                                        </div>
                                     }
                                     else
                                     {
-                                        <span>No countries specified</span>
+                                        <span class="text-muted">No countries specified</span>
                                     }
                                 </dd>
 
-                                <dt class="col-sm-3 text-nowrap">Description</dt>
-                                <dd class="col-sm-9">@Model.Description</dd>
+                                <dt class="col-sm-3 text-nowrap fw-bold">Description</dt>
+                                <dd class="col-sm-9">
+                                    @if (!string.IsNullOrEmpty(Model.Description))
+                                    {
+                                        <p>@Model.Description</p>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No description available</span>
+                                    }
+                                </dd>
                             </dl>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer d-flex justify-content-between">
+                
+                <div class="card-footer bg-light d-flex justify-content-between py-3 px-4 border-0 rounded-bottom">
                     <div>
                         @if (User.IsInRole("User") || User.IsInRole("Admin"))
                         {
                             @if (!isInUserLists)
                             {
-                                <a asp-controller="User" asp-action="AddToWatch" asp-route-movieId="@Model.Id" class="btn btn-primary">
-                                    <i class="bi bi-plus"></i> To Watch!
+                                <a asp-controller="User" asp-action="AddToWatch" asp-route-movieId="@Model.Id" class="btn btn-secondary-style btn-rounded px-4 py-2 me-2">
+                                    <i class="bi bi-plus me-2"></i> To Watch!
                                 </a>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rateMovieModal">
-                                    <i class="bi bi-eye"></i> Seen It!
+                                <button type="button" class="btn btn-primary-style btn-rounded px-4 py-2" data-bs-toggle="modal" data-bs-target="#rateMovieModal">
+                                    <i class="bi bi-eye me-2"></i> Seen It!
                                 </button>
                             }
                             else
                             {
-                                <a asp-controller="User" asp-action="RemoveFromLists" asp-route-id="@Model.Id" class="btn btn-secondary">
-                                    <i class="bi bi-dash-circle"></i> Remove from My Lists
+                                <a asp-controller="User" asp-action="RemoveFromLists" asp-route-id="@Model.Id" class="btn btn-outline-secondary-style btn-rounded px-4 py-2">
+                                    <i class="bi bi-dash-circle me-2"></i> Remove from My Lists
                                 </a>
                             }
                         }
                     </div>
+                    <a onclick="window.history.back();" class="btn btn-outline-secondary-style btn-rounded px-4 py-2 cursor-pointer">
+                        <i class="bi bi-arrow-left me-2"></i> Back
+                    </a>
                 </div>
             </div>       
+            
             @if (User.IsInRole("User"))
             {
-                @if (isUserBanned)
-                    {
-                        <div class="mt-3 text-center">
-                            <small>Notice incorrect information? 
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#bannedUserModal" style="color: red;">Report</a>
-                            </small>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="mt-3 text-center">
-                            <small>Notice incorrect information? 
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#reportModal" style="color: red;">Report</a>
-                            </small>
-                        </div>
-                    }
+                <div class="mt-3 text-center">
+                    <small>
+                        Notice incorrect information? 
+                        @if (isUserBanned)
+                        {
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#bannedUserModal" style="color: var(--primary-color);">Report</a>
+                        }
+                        else
+                        {
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#reportModal" style="color: var(--primary-color);">Report</a>
+                        }
+                    </small>
+                </div>
                 
-                @if (User.IsInRole("User"))
+                @if (!isUserBanned)
                 {
                     <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-4 shadow">
+                                <div class="modal-header modal-header-primary border-bottom-0">
                                     <h5 class="modal-title" id="reportModalLabel">Create a Report for this Movie</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">
-                                    <!-- Форма для створення звіту -->
+                                <div class="modal-body py-4">
                                     <form asp-controller="Report" asp-action="Create" method="post">
                                         <div class="mb-3">
-                                            <label for="comment" class="form-label">Comment</label>
-                                            <textarea id="comment" name="comment" class="form-control" rows="4" required></textarea>
+                                            <label for="comment" class="form-label fw-bold">Comment</label>
+                                            <textarea id="comment" name="comment" class="form-control" rows="4" required style="border-radius: 15px;"></textarea>
                                         </div>
                                         <input type="hidden" name="MovieId" value="@Model.Id" />
                                         <input type="hidden" name="UserId" value="@currentUser!.Id" />
-                                        <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-plus-circle"></i> Submit Report
-                                    </button>
-                                </div>
+                                        <div class="modal-footer border-top-0">
+                                            <button type="button" class="btn btn-outline-secondary-style btn-rounded px-4" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary-style btn-rounded px-4">
+                                                <i class="bi bi-plus-circle me-2"></i> Submit Report
+                                            </button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -187,32 +212,46 @@
                     </div>
                 }
             }
+            
             @if (User.IsInRole("Admin"))
             {
-                <div class="mt-3">
-                    <h4>Reports for this Movie</h4>
-                    @if (Model.Reports != null && Model.Reports.Any())
-                    {
-                        <ul class="list-group">
-                            @foreach (var report in Model.Reports)
+                <div class="mt-4">
+                    <div class="card shadow-sm border-0 card-rounded">
+                        <div class="card-header-gradient card-header border-0 rounded-top">
+                            <h4 class="text-white mb-0 fs-4 fw-bold">Reports for this Movie</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            @if (Model.Reports != null && Model.Reports.Any())
                             {
-                                <li class="list-group-item">
-                                    <strong></strong> @report.Comment
-                                    <br />
-                                    <small class="text-muted">Reported on @report.CreationDate</small>
-                                    <form action="@Url.Action("Delete", "Report", new { id = report.Id })" method="post" class="d-inline">
-                                        <button type="submit" class="btn btn-danger btn-sm float-end" onclick="return confirm('Are you sure you want to delete this report?');">
-                                            <i class="bi bi-x-circle"></i> Close Report
-                                        </button>
-                                    </form>
-                                </li>
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var report in Model.Reports)
+                                    {
+                                        <li class="list-group-item border-0 p-3">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <p class="mb-1">@report.Comment</p>
+                                                    <small class="text-muted">Reported on @report.CreationDate</small>
+                                                </div>
+                                                <form action="@Url.Action("Delete", "Report", new { id = report.Id })" method="post" class="ms-3">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm btn-rounded" 
+                                                            onclick="return confirm('Are you sure you want to delete this report?');">
+                                                        <i class="bi bi-x-circle me-1"></i> Close Report
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
                             }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>No reports available for this movie.</p>
-                    }
+                            else
+                            {
+                                <div class="text-center p-4">
+                                    <i class="bi bi-clipboard-check text-muted mb-3" style="font-size: 2rem;"></i>
+                                    <p class="text-muted">No reports available for this movie.</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             }
         </div>
@@ -221,26 +260,26 @@
 
 <!-- Modal for Rating -->
 <div class="modal fade" id="rateMovieModal" tabindex="-1" aria-labelledby="rateMovieModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header modal-header-primary border-bottom-0">
                 <h5 class="modal-title" id="rateMovieModalLabel">Rate @Model.Title</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-4">
                 <form id="rateMovieForm" asp-controller="User" asp-action="RateMovie" method="post">
                     <input type="hidden" name="movieId" value="@Model.Id" />
-                    <div class="form-group">
-                        <label for="rating">Rating (1-10):</label>
-                        <input type="number" id="rating" name="rating" class="form-control" min="1" max="10" required />
+                    <div class="mb-3">
+                        <label for="rating" class="form-label fw-bold">Rating (1-10):</label>
+                        <input type="number" id="rating" name="rating" class="form-control rounded-pill" min="1" max="10" required />
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="watchedDate">Watched Date:</label>
-                        <input type="date" id="watchedDate" name="watchedDate" class="form-control" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    <div class="mb-3">
+                        <label for="watchedDate" class="form-label fw-bold">Watched Date:</label>
+                        <input type="date" id="watchedDate" name="watchedDate" class="form-control rounded-pill" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Submit</button>
+                    <div class="modal-footer border-top-0">
+                        <button type="button" class="btn btn-outline-secondary-style btn-rounded px-4" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary-style btn-rounded px-4">Submit Rating</button>
                     </div>
                 </form>
             </div>
@@ -252,23 +291,24 @@
 <div class="modal fade" id="bannedUserModal" tabindex="-1" aria-labelledby="bannedUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4 shadow">
-            <div class="modal-header border-bottom-0">
+            <div class="modal-header modal-header-primary border-bottom-0">
                 <h5 class="modal-title" id="bannedUserModalLabel">Account Restriction</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-4">
                 <div class="text-center mb-4">
-                    <i class="bi bi-slash-circle text-danger fs-1"></i>
+                    <i class="bi bi-slash-circle text-danger" style="font-size: 4rem;"></i>
                 </div>
-                <p class="text-center">
-                    Your account has been banned. You cannot report.
+                <h4 class="text-center mb-3">Your account has been banned</h4>
+                <p class="text-center text-muted">
+                    You currently don't have permission to report issues.
                 </p>
                 <p class="text-center text-muted small">
-                    Please contact an administrator for more information.
+                    Please contact an administrator for more information or to appeal this decision.
                 </p>
             </div>
             <div class="modal-footer border-top-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary-style btn-rounded px-4" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -284,18 +324,10 @@
     });
   
     document.addEventListener("DOMContentLoaded", function() {
-        const dtElements = document.querySelectorAll('dt.col-sm-3');
-        let maxWidth = 0;
-
-        dtElements.forEach(dt => {
-            const width = dt.offsetWidth;
-            if (width > maxWidth) {
-                maxWidth = width;
-            }
-        });
-
-        dtElements.forEach(dt => {
-            dt.style.minWidth = `${maxWidth}px`;
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
     });
 </script>

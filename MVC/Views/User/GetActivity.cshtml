@@ -13,187 +13,214 @@
     var endDate = ViewBag.EndDate;
 }
 
-<h2>User Activity</h2>
+<div class="container my-5">
+    <div class="card shadow-sm border-0 card-rounded">
+        <div class="card-header-gradient card-header border-0 rounded-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="text-white mb-0 fs-3 fw-bold">User Activity</h1>
+            </div>
+        </div>
 
-<form method="get" action="@Url.Action("GetActivity", "User")" class="row g-3">
-    <div class="col-md-3">
-        <label for="startDate" class="form-label">Start Date:</label>
-        <input type="date" class="form-control" id="startDate" name="startDate" value="@startDate" />
-    </div>
-    <div class="col-md-3">
-        <label for="endDate" class="form-label">End Date:</label>
-        <input type="date" class="form-control" id="endDate" name="endDate" value="@endDate" />
-    </div>
-    <div class="col-md-3 align-self-end">
-        <button type="submit" class="btn btn-primary">Filter</button>
-    </div>
-</form>
+        <div class="card-body p-4">
+            <form method="get" action="@Url.Action("GetActivity", "User")" class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label for="startDate" class="form-label">Start Date:</label>
+                    <input type="date" class="form-control rounded-pill" id="startDate" name="startDate" value="@startDate" />
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate" class="form-label">End Date:</label>
+                    <input type="date" class="form-control rounded-pill" id="endDate" name="endDate" value="@endDate" />
+                </div>
+                <div class="col-md-4 align-self-end">
+                    <button type="submit" class="btn btn-secondary-style btn-rounded px-4 py-2">
+                        <i class="bi bi-funnel me-2"></i> Filter
+                    </button>
+                </div>
+            </form>
 
-<hr />
-
-@if (Model != null && Model.Any())
-{
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Movie</th>
-                    <th>Creation Date</th>
-                    <th>User</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var entry in Model)
-                {
-                    var user = entry.Value;
-                    bool isBanned = user.BannedUntil.HasValue && user.BannedUntil > DateTime.Now;
-                    
-                    <tr>
-                        <td><a href="@Url.Action("Details", "Movie", new { id = entry.Key.Id })">
-                            @entry.Key.Title</a></td>
-                        <td>@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            @user.UserName
-                            @if (isBanned)
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" style="border-collapse: separate; border-spacing: 0;">
+                        <thead>
+                            <tr class="bg-light">
+                                <th class="px-4 py-3" style="width: 140px;">Cover</th>
+                                <th class="px-4 py-3">Movie</th>
+                                <th class="px-4 py-3">Creation Date</th>
+                                <th class="px-4 py-3">User</th>
+                                <th class="px-4 py-3" style="width: 150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-hover-effect">
+                            @foreach (var entry in Model)
                             {
-                                <span class="badge bg-danger ms-1">Banned</span>
+                                var user = entry.Value;
+                                bool isBanned = user.BannedUntil.HasValue && user.BannedUntil > DateTime.Now;
                                 
-                                @if (user.BannedUntil.HasValue)
-                                {
-                                    <div class="small text-danger">
-                                        Until: @user.BannedUntil.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
-                                    </div>
-                                    
-                                    TimeSpan timeLeft = user.BannedUntil.Value.ToLocalTime() - DateTime.Now;
-                                    string formattedTimeLeft = $"{timeLeft.Days}d {timeLeft.Hours}h {timeLeft.Minutes}m";
-                                    
-                                    <div class="small text-danger">
-                                        Time left: @formattedTimeLeft
-                                    </div>
-                                }
-                            }
-                        </td>
-                        <td>
-                            @if (isAdmin && user.UserName != currentUser)
-                            {
-                                <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
-                                    @if (isBanned)
-                                    {
-                                        <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm action-button">
-                                            <i class="bi bi-check-circle"></i> Unban
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <div class="d-flex align-items-center gap-2">
-                                            <select name="banDurationHours" class="form-select form-select-sm ban-duration">
-                                                <option value="6">6 hours</option>
-                                                <option value="12">12 hours</option>
-                                                <option value="24" selected>24 hours</option>
-                                                <option value="72">3 days</option>
-                                                <option value="168">1 week</option>
-                                                <option value="720">30 days</option>
-                                                <option value="">Forever</option>
-                                            </select>
-                                            <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm action-button">
-                                                <i class="bi bi-slash-circle"></i> Ban
-                                            </button>
+                                <tr onclick="location.href='@Url.Action("Details", "Movie", new { id = entry.Key.Id })'">
+                                    <td class="px-4 py-3">
+                                        @if (!string.IsNullOrEmpty(entry.Key.Cover))
+                                        {
+                                            <div class="image-container">
+                                                <img src="@entry.Key.Cover" alt="@entry.Key.Title" 
+                                                     class="img-fluid rounded shadow-sm" 
+                                                     style="width: 100%; height: 100%; object-fit: cover;" />
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="image-placeholder rounded" style="height: 180px; width: 120px;">
+                                                <i class="bi bi-film text-secondary" style="font-size: 2rem;"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="px-4 py-3 fw-bold">@entry.Key.Title</td>
+                                    <td class="px-4 py-3 text-muted">@entry.Key.CreationDate.ToString("yyyy-MM-dd")</td>
+                                    <td class="px-4 py-3">
+                                        <div>
+                                            <span class="fw-medium">@user.UserName</span>
+                                            @if (isBanned)
+                                            {
+                                                <span class="badge rounded-pill ms-2" style="background-color: var(--primary-color);">Banned</span>
+                                                
+                                                @if (user.BannedUntil.HasValue)
+                                                {
+                                                    <div class="small text-muted mt-1">
+                                                        Until: @user.BannedUntil.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                                    </div>
+                                                    
+                                                    TimeSpan timeLeft = user.BannedUntil.Value.ToLocalTime() - DateTime.Now;
+                                                    string formattedTimeLeft = $"{timeLeft.Days}d {timeLeft.Hours}h {timeLeft.Minutes}m";
+                                                    
+                                                    <div class="small text-muted">
+                                                        Time left: @formattedTimeLeft
+                                                    </div>
+                                                }
+                                            }
                                         </div>
-                                    }
-                                </form>
+                                    </td>
+                                    <td class="px-4 py-3" onclick="event.stopPropagation();">
+                                        @if (isAdmin && user.UserName != currentUser)
+                                        {
+                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post" class="d-flex align-items-center">
+                                                @if (isBanned)
+                                                {
+                                                    <button type="submit" class="btn btn-secondary-style btn-rounded btn-sm px-3 py-1">
+                                                        <i class="bi bi-check-circle me-1"></i> Unban
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <select name="banDurationHours" class="form-select form-select-sm rounded-pill" style="width: 120px;">
+                                                            <option value="6">6 hours</option>
+                                                            <option value="12">12 hours</option>
+                                                            <option value="24" selected>24 hours</option>
+                                                            <option value="72">3 days</option>
+                                                            <option value="168">1 week</option>
+                                                            <option value="720">30 days</option>
+                                                            <option value="">Forever</option>
+                                                        </select>
+                                                        <button type="submit" class="btn btn-outline-secondary-style btn-rounded btn-sm px-3 py-1">
+                                                            <i class="bi bi-slash-circle me-1"></i> Ban
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
                             }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-calendar-x empty-state-icon"></i>
+                    </div>
+                    <h3 class="text-muted">No user activity found</h3>
+                    <p class="text-muted mb-4">No user activity found for the selected date range.</p>
+                    <a asp-controller="User" asp-action="GetActivity" class="btn btn-secondary-style btn-rounded px-4 py-2">
+                        <i class="bi bi-arrow-left me-2"></i> Reset filters
+                    </a>
+                </div>
+            }
+        </div>
+        
+        @if (totalPages > 1)
+        {
+            <div class="card-footer border-0 p-4" style="background-color: var(--background-color);">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-circle justify-content-center mb-0">
+                        @if (hasPreviousPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link btn-secondary-style" 
+                                   style="background-color: #a9cbb7; color: #333;"
+                                   href="@Url.Action("GetActivity", new { startDate = startDate, endDate = endDate, page = currentPage - 1 })" 
+                                   aria-label="Previous">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link btn-outline-secondary-style" 
+                                   style="border-color: #a9cbb7; color: #333;"
+                                   href="#" 
+                                   aria-label="Previous">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                        }
+                        
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            if (i == 1 || i == totalPages || (i >= currentPage - 2 && i <= currentPage + 2))
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" 
+                                       style="@(i == currentPage ? "background-color: #a9cbb7; color: #333;" : "border-color: #a9cbb7; color: #333;")"
+                                       href="@Url.Action("GetActivity", new { startDate = startDate, endDate = endDate, page = i })">@i</a>
+                                </li>
+                            }
+                            else if (i == currentPage - 3 || i == currentPage + 3)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link border-0 bg-transparent">...</span>
+                                </li>
+                            }
+                        }
+                        
+                        @if (hasNextPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link btn-secondary-style" 
+                                   style="background-color: #a9cbb7; color: #333;"
+                                   href="@Url.Action("GetActivity", new { startDate = startDate, endDate = endDate, page = currentPage + 1 })" 
+                                   aria-label="Next">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item disabled">
+                                <a class="page-link btn-outline-secondary-style" 
+                                   style="border-color: #a9cbb7; color: #333;"
+                                   href="#" 
+                                   aria-label="Next">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
     </div>
-
-    @if (totalPages > 1)
-    {
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                @if (hasPreviousPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" 
-                           href="@Url.Action("GetActivity", new { startDate = startDate, endDate = endDate, page = currentPage - 1 })" 
-                           aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                }
-                
-                @for (int i = 1; i <= totalPages; i++)
-                {
-                    if (i == 1 || i == totalPages || (i >= currentPage - 2 && i <= currentPage + 2))
-                    {
-                        <li class="page-item @(i == currentPage ? "active" : "")">
-                            <a class="page-link" 
-                               href="@Url.Action("GetActivity", new { startDate = startDate, endDate = endDate, page = i })">
-                                @i
-                            </a>
-                        </li>
-                    }
-                    else if (i == currentPage - 3 || i == currentPage + 3)
-                    {
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
-                    }
-                }
-                
-                @if (hasNextPage)
-                {
-                    <li class="page-item">
-                        <a class="page-link" 
-                           href="@Url.Action("GetActivity", new { startDate = startDate, endDate = endDate, page = currentPage + 1 })" 
-                           aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                }
-            </ul>
-        </nav>
-    }
-}
-else
-{
-    <p>No user activity found for the selected date range.</p>
-}
-
-<style>
-    .action-button {
-        min-width: 90px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-    }
-    
-    .ban-duration {
-        width: 120px;
-    }
-    
-    .small.text-danger {
-        margin-bottom: 0;
-        font-size: 11px;
-    }
-</style>
+</div>

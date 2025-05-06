@@ -9,7 +9,7 @@ html {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.25rem #a9cbb7;
 }
 
 html {
@@ -77,4 +77,121 @@ body {
     font-size: 0.85rem;
     color: #6c757d;
     margin-top: 0.5rem;
+}
+
+/* ------------------------------------------- */
+
+/* Color Variables */
+:root {
+  --primary-color: #6e8ec4;
+  --secondary-color: #a9cbb7;
+  --background-color: #efecca;
+  --star-color: #f7ff58;
+  --star-outline: #7b7744;
+  --text-dark: #333;
+  --text-muted: #6c757d;
+}
+
+/* Card Styles */
+.card-rounded {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.card-header-gradient {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1.5rem;
+}
+
+/* Button Styles */
+.btn-rounded {
+  border-radius: 50rem;
+}
+
+.btn-secondary-style {
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-style:hover {
+  background-color: #98b8a7;
+  transform: translateY(-2px);
+}
+
+.btn-outline-secondary-style {
+  background-color: white;
+  color: var(--text-dark);
+  border: 1px solid var(--secondary-color);
+  transition: all 0.2s ease;
+}
+
+.btn-outline-secondary-style:hover {
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+}
+
+/* Table Styles */
+.table-hover-effect tr {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-hover-effect tr:hover {
+  background-color: var(--background-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Empty State Styles */
+.empty-state-icon {
+  color: var(--text-muted);
+  font-size: 3rem;
+}
+
+/* Pagination Styles */
+.pagination-circle .page-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: all 0.2s ease;
+}
+
+.pagination-circle .page-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Form Controls */
+.form-control {
+  border-radius: 0.5rem;
+  border: 1px solid #ced4da;
+  padding: 0.5rem 1rem;
+}
+
+.form-control:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.25rem rgba(169, 203, 183, 0.25);
+}
+
+/* Image Styles */
+.image-container {
+  height: 180px;
+  width: 120px;
+  overflow: hidden;
+}
+
+.image-placeholder {
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
