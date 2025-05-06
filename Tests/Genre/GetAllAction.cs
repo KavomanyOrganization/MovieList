@@ -64,8 +64,5 @@ namespace Tests.GenreTests
             var genresInViewBag = Assert.IsAssignableFrom<List<MVC.Models.Genre>>(_controller.ViewBag.Genres);
             Assert.Empty(genresInViewBag); 
         }
-
-
-
     }
 }
