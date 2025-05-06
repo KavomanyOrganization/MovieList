@@ -61,7 +61,7 @@
                         <div class="mb-3">
                             <label class="form-label">Genres</label>
                             <select asp-for="SelectedGenreIds" class="form-control select2-genres" multiple="multiple">
-                                @foreach (var genre in Model.Genres) {
+                                @foreach (var genre in Model.Genres!) {
                                     <option value="@genre.Key">@genre.Value</option>
                                 }
                             </select>
@@ -71,7 +71,7 @@
                         <div class="mb-3">
                             <label class="form-label">Countries</label>
                             <select asp-for="SelectedCountryIds" class="form-control select2-countries" multiple="multiple">
-                                @foreach (var country in Model.Countries) {
+                                @foreach (var country in Model.Countries!) {
                                     <option value="@country.Key">@country.Value</option>
                                 }
                             </select>
@@ -104,13 +104,13 @@
     <script>
         $(document).ready(function() {
             $('.select2-genres').select2({
-                placeholder: "Select genres",
+                placeholder: "Select",
                 allowClear: true,
                 width: '100%'
             });
 
             $('.select2-countries').select2({
-                placeholder: "Select countries",
+                placeholder: "Select",
                 allowClear: true,
                 width: '100%'
             });

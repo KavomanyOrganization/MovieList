@@ -4,23 +4,30 @@
     ViewData["Title"] = "Movie Reports";
 }
 
-<h2>Movie Reports</h2>
+<div class="container mt-4">
+    <h2>Movie Reports</h2>
 
-<form method="get" action="@Url.Action("Filter", "Report")" class="row g-3">
-    <div class="col-md-3">
-        <label for="startDate" class="form-label">Start Date:</label>
-        <input type="date" class="form-control" id="startDate" name="startDate" value="@Context.Request.Query["startDate"]" />
-    </div>
-    <div class="col-md-3">
-        <label for="endDate" class="form-label">End Date:</label>
-        <input type="date" class="form-control" id="endDate" name="endDate" value="@Context.Request.Query["endDate"]" />
-    </div>
-    <div class="col-md-3 align-self-end">
-        <button type="submit" class="btn btn-primary">Filter</button>
-    </div>
-</form>
+    <form method="get" action="@Url.Action("Filter", "Report")" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="startDate" class="form-label">Start Date:</label>
+            <input type="date" class="form-control" id="startDate" name="startDate"
+                value="@Context.Request.Query["startDate"]" />
+        </div>
+        <div class="col-md-3">
+            <label for="endDate" class="form-label">End Date:</label>
+            <input type="date" class="form-control" id="endDate" name="endDate"
+                value="@Context.Request.Query["endDate"]" />
+        </div>
+        <div class="col-md-3 align-self-end">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            @if (!string.IsNullOrEmpty(Context.Request.Query["startDate"]) ||
+                        !string.IsNullOrEmpty(Context.Request.Query["endDate"]))
+            {
+                <a href="@Url.Action("GetAll")" class="btn btn-secondary">Clear</a>
+            }
+        </div>
+    </form>
 
-<hr />
     @if (Model.Any())
     {
         <div class="table-responsive">
@@ -34,7 +41,7 @@
                         <th style="white-space: nowrap;">User</th>
                         @if (User.IsInRole("Admin"))
                         {
-                            <th style="white-space: nowrap; text-align: center; width: 100px;">Actions</th>
+                            <th style="white-space: nowrap; text-align: center;" class="actions-cell">Actions</th>
                         }
                     </tr>
                 </thead>
@@ -43,10 +50,11 @@
                     {
                         <tr>
                             <td>
-                                <a href="@Url.Action("Details", "Movie", new { id = report.Movie!.Id })" style="text-decoration: none; color: inherit;">
+                                <a href="@Url.Action("Details", "Movie", new { id = report.Movie!.Id })"
+                                    style="text-decoration: none; color: inherit;">
                                     @if (!string.IsNullOrEmpty(report.Movie.Cover))
                                     {
-                                        <img src="@report.Movie.Cover" alt="@report.Movie.Title" class="img-thumbnail" style="max-height: 100px;" />
+                                        <img src="@report.Movie.Cover" alt="@report.Movie.Title" class="img-thumbnail cover-img" />
                                     }
                                     else
                                     {
@@ -55,46 +63,88 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="@Url.Action("Details", "Movie", new { id = report.Movie.Id })" style="text-decoration: none; color: inherit;">
+                                <a href="@Url.Action("Details", "Movie", new { id = report.Movie.Id })"
+                                    style="text-decoration: none; color: inherit;">
                                     @report.Movie.Title
                                 </a>
                             </td>
                             <td>@report.Comment</td>
                             <td>@report.CreationDate.ToString("dd MMM yyyy")</td>
                             <td>
-                                <a href="@Url.Action("Details", "User", new { userId = report.User?.Id })" 
-                                class="user-link" 
-                                style="text-decoration: none; color: inherit;">
-                                    @report.User?.UserName
-                                </a>
-                            </td>
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a asp-controller="Report" asp-action="Delete" asp-route-id="@report.Id"
-                                        class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Are you sure you want to delete this report?');">
-                                            <i class="bi bi-x-circle"></i> Close
-                                        </a>
-                                    </div>
+                                <div class="d-flex align-items-center">
+                                    <a href="@Url.Action("Details", "User", new { userId = report.User?.Id })"
+                                        class="user-link me-2" style="text-decoration: none; color: inherit;">
+                                        @report.User?.UserName
+                                    </a>
 
-                                <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id" method="post">
-                                    @if (report.User.IsBanned)
-                                    {
-                                        <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm">
-                                            <i class="bi bi-check-circle"></i> Unban
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm">
-                                            <i class="bi bi-slash-circle"></i> Ban
-                                        </button>
-                                    }
-                                </form>
-                                </td>
-                            }
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm @(
+                                                report.User!.BannedUntil.HasValue && report.User.BannedUntil > DateTime.UtcNow 
+                                                    ? "btn-success" 
+                                                    : "btn-danger"
+                                                                ) dropdown - toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                        title="Ban options">
+                                        <i class="bi bi-slash-circle"></i>
+                                    </button>
+
+                                        <ul class="dropdown-menu">
+                                    @if (report.User.BannedUntil.HasValue && report.User.BannedUntil > DateTime.UtcNow)
+                                            {
+                                                <li>
+                                                    <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
+                                                        method="post" class="dropdown-item m-0 p-0">
+                                                        <button type="submit" class="btn btn-success w-100">
+                                                            <i class="bi bi-check-circle"></i> Unban
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li>
+                                                    <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
+                                                        method="post" class="dropdown-item m-0 p-0">
+                                                        <input type="hidden" name="banDurationHours" value="6" />
+                                                        <button type="submit" class="dropdown-item text-danger">Ban for 6h</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
+                                                        method="post" class="dropdown-item m-0 p-0">
+                                                        <input type="hidden" name="banDurationHours" value="24" />
+                                                        <button type="submit" class="dropdown-item text-danger">Ban for 24h</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
+                                                        method="post" class="dropdown-item m-0 p-0">
+                                                        <input type="hidden" name="banDurationHours" value="168" />
+                                                        <button type="submit" class="dropdown-item text-danger">Ban for 1
+                                                            week</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
+                                                        method="post" class="dropdown-item m-0 p-0">
+                                                        <input type="hidden" name="banDurationHours" value="" />
+                                                        <button type="submit" class="dropdown-item text-danger">Ban
+                                                            permanently</button>
+                                                    </form>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-controller="Report" asp-action="Delete" asp-route-id="@report.Id"
+                                        class="btn btn-danger btn-sm btn-close-report"
+                                        onclick="return confirm('Are you sure you want to delete this report?');">
+                                        <i class="bi bi-x-circle"></i> Close
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -103,9 +153,50 @@
     }
     else
     {
-        <div style="margin-top: 20px; color: #6c757d;">
-            <p>No reports have been added yet.</p>
+        <div class="alert alert-info">
+            <p class="mb-0">No reports have been added yet.</p>
         </div>
     }
 </div>
 
+<style>
+    .table td {
+        vertical-align: middle;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .actions-cell {
+        width: 250px;
+    }
+
+    .btn-close-report {
+        width: 100px;
+    }
+
+    .cover-img {
+        max-height: 100px;
+        object-fit: cover;
+    }
+
+    .ban-dropdown {
+        min-width: 140px;
+    }
+
+    .ban-control {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .ban-btn {
+        width: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>

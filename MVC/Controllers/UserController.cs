@@ -164,8 +164,9 @@ public class UserController : Controller
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetAllSeenIt()
+    public async Task<IActionResult> GetAllSeenIt(int page = 1)
     {
+        var pageSize = 10;
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
         {
@@ -178,12 +179,29 @@ public class UserController : Controller
         {
             return View(new List<Movie>());
         }
+        
         userMovies = userMovies.OrderByDescending(um => um.WatchedAt).ToList();
-
-        ViewBag.UserMovies = userMovies;
-
+        
+        var totalUserMovies = userMovies.Count;
+        var totalPages = (int)Math.Ceiling(totalUserMovies / (double)pageSize);
+        
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        
+        var paginatedUserMovies = userMovies
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        ViewBag.UserMovies = paginatedUserMovies;
+        
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        
         var movies = new List<Movie>();
-        foreach (var userMovie in userMovies)
+        foreach (var userMovie in paginatedUserMovies)
         {
             var movie = await _movieService.GetMovieById(userMovie.MovieId);
             if (movie != null) movies.Add(movie);
@@ -194,7 +212,7 @@ public class UserController : Controller
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetActivity(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> GetActivity(DateTime? startDate, DateTime? endDate, int page = 1)
     {
         if (startDate == null)
             startDate = DateTime.Now.AddMonths(-1);
@@ -216,11 +234,28 @@ public class UserController : Controller
             }
         }
 
-        var moviesCreatorsDict = moviesCreators
-            .GroupBy(pair => pair.Key)
-            .ToDictionary(g => g.Key, g => g.First().Value);
+        moviesCreators = moviesCreators.OrderByDescending(x => x.Key.CreationDate).ToList();
+        
+        var pageSize = 10;
+        var totalMovies = moviesCreators.Count;
+        var totalPages = (int)Math.Ceiling(totalMovies / (double)pageSize);
+        
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        
+        var paginatedMovies = moviesCreators
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+        ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
 
-        return View(moviesCreatorsDict);
+        return View(paginatedMovies);
     }
 
     [Authorize]
@@ -245,8 +280,9 @@ public class UserController : Controller
     
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetAllToWatch()
+    public async Task<IActionResult> GetAllToWatch(int page = 1)
     {
+        var pageSize = 10;
         var user = await _userService.GetCurrentUserAsync(User);
         if (user == null)
         {
@@ -259,10 +295,27 @@ public class UserController : Controller
         {
             return View(new List<Movie>());
         }
-        ViewBag.UserMovies = userMovies;
-
+        
+        userMovies = userMovies.OrderByDescending(um => um.WatchedAt).ToList();
+        
+        var totalUserMovies = userMovies.Count;
+        var totalPages = (int)Math.Ceiling(totalUserMovies / (double)pageSize);
+        
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        
+        var paginatedUserMovies = userMovies
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        
         var movies = new List<Movie>();
-        foreach (var userMovie in userMovies)
+        foreach (var userMovie in paginatedUserMovies)
         {
             var movie = await _movieService.GetMovieById(userMovie.MovieId);
             if (movie != null) movies.Add(movie);
@@ -273,33 +326,106 @@ public class UserController : Controller
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> SearchInList(string title, string listType)
+    public async Task<IActionResult> SearchInList(string title, string listType, int page = 1)
     {
-        var currentUser = await _userService.GetCurrentUserAsync(User);
-        if (currentUser == null)
+        if (string.IsNullOrEmpty(title))
+        {
+            if (listType == "watchlist")
+            {
+                return RedirectToAction("GetAllToWatch");
+            }
+            else
+            {
+                return RedirectToAction("GetAllSeenIt");
+            }
+        }
+        
+        var user = await _userService.GetCurrentUserAsync(User);
+        if (user == null)
         {
             return RedirectToAction("Login", "Account");
         }
-
-        var movies = await _movieService.SearchInPersonalListAsync(title, currentUser.Id, listType);
-
-        if (listType == "watchlist")
+        
+        bool isWatched = listType != "watchlist";
+        var pageSize = 12;
+        
+        var userMovies = await _userMovieService.GetUserMoviesAsync(user.Id, isWatched);
+        
+        if (userMovies == null || !userMovies.Any())
         {
-            return View("GetAllToWatch", movies);
+            return View(isWatched ? "GetAllSeenIt" : "GetAllToWatch", new List<Movie>());
         }
-        else
+        
+        var filteredUserMovies = userMovies
+            .Where(um => {
+                var movie = _movieService.GetMovieById(um.MovieId).Result;
+                return movie != null && movie.Title!.Contains(title, StringComparison.OrdinalIgnoreCase);
+            })
+            .ToList();
+        
+        if (isWatched)
+            filteredUserMovies = filteredUserMovies.OrderByDescending(um => um.WatchedAt).ToList();
+        
+        var totalUserMovies = filteredUserMovies.Count;
+        var totalPages = (int)Math.Ceiling(totalUserMovies / (double)pageSize);
+        
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+        
+        var paginatedUserMovies = filteredUserMovies
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        ViewBag.UserMovies = paginatedUserMovies;
+        
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        
+        var movies = new List<Movie>();
+        foreach (var userMovie in paginatedUserMovies)
         {
-            ViewBag.UserMovies = await _userMovieService.GetUserMoviesAsync(currentUser.Id, true);
-            return View("GetAllSeenIt", movies);
+            var movie = await _movieService.GetMovieById(userMovie.MovieId);
+            if (movie != null) movies.Add(movie);
         }
+
+        return View(isWatched ? "GetAllSeenIt" : "GetAllToWatch", movies);
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(int page = 1, string? status = null)
     {
+        var pageSize = 9;
         var users = await _userService.GetAllUsersAsync();
-        return View(users);
+        
+        if (!string.IsNullOrEmpty(status))
+        {
+            bool isBanned = status.ToLower() == "banned";
+            users = users.Where(u => u.IsBanned == isBanned).ToList();
+        }
+
+        var totalUsers = users.Count;
+        var totalPages = (int)Math.Ceiling(totalUsers / (double)pageSize);
+        
+        page = Math.Max(1, Math.Min(page, totalPages));
+
+        var paginatedUsers = users
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.HasPreviousPage = page > 1;
+        ViewBag.HasNextPage = page < totalPages;
+        ViewBag.TotalUsers = totalUsers;
+        ViewBag.CurrentStatus = status; 
+
+        return View(paginatedUsers);
     }
+
     [HttpPost]
     [Authorize(Roles="Admin")]
     public async Task<IActionResult> DeleteUser(string userId)
