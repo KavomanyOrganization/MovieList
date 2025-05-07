@@ -110,10 +110,10 @@
                                         <div class="d-flex align-items-center">
                                             @{
                                                 double ratingOutOf10 = movie.Rating;
-                                                var ratingClass = ratingOutOf10 >= 8 ? "text-success" : 
-                                                                  ratingOutOf10 >= 6 ? "text-warning" : "text-danger";
+                                                var ratingClass = ratingOutOf10 >= 8 ? "high" : 
+                                                                  ratingOutOf10 >= 6 ? "medium" : "low";
                                             }
-                                            <span class="badge rating-badge fs-6 me-2">
+                                            <span class="badge rating-badge @ratingClass fs-6 me-2">
                                                 @ratingOutOf10.ToString("0.0")
                                             </span>
                                             <i class="fas fa-star star-icon"></i>

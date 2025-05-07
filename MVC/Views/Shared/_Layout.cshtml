@@ -16,6 +16,10 @@
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            margin: 0;
+            padding-bottom: 60px; /* Height of footer */
         }
         
         .navbar {
@@ -48,11 +52,13 @@
         }
 
         .footer {
-            position: absolute;
+            position: fixed;
             bottom: 0;
             width: 100%;
-            white-space: nowrap;
-            line-height: 40px;
+            height: 60px;
+            line-height: 60px;
+            background-color: var(--background-color);
+            z-index: 1000;
         }
         
         .dropdown-menu {
@@ -143,15 +149,14 @@
         </main>
     </div>
 
-    <footer class="footer text-center" style="background-color: var(--background-color);">
+    <footer class="footer text-center">
         <div class="container">
-            &copy; 2025 - MovieList</a>
+            &copy; 2025 - MovieList
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
@@ -167,7 +172,7 @@
             // Initialize Select2 components
             if($.fn.select2) {
                 $('.select2').select2({
-                    theme: 'bootstrap4'
+                    dropdownParent: $('body')
                 });
             }
         });

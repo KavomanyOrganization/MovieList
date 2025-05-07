@@ -45,8 +45,7 @@
                                  onclick="location.href='@Url.Action("Details", "User", new { userId = user.Id })'">
                                 <div class="card-header bg-light border-0">
                                     <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-3" 
-                                             style="width: 48px; height: 48px;">
+                                        <div class="rounded-circle user-avatar @(isBanned ? "banned" : "active") d-flex justify-content-center align-items-center me-3">
                                             <span class="fw-bold fs-4">@user.UserName?.Substring(0, 1).ToUpper()</span>
                                         </div>
                                         <div>
@@ -173,7 +172,8 @@
 <style>    
     .banned-user {
         opacity: 0.8;
-        border-left: 4px solid var(--bs-danger) !important;
+
+        border-left: 4px solid var(--avatar-banned) !important;
     }
     
     .form-select {
@@ -190,28 +190,33 @@
     .input-group-sm {
         border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,.05);
     }
 
-    .card {
-        box-shadow: 0 4px 12px rgba(0,0,0,.08) !important;
+    .user-avatar {
+        width: 48px;
+        height: 48px;
+        color: white;
+        transition: all 0.3s ease;
     }
 
-    .card-header {
-        background-color: #e3f2fd !important;
+    .user-avatar.active {
+        background: linear-gradient(135deg, rgba(123, 140, 255, 0.95), rgba(180, 144, 226, 0.95));
+        box-shadow: 0 4px 8px rgba(123, 140, 255, 0.2);
     }
 
-    .card .rounded-circle {
-        background: linear-gradient(45deg, #20B2AA, #48D1CC) !important; /* Бірюзовий градієнт */
-        box-shadow: 0 2px 6px rgba(32, 178, 170, 0.3);
+    .user-avatar.banned {
+        background: linear-gradient(135deg, rgba(209, 182, 243, 0.95), rgba(218, 198, 245, 0.95));
+        box-shadow: 0 4px 8px rgba(209, 182, 243, 0.2);
+        opacity: 0.8;
     }
 
-    .card.banned-user {
-        box-shadow: 0 4px 12px rgba(220,53,69,.08) !important;
+    .card:hover .user-avatar.active {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(123, 140, 255, 0.25);
     }
 
-    .card.banned-user .rounded-circle {
-        background: linear-gradient(45deg, #dc3545, #ef5350) !important;
-        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+    .card:hover .user-avatar.banned {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(209, 182, 243, 0.25);
     }
 </style>
