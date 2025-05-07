@@ -8,188 +8,210 @@
     var hasPreviousPage = ViewBag.HasPreviousPage;
 }
 
-<div class="row mb-4">
-    <div class="col-md-6">
-        <h2>Registered Users</h2>
-        <p class="text-muted">Total count: <span class="badge bg-primary">@ViewBag.TotalUsers</span></p>
-    </div>
-    <div class="col-md-6">
-        <div class="d-flex justify-content-end align-items-center">
-            <div class="btn-group" role="group">
-                <a asp-controller="User" asp-action="GetAll" 
-                   class="btn @(string.IsNullOrEmpty(ViewBag.CurrentStatus) ? "btn-primary" : "btn-outline-primary")">
-                    All
-                </a>
-                <a asp-controller="User" asp-action="GetAll" asp-route-status="active"
-                   class="btn @(ViewBag.CurrentStatus == "active" ? "btn-primary" : "btn-outline-primary")">
-                    Active
-                </a>
-                <a asp-controller="User" asp-action="GetAll" asp-route-status="banned"
-                   class="btn @(ViewBag.CurrentStatus == "banned" ? "btn-primary" : "btn-outline-primary")">
-                    Banned
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-@if (Model.Any())
-{
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var user in Model)
-        {
-            bool isBanned = user.BannedUntil.HasValue && user.BannedUntil > DateTime.Now;
-            <div class="col">
-                <div class="card rounded-4 shadow-sm border-0 h-100 @(isBanned ? "banned-user" : "")" 
-                     onclick="location.href='@Url.Action("Details", "User", new { userId = user.Id })'"
-                     style="cursor: pointer;">
-                    <div class="card-header bg-light border-0 rounded-top-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-3" style="width: 48px; height: 48px;">
-                                    <span class="fw-bold fs-4">@user.UserName?.Substring(0, 1).ToUpper()</span>
-                                </div>
-                                <div>
-                                    <h5 class="card-title mb-0 fw-bold">@user.UserName</h5>
-                                    <p class="card-subtitle text-muted small mb-0 text-break">@user.Email</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-2">
-                            <span class="text-muted me-2">Status:</span>
-                            @if (isBanned)
-                            {
-                                <span class="badge rounded-pill bg-danger">Banned</span>
-                                
-                                @if (user.BannedUntil.HasValue)
-                                {
-                                    <div class="small text-danger mt-1">
-                                        Until: @user.BannedUntil.Value.ToLocalTime().ToString("MM/dd/yyyy HH:mm")
-                                    </div>
-                                    
-                                    TimeSpan timeLeft = user.BannedUntil.Value.ToLocalTime() - DateTime.Now;
-                                    string formattedTimeLeft = $"{timeLeft.Days}d {timeLeft.Hours}h {timeLeft.Minutes}m";
-                                    
-                                    <div class="small text-danger">
-                                        Time left: @formattedTimeLeft
-                                    </div>
-                                }
-                            }
-                            else
-                            {
-                                <span class="badge rounded-pill bg-success">Active</span>
-                            }
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 py-3">
-                        <div class="d-flex justify-content-end gap-2" onclick="event.stopPropagation();">
-                            @if(user.UserName != User.Identity?.Name)
-                            {
-                                <a asp-controller="User" asp-action="DeleteUser" asp-route-userId="@user.Id" 
-                                    class="btn btn-danger btn-sm rounded-3" 
-                                    onclick="return confirm('Are you sure you want to delete this user?');">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            
-                                @if (isBanned)
-                                {
-                                    <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
-                                        <button type="submit" class="btn btn-success btn-sm rounded-3">
-                                            <i class="bi bi-check-circle"></i> Unban
-                                        </button>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
-                                        <div class="input-group input-group-sm">
-                                            <select name="banDurationHours" class="form-select form-select-sm rounded-start">
-                                                <option value="6">6 hours</option>
-                                                <option value="12">12 hours</option>
-                                                <option value="24" selected>24 hours</option>
-                                                <option value="72">3 days</option>
-                                                <option value="168">1 week</option>
-                                                <option value="720">30 days</option>
-                                                <option value="">Permanent</option>
-                                            </select>
-                                            <button type="submit" class="btn btn-warning btn-sm rounded-end">
-                                                <i class="bi bi-slash-circle"></i>
-                                            </button>
-                                        </div>
-                                    </form>
-                                }
-                            }
-                        </div>
-                    </div>
+<div class="container mt-4">
+    <div class="card card-rounded shadow-sm border-0">
+        <div class="card-header-gradient border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0 text-white">Registered Users</h2>
+                    <p class="mb-0 text-white-50">Total count: <span class="badge bg-light text-dark">@ViewBag.TotalUsers</span></p>
+                </div>
+                <div class="btn-group" role="group">
+                    <a asp-controller="User" asp-action="GetAll" 
+                       class="btn btn-rounded @(string.IsNullOrEmpty(ViewBag.CurrentStatus) ? "btn-light" : "btn-outline-light")">
+                        All
+                    </a>
+                    <a asp-controller="User" asp-action="GetAll" asp-route-status="active"
+                       class="btn btn-rounded @(ViewBag.CurrentStatus == "active" ? "btn-light" : "btn-outline-light")">
+                        Active
+                    </a>
+                    <a asp-controller="User" asp-action="GetAll" asp-route-status="banned"
+                       class="btn btn-rounded @(ViewBag.CurrentStatus == "banned" ? "btn-light" : "btn-outline-light")">
+                        Banned
+                    </a>
                 </div>
             </div>
-        }
-    </div>
+        </div>
 
-    @if (totalPages > 1)
-    {
-        <nav aria-label="Users pagination" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(!hasPreviousPage ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("GetAll", new { page = currentPage - 1 })" tabindex="-1">
-                        <i class="bi bi-chevron-left"></i>
-                    </a>
-                </li>
+        <div class="card-body p-4">
+            @if (Model.Any())
+            {
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    @foreach (var user in Model)
+                    {
+                        bool isBanned = user.BannedUntil.HasValue && user.BannedUntil > DateTime.Now;
+                        <div class="col">
+                            <div class="card card-rounded shadow-sm border-0 h-100 @(isBanned ? "banned-user" : "")" 
+                                 onclick="location.href='@Url.Action("Details", "User", new { userId = user.Id })'">
+                                <div class="card-header bg-light border-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-3" 
+                                             style="width: 48px; height: 48px;">
+                                            <span class="fw-bold fs-4">@user.UserName?.Substring(0, 1).ToUpper()</span>
+                                        </div>
+                                        <div>
+                                            <h5 class="card-title mb-0 fw-bold">@user.UserName</h5>
+                                            <p class="card-subtitle text-muted small mb-0">@user.Email</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="text-muted me-2">Status:</span>
+                                        @if (isBanned)
+                                        {
+                                            <span class="badge rounded-pill bg-danger">Banned</span>
+                                            @if (user.BannedUntil.HasValue)
+                                            {
+                                                <div class="ms-2 small text-danger">
+                                                    Until: @user.BannedUntil.Value.ToLocalTime().ToString("MM/dd/yyyy HH:mm")
+                                                    @{
+                                                        TimeSpan timeLeft = user.BannedUntil.Value.ToLocalTime() - DateTime.Now;
+                                                        <br/>
+                                                        <span>(@timeLeft.Days)d @timeLeft.Hours)h @timeLeft.Minutes)m left)</span>
+                                                    }
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-success">Active</span>
+                                        }
+                                    </div>
+                                </div>
+                                @if(User.IsInRole("Admin") && user.UserName != User.Identity?.Name)
+                                {
+                                    <div class="card-footer bg-transparent border-0 py-3">
+                                        <div class="d-flex justify-content-end gap-2" onclick="event.stopPropagation();">
+                                            <a asp-controller="User" asp-action="DeleteUser" asp-route-userId="@user.Id" 
+                                               class="btn btn-danger btn-sm btn-rounded" 
+                                               onclick="return confirm('Are you sure you want to delete this user?');">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                            @if (isBanned)
+                                            {
+                                                <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
+                                                    <button type="submit" class="btn btn-secondary-style btn-sm btn-rounded">
+                                                        <i class="bi bi-check-circle"></i> Unban
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-controller="User" asp-action="Ban" asp-route-id="@user.Id" method="post">
+                                                    <div class="input-group input-group-sm">
+                                                        <select name="banDurationHours" class="form-select form-select-sm">
+                                                            <option value="6">6 hours</option>
+                                                            <option value="12">12 hours</option>
+                                                            <option value="24" selected>24 hours</option>
+                                                            <option value="72">3 days</option>
+                                                            <option value="168">1 week</option>
+                                                            <option value="720">30 days</option>
+                                                            <option value="">Permanent</option>
+                                                        </select>
+                                                        <button type="submit" class="btn btn-outline-secondary-style">
+                                                            <i class="bi bi-slash-circle"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
 
-                @for (var i = 1; i <= totalPages; i++)
+                @if (totalPages > 1)
                 {
-                    if (i == 1 || i == totalPages || (i >= currentPage - 2 && i <= currentPage + 2))
-                    {
-                        <li class="page-item @(i == currentPage ? "active" : "")">
-                            <a class="page-link" 
-                               href="@Url.Action("GetAll", new { page = i, status = ViewBag.CurrentStatus })">@i</a>
-                        </li>
-                    }
-                    else if (i == currentPage - 3 || i == currentPage + 3)
-                    {
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
-                    }
-                }
+                    <nav aria-label="Users pagination" class="mt-4">
+                        <ul class="pagination pagination-circle justify-content-center">
+                            <li class="page-item @(!hasPreviousPage ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("GetAll", new { page = currentPage - 1, status = ViewBag.CurrentStatus })">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
 
-                <li class="page-item @(!hasNextPage ? "disabled" : "")">
-                    <a class="page-link" href="@Url.Action("GetAll", new { page = currentPage + 1 })">
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    }
-}
-else
-{
-    <div class="alert alert-info rounded-4 shadow-sm">
-        <div class="d-flex align-items-center">
-            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
-            <p class="mb-0">There are no registered users in the system.</p>
+                            @for (var i = 1; i <= totalPages; i++)
+                            {
+                                if (i == 1 || i == totalPages || (i >= currentPage - 2 && i <= currentPage + 2))
+                                {
+                                    <li class="page-item @(i == currentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("GetAll", new { page = i, status = ViewBag.CurrentStatus })">@i</a>
+                                    </li>
+                                }
+                                else if (i == currentPage - 3 || i == currentPage + 3)
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                }
+                            }
+
+                            <li class="page-item @(!hasNextPage ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("GetAll", new { page = currentPage + 1, status = ViewBag.CurrentStatus })">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-people empty-state-icon mb-3"></i>
+                    <h4 class="text-muted">No users found</h4>
+                    <p class="text-muted mb-0">There are no registered users in the system.</p>
+                </div>
+            }
         </div>
     </div>
-}
 </div>
 
 <style>    
     .banned-user {
         opacity: 0.8;
-        border-left: 4px solid #dc3545 !important;
+        border-left: 4px solid var(--bs-danger) !important;
     }
     
     .form-select {
         border-right: 0;
+        border-radius: 20px 0 0 20px !important;
+        padding-left: 1rem;
     }
     
-    .input-group-sm .btn {
-        height: 100%;
+    .input-group .btn {
+        border-radius: 0 20px 20px 0 !important;
+        padding-right: 1rem;
     }
-    
-    .form-select:focus + .btn {
-        border-color: #86b7fe;
+
+    .input-group-sm {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    }
+
+    .card {
+        box-shadow: 0 4px 12px rgba(0,0,0,.08) !important;
+    }
+
+    .card-header {
+        background-color: #e3f2fd !important;
+    }
+
+    .card .rounded-circle {
+        background: linear-gradient(45deg, #20B2AA, #48D1CC) !important; /* Бірюзовий градієнт */
+        box-shadow: 0 2px 6px rgba(32, 178, 170, 0.3);
+    }
+
+    .card.banned-user {
+        box-shadow: 0 4px 12px rgba(220,53,69,.08) !important;
+    }
+
+    .card.banned-user .rounded-circle {
+        background: linear-gradient(45deg, #dc3545, #ef5350) !important;
+        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
     }
 </style>
