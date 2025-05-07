@@ -4,37 +4,114 @@
     ViewData["Title"] = "Register";
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
-<div class="account-container">
-    <div class="account-box">
-        <h2 class=" text-center mb-4">Register</h2>
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="UserName" class="form-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class=" text-danger"></span>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card card-rounded shadow">
+                <div class="card-header-gradient text-center">
+                    <h2 class="m-0">Register</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="form-label"></label>
+                            <input asp-for="UserName" class="form-control" placeholder="Choose a username" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" placeholder="Create a password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm your password" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-secondary-style btn-rounded w-100 py-2 mb-3">
+                            Register
+                        </button>
+                        
+                        <p class="text-center mb-0">
+                            Already have an account? 
+                            <a asp-controller="User" asp-action="Login" class="text-decoration-none" style="color: var(--primary-color);">
+                                Login
+                            </a>
+                        </p>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class=" text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class=" text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class=" text-danger"></span>
-            </div>
-            <input type="submit" value="Register" class="btn btn-success w-100 p-2"/>
-            <p class="text-center mt-2">
-                Already have an account?<a asp-controller="User" asp-action="Login" class=" text-decoration-none"> Login</a></p>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Color Variables */
+    :root {
+        --primary-color: #6e8ec4;
+        --secondary-color: #a9cbb7;
+        --background-color: #efecca;
+        --text-dark: #333;
+        --text-muted: #6c757d;
+    }
+
+    body {
+        background-color: #f5f5f5;
+    }
+
+    .card-rounded {
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: none;
+    }
+
+    .card-header-gradient {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1.5rem;
+    }
+
+    .btn-rounded {
+        border-radius: 50rem;
+    }
+
+    .btn-secondary-style {
+        background-color: var(--secondary-color);
+        color: var(--text-dark);
+        border: none;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .btn-secondary-style:hover {
+        background-color: #98b8a7;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        padding: 0.5rem 1rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.25rem rgba(169, 203, 183, 0.25);
+    }
+</style>
 
 @section Scripts{
     @{
