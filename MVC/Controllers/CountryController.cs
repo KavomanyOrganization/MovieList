@@ -24,7 +24,7 @@ namespace MVC.Controllers
             var totalPages = (int)Math.Ceiling(totalCountries / (double)pageSize);
 
             var paginatedCountries = countries
-            .OrderByDescending(c => c.Name)
+            .OrderBy(c => c.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize);
 

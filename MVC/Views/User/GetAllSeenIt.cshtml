@@ -12,109 +12,133 @@
 }
 
 <div class="container mt-4">
-    <h2>Seen It!</h2>
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <form asp-controller="User" asp-action="SearchInList" method="get" class="d-flex">
-                <input type="text" name="title" class="form-control me-2" placeholder="Search in Seen It!..." required value="@searchTerm">
-                <input type="hidden" name="listType" value="seenit">
-                <input type="hidden" name="page" value="1">
-                <button class="btn btn-outline-primary" type="submit">Search</button>
-                @if (hasSearchTerm)
-                {
-                    <a asp-controller="User" asp-action="GetAllSeenIt" class="btn btn-outline-secondary ms-2">Clear</a>
-                }
-            </form>
+    <div class="card shadow-sm border-0 card-rounded">
+        <div class="card-header-gradient card-header border-0 rounded-top">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="text-white mb-0 fs-3 fw-bold">Seen It!</h1>
+                <div class="d-flex align-items-center">
+                    <form asp-controller="User" asp-action="SearchInList" method="get" class="d-flex">
+                        <div class="input-group">
+                            <input type="text" name="title" class="form-control border-0" 
+                                   placeholder="Search in Seen It!..." value="@searchTerm" required
+                                   style="border-radius: 20px 0 0 20px;" />
+                            <input type="hidden" name="listType" value="seenit">
+                            <input type="hidden" name="page" value="1">
+                            <button type="submit" class="nav-link btn btn-secondary-style px-3" style="border-radius: 0 20px 20px 0;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            @if (hasSearchTerm)
+                            {
+                                <a asp-controller="User" asp-action="GetAllSeenIt" class="btn btn-outline-secondary-style btn-rounded ms-2">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var item in Model)
+        
+        <div class="card-body">
+            @if (hasSearchTerm)
             {
-                <div class="col-6 col-sm-4 col-md-3 col-lg-2-4 mb-3 d-flex justify-content-center">
-                    <div class="card movie-card" style="width: 100%; max-width: 200px;">
-                        <div class="card-body">
-                            <div class="card-image text-center" onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'" style="cursor: pointer;">
-                                @if (!string.IsNullOrEmpty(item.Cover))
-                                {
-                                    <img src="@item.Cover" alt="@item.Title" class="img-fluid rounded" />
-                                }
-                                else
-                                {
-                                    <span>No cover available</span>
-                                }
-                            </div>
-                            <div class="text-center mt-2">
-                                <h5 class="card-title" title="@item.Title">@(item.Title ?? "No Title")</h5>
-                                @{
-                                    var userMovies = ViewBag.UserMovies as IEnumerable<MVC.Models.UserMovie>;
-                                    var userMovie = userMovies?.FirstOrDefault(um => um.MovieId == item.Id);
-                                    var userRating = userMovie?.Rating ?? 0;
-                                    var watchedDate = userMovie?.WatchedAt;
-                                }
-                                @if(watchedDate.HasValue)
-                                {
-                                    <p class="small text-muted mb-1">Watched: @watchedDate.Value.ToString("yyyy-MM-dd")</p>
-                                }
-                                <div class="d-flex justify-content-center gap-2">
-                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
-                                        @userRating/10 <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <a href="@Url.Action("RemoveFromLists", "User", new { id = item.Id })" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();">
-                                        <i class="bi bi-dash-circle"></i>
-                                    </a>
+                <div class="alert mb-3 py-2 px-3 filter-alert">
+                    <i class="fas fa-filter me-2"></i> Showing results for: <strong>@searchTerm</strong>
+                </div>
+            }
+            
+            <div class="row">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-6 col-sm-4 col-md-3 mb-3 d-flex justify-content-center">
+                            <div class="card movie-card card-rounded">
+                                <div class="card-body">
+                                    <div class="card-image" onclick="location.href='@Url.Action("Details", "Movie", new { id = item.Id })'">
+                                        @if (!string.IsNullOrEmpty(item.Cover))
+                                        {
+                                            <img src="@item.Cover" alt="@item.Title" class="img-fluid" />
+                                        }
+                                        else
+                                        {
+                                            <div class="image-placeholder">
+                                                <span class="empty-state-icon">No cover available</span>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <h5 class="card-title" title="@item.Title">@(item.Title ?? "No Title")</h5>
+                                        @{
+                                            var userMovies = ViewBag.UserMovies as IEnumerable<MVC.Models.UserMovie>;
+                                            var userMovie = userMovies?.FirstOrDefault(um => um.MovieId == item.Id);
+                                            var userRating = userMovie?.Rating ?? 0;
+                                            var watchedDate = userMovie?.WatchedAt;
+                                        }
+                                        @if(watchedDate.HasValue)
+                                        {
+                                            <p class="watched-date">Watched: @watchedDate.Value.ToString("yyyy-MM-dd")</p>
+                                        }
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button type="button" class="btn btn-secondary-style btn-rounded btn-sm" data-bs-toggle="modal" data-bs-target="#rateMovieModal-@item.Id" onclick="event.stopPropagation();">
+                                                @userRating/10 <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <a href="@Url.Action("RemoveFromLists", "User", new { id = item.Id })" class="btn btn-outline-secondary-style btn-rounded btn-sm" onclick="event.stopPropagation();">
+                                                <i class="bi bi-dash-circle"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Modal for Rating -->
-                <div class="modal fade" id="rateMovieModal-@item.Id" tabindex="-1" aria-labelledby="rateMovieModalLabel-@item.Id" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="rateMovieModalLabel-@item.Id">Rate Movie</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form asp-controller="User" asp-action="RateMovie" method="post">
-                                    <input type="hidden" name="movieId" value="@item.Id" />
-                                    <div class="form-group mb-3">
-                                        <label for="rating-@item.Id">Rating (1-10):</label>
-                                        <input type="number" id="rating-@item.Id" name="rating" class="form-control" min="1" max="10" value="@userRating" required />
+                        <!-- Modal for Rating -->
+                        <div class="modal fade" id="rateMovieModal-@item.Id" tabindex="-1" aria-labelledby="rateMovieModalLabel-@item.Id" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content card-rounded">
+                                    <div class="modal-header card-header-gradient">
+                                        <h5 class="modal-title" id="rateMovieModalLabel-@item.Id">Rate Movie</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="form-group mb-3">
-                                        <label for="watchedDate-@item.Id">Watched Date:</label>
-                                        <input type="date" id="watchedDate-@item.Id" name="watchedDate" class="form-control" value="@(watchedDate.HasValue ? watchedDate.Value.ToString("yyyy-MM-dd") : "")" />
+                                    <div class="modal-body">
+                                        <form asp-controller="User" asp-action="RateMovie" method="post">
+                                            <input type="hidden" name="movieId" value="@item.Id" />
+                                            <div class="form-group mb-3">
+                                                <label for="rating-@item.Id">Rating (1-10):</label>
+                                                <input type="number" id="rating-@item.Id" name="rating" class="form-control" min="1" max="10" value="@userRating" required />
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label for="watchedDate-@item.Id">Watched Date:</label>
+                                                <input type="date" id="watchedDate-@item.Id" name="watchedDate" class="form-control" value="@(watchedDate.HasValue ? watchedDate.Value.ToString("yyyy-MM-dd") : "")" />
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary-style btn-rounded" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-secondary-style btn-rounded">Submit</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-success">Submit</button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="col-12 text-center">
-                @if (hasSearchTerm)
-                {
-                    <p>No movies found matching "@searchTerm" in your Seen It! list.</p>
-                    <a asp-controller="User" asp-action="GetAllSeenIt" class="btn btn-outline-primary">Show all movies</a>
+                    }
                 }
                 else
                 {
-                    <p>The list is empty! You haven't added any films to your Seen It! yet.</p>
-                    <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-primary">Watch popular films</a>
+                    <div class="col-12 text-center">
+                        @if (hasSearchTerm)
+                        {
+                            <p class="empty-state-icon">No movies found matching "@searchTerm" in your Seen It! list.</p>
+                            <a asp-controller="User" asp-action="GetAllSeenIt" class="btn btn-secondary-style btn-rounded">Show all movies</a>
+                        }
+                        else
+                        {
+                            <p class="empty-state-icon">The list is empty! You haven't added any films to your Seen It! yet.</p>
+                            <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-secondary-style btn-rounded">Watch popular films</a>
+                        }
+                    </div>
                 }
             </div>
-        }
+        </div>
     </div>
     
     @if (Model != null && Model.Any() && totalPages > 1)
@@ -122,7 +146,7 @@
         <div class="row mt-4">
             <div class="col-12">
                 <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center pagination-circle">
                         @if (hasPreviousPage)
                         {
                             <li class="page-item">
@@ -217,33 +241,6 @@
         </div>
     }
 </div>
-
-<style>
-    /* Custom column class for 5 columns (20% width) */
-    .col-lg-2-4 {
-        width: 20%;
-    }
-    
-    /* Responsive adjustments */
-    @@media (max-width: 991.98px) {
-        .col-lg-2-4 {
-            width: 25%; /* 4 per row on medium screens */
-        }
-    }
-    
-    @@media (max-width: 767.98px) {
-        .col-lg-2-4 {
-            width: 33.333%; /* 3 per row on small screens */
-        }
-    }
-    
-    @@media (max-width: 575.98px) {
-        .col-lg-2-4 {
-            width: 50%; /* 2 per row on extra small screens */
-        }
-    }
-</style>
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
