@@ -95,76 +95,45 @@
                                         @report.CreationDate.ToString("dd MMM yy")
                                     </td>
                                     <td class="px-4 py-3">
+                                        @if (report.User.BannedUntil.HasValue && report.User.BannedUntil > DateTime.UtcNow)
+                                        {
+                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id" method="post">
+                                                <button type="submit" class="btn btn-secondary-style btn-sm btn-rounded">
+                                                    <i class="bi bi-check-circle"></i> Unban
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id" method="post">
+                                                <div class="input-group input-group-sm">
+                                                    <select name="banDurationHours" class="form-select form-select-sm rounded-start">
+                                                        <option value="6">6 hours</option>
+                                                        <option value="12">12 hours</option>
+                                                        <option value="24" selected>24 hours</option>
+                                                        <option value="72">3 days</option>
+                                                        <option value="168">1 week</option>
+                                                        <option value="720">30 days</option>
+                                                        <option value="">Permanent</option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-outline-secondary-style">
+                                                        <i class="bi bi-slash-circle"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        }
                                         <div class="d-flex align-items-center">
                                             <a href="@Url.Action("Details", "User", new { userId = report.User?.Id })" 
                                                class="text-truncate d-inline-block me-1" style="max-width: 120px;">
                                                 @report.User?.UserName
                                             </a>
                                         </div>
+                                        
                                     </td>
                                     <td class="px-2 py-3">
-                                        <div class="d-flex flex-wrap align-items gap-">
-                                            <div class="dropdown ban-dropdown">
-                                                <button class="btn btn-sm @(
-                                                    report.User!.BannedUntil.HasValue && report.User.BannedUntil > DateTime.UtcNow 
-                                                        ? "btn-success" 
-                                                        : "btn-danger"
-                                                    ) dropdown-toggle p-1"
-                                                    type="button" 
-                                                    data-bs-toggle="dropdown" 
-                                                    aria-expanded="false"
-                                                    title="Ban options">
-                                                    <i class="bi bi-slash-circle"></i>
-                                                </button>
-
-                                                <ul class="dropdown-menu">
-                                                    @if (report.User.BannedUntil.HasValue && report.User.BannedUntil > DateTime.UtcNow)
-                                                    {
-                                                        <li>
-                                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
-                                                                method="post" class="dropdown-item m-0 p-0">
-                                                                <button type="submit" class="btn btn-success w-100">
-                                                                    <i class="bi bi-check-circle me-1"></i> Unban
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    }
-                                                    else
-                                                    {
-                                                        <li>
-                                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
-                                                                method="post" class="dropdown-item m-0 p-0">
-                                                                <input type="hidden" name="banDurationHours" value="6" />
-                                                                <button type="submit" class="dropdown-item text-danger">Ban for 6h</button>
-                                                            </form>
-                                                        </li>
-                                                        <li>
-                                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
-                                                                method="post" class="dropdown-item m-0 p-0">
-                                                                <input type="hidden" name="banDurationHours" value="24" />
-                                                                <button type="submit" class="dropdown-item text-danger">Ban for 24h</button>
-                                                            </form>
-                                                        </li>
-                                                        <li>
-                                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
-                                                                method="post" class="dropdown-item m-0 p-0">
-                                                                <input type="hidden" name="banDurationHours" value="168" />
-                                                                <button type="submit" class="dropdown-item text-danger">Ban for 1 week</button>
-                                                            </form>
-                                                        </li>
-                                                        <li>
-                                                            <form asp-controller="User" asp-action="Ban" asp-route-id="@report.User.Id"
-                                                                method="post" class="dropdown-item m-0 p-0">
-                                                                <input type="hidden" name="banDurationHours" value="" />
-                                                                <button type="submit" class="dropdown-item text-danger">Ban permanently</button>
-                                                            </form>
-                                                        </li>
-                                                    }
-                                                </ul>
-                                            </div>
-
+                                        <div class="d-flex flex-wrap align-items-center gap-2">
                                             <a asp-controller="Report" asp-action="Delete" asp-route-id="@report.Id"
-                                               class="btn btn-sm btn-outline-secondary-style"
+                                               class="btn btn-sm btn-outline-danger"
                                                onclick="return confirm('Are you sure you want to delete this report?');"
                                                data-bs-toggle="tooltip" title="Close Report">
                                                 <i class="bi bi-x-circle"></i>
