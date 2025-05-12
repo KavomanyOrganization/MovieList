@@ -183,7 +183,7 @@
         {
             <div class="card-footer border-0 p-4" style="background-color: var(--background-color);">
                 <nav aria-label="Movie pagination">
-                    <ul class="pagination pagination-circle justify-content-center mb-0">
+                    <ul class="pagination pagination-circle justify-content-center flex-wrap">
                         <li class="page-item @(!hasPreviousPage ? "disabled" : "")">
                             <a class="page-link @(hasPreviousPage ? "btn-secondary-style" : "btn-outline-secondary-style")" 
                                style="@(hasPreviousPage ? "background-color: #a9cbb7; color: #333;" : "border-color: #a9cbb7; color: #333;")"
@@ -199,23 +199,21 @@
                             {
                                 <li class="page-item @(i == currentPage ? "active" : "")">
                                     <a class="page-link" 
-                                       style="@(i == currentPage ? "background-color: #a9cbb7; color: #333;" : "border-color: #a9cbb7; color: #333;")"
                                        href="@Url.Action("ViewRating", new { page = i, searchTerm = searchTerm })">@i</a>
                                 </li>
                             }
                             else if (i == currentPage - 3 || i == currentPage + 3)
                             {
                                 <li class="page-item disabled">
-                                    <span class="page-link border-0 bg-transparent">...</span>
+                                    <span class="page-link">...</span>
                                 </li>
                             }
                         }
 
                         <li class="page-item @(!hasNextPage ? "disabled" : "")">
-                            <a class="page-link @(hasNextPage ? "btn-secondary-style" : "btn-outline-secondary-style")" 
-                               style="@(hasNextPage ? "background-color: #a9cbb7; color: #333;" : "border-color: #a9cbb7; color: #333;")"
+                            <a class="page-link" 
                                href="@Url.Action("ViewRating", new { page = currentPage + 1, searchTerm = searchTerm })">
-                                <i class="bi bi-chevron-right"></i>
+                               <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
                     </ul>
