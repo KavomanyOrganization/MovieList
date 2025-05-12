@@ -24,7 +24,7 @@ namespace MVC.Controllers
             var totalPages = (int)Math.Ceiling(totalGenres / (double)pageSize);
 
             var paginatedGenres =  genres
-            .OrderByDescending(m => m.Name)
+            .OrderBy(m => m.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize);
 
