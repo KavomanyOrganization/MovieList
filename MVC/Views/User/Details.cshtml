@@ -6,60 +6,59 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">@Model.UserName</h3>
+            <div class="card card-rounded shadow-sm border-0">
+                <div class="card-header-gradient border-0 d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0 text-white">@Model.UserName</h3>
                     @if (User.IsInRole("Admin"))
                     {
-                        <span class="badge bg-light text-dark">User ID: @Model.Id</span>
+                        <span class="badge rounded-pill bg-light text-dark">ID: @Model.Id</span>
                     }
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="text-center py-4 bg-light rounded">
-                                <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
+                            <div class="text-center p-4 bg-light rounded-4">
+                                <i class="bi bi-person-circle text-primary" style="font-size: 5rem;"></i>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <dl class="row gy-3">
-                                <dt class="col-sm-3 text-nowrap">Username</dt>
-                                <dd class="col-sm-10">@Model.UserName</dd>
+                                <dt class="col-sm-3 text-nowrap text-muted">Username</dt>
+                                <dd class="col-sm-9 fw-bold">@Model.UserName</dd>
 
-                                <dt class="col-sm-3 text-nowrap">Email</dt>
-                                <dd class="col-sm-10">@Model.Email</dd>
+                                <dt class="col-sm-3 text-nowrap text-muted">Email</dt>
+                                <dd class="col-sm-9">@Model.Email</dd>
 
-                                <dt class="col-sm-3 text-nowrap">Status</dt>
+                                <dt class="col-sm-3 text-nowrap text-muted">Status</dt>
                                 <dd class="col-sm-9">
                                     @if (Model.IsBanned)
                                     {
-                                        <span class="badge bg-danger">Banned</span>
+                                        <span class="badge rounded-pill bg-danger">Banned</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="badge rounded-pill bg-success">Active</span>
                                     }
                                 </dd>
 
-                                <dt class="col-sm-3 text-nowrap">Achievement</dt>
-                                <dd class="col-sm-10" id="achievementBadge">
-                                    <span class="badge bg-secondary">Loading...</span>
+                                <dt class="col-sm-3 text-nowrap text-muted">Achievement</dt>
+                                <dd class="col-sm-9" id="achievementBadge">
+                                    <span class="badge rounded-pill bg-secondary">Loading...</span>
                                 </dd>
-
                             </dl>
                         </div>
                     </div>
 
                     <div class="mt-4">
-                        <h5 class="mb-3">Progress to next level</h5>
-                        <div class="progress" style="height: 25px;">
+                        <h5 class="mb-3 text-muted">Progress to next level</h5>
+                        <div class="progress rounded-pill" style="height: 25px;">
                             <div id="achievementProgress"
-                                class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                                style="width: 0%"></div>
+                                class="progress-bar progress-bar-striped progress-bar-animated rounded-pill" 
+                                role="progressbar" style="width: 0%"></div>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
-                            <small id="currentLevelText">Loading...</small>
-                            <small id="nextLevelText">Loading...</small>
+                            <small id="currentLevelText" class="text-muted">Loading...</small>
+                            <small id="nextLevelText" class="text-muted">Loading...</small>
                         </div>
                     </div>
                 </div>
@@ -69,7 +68,7 @@
                     <div class="card-footer bg-transparent border-0 py-3">
                         <div class="d-flex justify-content-end gap-2">
                             <a asp-controller="User" asp-action="DeleteUser" asp-route-userId="@Model.Id"
-                                class="btn btn-danger btn-sm"
+                                class="btn btn-danger btn-sm btn-rounded"
                                 onclick="return confirm('Are you sure you want to delete this user?');">
                                 <i class="bi bi-trash"></i> Delete
                             </a>
@@ -77,13 +76,13 @@
                             <form asp-controller="User" asp-action="Ban" asp-route-id="@Model.Id" method="post">
                                 @if (Model.IsBanned)
                                 {
-                                    <button type="submit" class="btn btn-success btn-sm rounded-3 shadow-sm">
+                                    <button type="submit" class="btn btn-secondary-style btn-sm btn-rounded">
                                         <i class="bi bi-check-circle"></i> Unban
                                     </button>
                                 }
                                 else
                                 {
-                                    <button type="submit" class="btn btn-warning btn-sm rounded-3 shadow-sm">
+                                    <button type="submit" class="btn btn-outline-secondary-style btn-sm btn-rounded">
                                         <i class="bi bi-slash-circle"></i> Ban
                                     </button>
                                 }

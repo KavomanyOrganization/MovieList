@@ -2,37 +2,56 @@
 @model LoginViewModel;
 @{
     ViewData["Title"] = "Login";
-    Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
-<div class="account-container">
-    <div class="account-box">
-        <h2 class=" text-center mb-4">Login</h2>
-        <form asp-action="Login" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class=" text-danger"></span>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card card-rounded shadow-soft">
+                <div class="card-header-gradient text-center">
+                    <h2 class="m-0">Login</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <label class="form-check-label">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                @Html.DisplayNameFor(a => a.RememberMe)
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-secondary-style btn-rounded w-100 py-2 mb-3">
+                            Login
+                        </button>
+                        
+                        <p class="text-center mb-0">
+                            Don't have an account? 
+                            <a asp-controller="User" asp-action="Register" class="text-decoration-none">
+                                Register
+                            </a>
+                        </p>
+                    </form>
+                </div>
             </div>
-             <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class=" text-danger"></span>
-            </div>
-            <div class=" form-check mb-3">
-                <label class="form-check-label">
-                    <input asp-for="RememberMe" class="form-check-input" />
-                    @Html.DisplayNameFor(a=>a.RememberMe)
-                </label>
-            </div>
-            <input type="submit" value="Login" class="btn btn-success w-100 p-2"/>
-            <p class="text-center mt-2">
-                Don't have an account?<a asp-controller="User" asp-action="Register" class=" text-decoration-none"> Register</a></p>
-        </form>
+        </div>
     </div>
 </div>
 
-@section Scripts{
+@section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
     }

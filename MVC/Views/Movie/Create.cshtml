@@ -4,62 +4,60 @@
     ViewData["Title"] = "Add Movie";
 }
 
-<div class="container mt-4">
+<div class="container my-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title mb-0">Create Movie</h3>
+            <div class="card shadow-sm border-0 card-rounded">
+                <div class="card-header-gradient card-header border-0 rounded-top">
+                    <h3 class="text-white mb-0 fs-3 fw-bold">Create Movie</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     @if (ViewBag.ErrorMessage != null)
                     {
-                        <div class="alert alert-warning">
-                            <a href="#" class="btn btn-warning btn-sm" onclick="return false;">
-                                <i class="bi bi-exclamation-triangle"></i> @ViewBag.ErrorMessage
-                            </a>
+                        <div class="alert filter-alert mb-4">
+                            <i class="bi bi-exclamation-triangle me-2"></i> @ViewBag.ErrorMessage
                         </div>
                     }
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         
                         <div class="mb-3">
-                            <label asp-for="Title" class="form-label">Title <span class="text-danger">*</span></label>
-                            <input asp-for="Title" class="form-control" required />
+                            <label asp-for="Title" class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control rounded-pill" required />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="Cover" class="form-label">Cover Image URL</label>
-                            <input asp-for="Cover" class="form-control" />
+                            <label asp-for="Cover" class="form-label fw-bold">Cover Image URL</label>
+                            <input asp-for="Cover" class="form-control rounded-pill" />
                             <span asp-validation-for="Cover" class="text-danger"></span>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label asp-for="Year" class="form-label">Release Year</label>
-                                    <input asp-for="Year" class="form-control" type="number" min="1900" max="@DateTime.Now.Year" />
+                                    <label asp-for="Year" class="form-label fw-bold">Release Year</label>
+                                    <input asp-for="Year" class="form-control rounded-pill" type="number" min="1900" max="@DateTime.Now.Year" />
                                     <span asp-validation-for="Year" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label asp-for="Duration" class="form-label">Duration (minutes)</label>
-                                    <input asp-for="Duration" class="form-control" type="number" min="1" />
+                                    <label asp-for="Duration" class="form-label fw-bold">Duration (minutes)</label>
+                                    <input asp-for="Duration" class="form-control rounded-pill" type="number" min="1" />
                                     <span asp-validation-for="Duration" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="Director" class="form-label">Director</label>
-                            <input asp-for="Director" class="form-control" />
+                            <label asp-for="Director" class="form-label fw-bold">Director</label>
+                            <input asp-for="Director" class="form-control rounded-pill" />
                             <span asp-validation-for="Director" class="text-danger"></span>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Genres <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">Genres <span class="text-danger">*</span></label>
                             <select asp-for="SelectedGenreIds" class="form-control select2-genres" multiple="multiple" required>
                                 @foreach (var genre in ViewBag.Genres) {
                                     <option value="@genre.Key">@genre.Value</option>
@@ -69,7 +67,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Countries <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">Countries <span class="text-danger">*</span></label>
                             <select asp-for="SelectedCountryIds" class="form-control select2-countries" multiple="multiple" required>
                                 @foreach (var country in ViewBag.Countries) {
                                     <option value="@country.Key">@country.Value</option>
@@ -79,17 +77,17 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                            <label asp-for="Description" class="form-label fw-bold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="5" style="border-radius: 15px;"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                         
-                        <div class="d-flex justify-content-between">
-                            <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Back to Ratings
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-controller="Movie" asp-action="ViewRating" class="btn btn-outline-secondary-style btn-rounded px-4 py-2">
+                                <i class="bi bi-arrow-left me-2"></i> Back to Ratings
                             </a>
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-plus-circle"></i> Create Movie
+                            <button type="submit" class="btn btn-primary-style btn-rounded px-4 py-2">
+                                <i class="bi bi-plus-circle me-2"></i> Create Movie
                             </button>
                         </div>
                     </form>
@@ -104,15 +102,21 @@
     <script>
         $(document).ready(function() {
             $('.select2-genres').select2({
-                placeholder: "Select",
+                placeholder: "Select genres",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
+                theme: "classic",
+                dropdownCssClass: "rounded-3",
+                selectionCssClass: "rounded-3"
             });
 
             $('.select2-countries').select2({
-                placeholder: "Select",
+                placeholder: "Select countries",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
+                theme: "classic",
+                dropdownCssClass: "rounded-3",
+                selectionCssClass: "rounded-3"
             });
         });
     </script>
